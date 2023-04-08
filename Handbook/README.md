@@ -1,4 +1,4 @@
-# The NASA Protocol Exploits Project Handbook
+# :rocket: NASA Protocol Exploits Project Handbook
 
 This is where we'll share everything project related, our project structure, and our processes.
 
@@ -7,3 +7,5 @@ It's the central guide to provide a better understanding of what we believe in a
 Please create a pull request to suggest improvements or add clarifications.
 
 Please use issues to ask questions.
+
+## Handbook Sections
