@@ -1,6 +1,10 @@
 # Documentation
 
-Add all research, and project related documentation here
+## 2022 T3 Documentation
+The Static Analysis Reports (SAR) for 2022 T3 are located in the `Documentation\2022 T3\Coverity Scan - Static Analysis Reports` directory. These reports should serve as historical artifacts for older CIDs that have already been investigated by Hardhat Enterprises.
+
+## 2023 T1 Documentation
+The Static Analysis Reports (SAR) for 2023 T1 are located in the `Documentation\2023 T1\Coverity Scan - Static Analysis Reports` directory. These reports are for the most recent high impact CIDs that have been investigated by Hardhat Enterprises using Coverity.
 
 ## What is this repository used for?
 
