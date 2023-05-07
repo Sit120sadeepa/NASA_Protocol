@@ -1,4 +1,3 @@
-
 from scapy.layers.inet import IP, UDP
 import socket
 from bpcodec import Bundle
