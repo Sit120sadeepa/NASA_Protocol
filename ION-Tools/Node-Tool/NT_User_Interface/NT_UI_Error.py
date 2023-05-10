@@ -1,6 +1,6 @@
 import tkinter as tk
 
-#Define a function to close the window with confirmation window
+#Generic error window template.
 def ErrorGUI(windowLocation,ErrorMessage):
     #Create Higher level Window
     errorWindow = tk.Toplevel()

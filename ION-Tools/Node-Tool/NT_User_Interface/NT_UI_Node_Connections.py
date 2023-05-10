@@ -3,31 +3,20 @@ from tkinter import ttk
 import tkinter as tk
 import NT_User_Interface.NT_UI_Main
 from NT_User_Interface.NT_UI_Error import ErrorGUI
+from NT_Node.NT_Node import *
+from NT_User_Interface.NT_UI_UpdateWindow import UpdateWindowLocation
 
-def UpdateWindowLocation(UI,windowLocation):
-    windowLocation[0],windowLocation[1]=UI.winfo_x(),UI.winfo_y()
-    return windowLocation
-
-class node():
-    def __init__(self):
-        self.name = ""
-        self.IPAddress = []
-        self.connectedNodes = []
-
-def AddNode(nodes,node):
-    nodes.append(node)
-
-def NodeConstructor():
-        return node()
 
 #Define a function to close the window with confirmation window
 def ConnectNodeGui(windowLocation,nodes,focusNode):
     #Create Higher level Window
     connectNodeWindow = tk.Toplevel()
-    windowX = str(windowLocation[0])
-    windowY = str(windowLocation[1])
-    connectNodeWindow.geometry("300x80"+"+"+windowX+"+"+windowY)
+
+    #Configure Window
     connectNodeWindow.title('Connect Node')
+    connectNodeWindow.windowLocation = windowLocation
+    connectNodeWindow.geometry("300x80"+"+"+str(connectNodeWindow.windowLocation[0])+"+"+str(connectNodeWindow.windowLocation[1]))
+
     windowMessage = tk.Label(connectNodeWindow,text = "Choose Node to connect")
     windowMessage.pack()
 
@@ -58,29 +47,33 @@ def ConnectNodeGui(windowLocation,nodes,focusNode):
                 found = True
                 focusNode.connectedNodes.append(node)
                 node.connectedNodes.append(focusNode)
-                UpdateWindowLocation(connectNodeWindow,windowLocation)
+                UpdateWindowLocation(connectNodeWindow)
                 connectNodeWindow.destroy()
                 ChangeNodeConnectionsGui(windowLocation,nodes,focusNode)               
                 break
         if(not found):
-            ErrorGUI(UpdateWindowLocation(connectNodeWindow,windowLocation),"No Node Selected")
+            ErrorGUI(UpdateWindowLocation(connectNodeWindow),"No Node Selected")
 
     connectButton = tk.Button(connectNodeWindow, width=20 ,text="Connect", command=lambda:CheckIfNullEntry())
     connectButton.pack(side=tk.LEFT)
-    cancelButton = tk.Button(connectNodeWindow, width=20 ,text="Cancel", command=lambda:(UpdateWindowLocation(connectNodeWindow,windowLocation),
-                                                                                        connectNodeWindow.destroy(),
-                                                                                        ChangeNodeConnectionsGui(windowLocation,nodes,focusNode)))
+    cancelButton = tk.Button(connectNodeWindow, width=20 ,text="Cancel", command=lambda:(UpdateWindowLocation(connectNodeWindow),
+                                                                                         ChangeNodeConnectionsGui(connectNodeWindow.windowLocation,nodes,focusNode),
+                                                                                         connectNodeWindow.destroy()))
     cancelButton.pack(side=tk.LEFT)
 
 #Define a function to close the window with confirmation window
 def DisconnectNodeGui(windowLocation,nodes,focusNode):
     #Create Higher level Window
+
     disconnectNodeWindow = tk.Toplevel()
-    windowX = str(windowLocation[0])
-    windowY = str(windowLocation[1])
-    disconnectNodeWindow.geometry("300x80"+"+"+windowX+"+"+windowY)
-    disconnectNodeWindow.title('Remove Node')
-    windowMessage = tk.Label(disconnectNodeWindow,text = "Choose Node to remove")
+
+    #Configure Window
+    disconnectNodeWindow.title('Disconnect Node')
+    disconnectNodeWindow.windowLocation = windowLocation
+    disconnectNodeWindow.geometry("300x80"+"+"+str(disconnectNodeWindow.windowLocation[0])+"+"+str(disconnectNodeWindow.windowLocation[1]))
+
+
+    windowMessage = tk.Label(disconnectNodeWindow,text = "Choose Node to disconnect")
     windowMessage.pack()
 
     nodeList = []
@@ -100,18 +93,18 @@ def DisconnectNodeGui(windowLocation,nodes,focusNode):
                 found = True
                 focusNode.connectedNodes.remove(node)
                 node.connectedNodes.remove(focusNode)
-                UpdateWindowLocation(disconnectNodeWindow,windowLocation)
+                UpdateWindowLocation(disconnectNodeWindow)
                 disconnectNodeWindow.destroy()
                 ChangeNodeConnectionsGui(windowLocation,nodes,focusNode)               
                 break
         if(not found):
-                ErrorGUI(UpdateWindowLocation(disconnectNodeWindow,windowLocation),"No Node Selected")
+                ErrorGUI(UpdateWindowLocation(disconnectNodeWindow),"No Node Selected")
 
-    deleteButton = tk.Button(disconnectNodeWindow, width=20 ,text="Delete", command=lambda:CheckIfNullEntry())
-    deleteButton.pack(side=tk.LEFT)
-    cancelButton = tk.Button(disconnectNodeWindow, width=20 ,text="Cancel", command=lambda:(UpdateWindowLocation(disconnectNodeWindow,windowLocation),
-                                                                                        disconnectNodeWindow.destroy(),
-                                                                                        NT_User_Interface.NT_UI_Main.MainGUI(windowLocation,nodes)))
+    disconnectButton = tk.Button(disconnectNodeWindow, width=20 ,text="Disconnect", command=lambda:CheckIfNullEntry())
+    disconnectButton.pack(side=tk.LEFT)
+    cancelButton = tk.Button(disconnectNodeWindow, width=20 ,text="Cancel", command=lambda:(UpdateWindowLocation(disconnectNodeWindow),                                                                                       
+                                                                                        NT_User_Interface.NT_UI_Main.MainGUI(disconnectNodeWindow.windowLocation,nodes),
+                                                                                        disconnectNodeWindow.destroy()))
     cancelButton.pack(side=tk.LEFT)
     
 
@@ -119,11 +112,11 @@ def DisconnectNodeGui(windowLocation,nodes,focusNode):
 def ChangeNodeConnectionsGui(windowLocation,nodes,focusNode):
     #Create Higher level Window
     UI = tk.Toplevel()
-    windowX = str(windowLocation[0])
-    windowY = str(windowLocation[1])
-    UI.geometry("+"+windowX+"+"+windowY)
-    UI.title('Modify Node connections')
 
+    #Configure Window
+    UI.title('Modify Node connections')
+    UI.windowLocation = windowLocation
+    UI.geometry("+"+str(UI.windowLocation[0])+"+"+str(UI.windowLocation[1]))
 
     connectedNodeList = []
     for node in focusNode.connectedNodes:
@@ -143,28 +136,33 @@ def ChangeNodeConnectionsGui(windowLocation,nodes,focusNode):
     UI.windowMessage4 = tk.Label(UI,text = str(connectedNodeList))
     UI.windowMessage4.grid(row = 3, column = 0, columnspan = totalColums, pady = 2)
 
-    UI.Addbutton = tk.Button(UI, width=20 ,text="Connect a node", command=lambda:(UpdateWindowLocation(UI,windowLocation),
-                                                                                UI.destroy(),
-                                                                                ConnectNodeGui(windowLocation,nodes,focusNode)))
+    UI.Addbutton = tk.Button(UI, width=20 ,text="Connect a node", command=lambda:(UpdateWindowLocation(UI),                                                            
+                                                                                ConnectNodeGui(UI.windowLocation,nodes,focusNode),
+                                                                                UI.destroy()))
     UI.Addbutton.grid(row = 4, column = 0, pady = 2)
-    UI.Removebutton = tk.Button(UI, width=20 ,text="Disconnect a node", command=lambda:(UpdateWindowLocation(UI,windowLocation),
-                                                                                 UI.destroy(),
-                                                                                 DisconnectNodeGui(windowLocation,nodes,focusNode)))
+    UI.Removebutton = tk.Button(UI, width=20 ,text="Disconnect a node", command=lambda:(UpdateWindowLocation(UI),                                                                                 
+                                                                                 DisconnectNodeGui(UI.windowLocation,nodes,focusNode),
+                                                                                 UI.destroy()))
     UI.Removebutton.grid(row = 4, column = 1, pady = 2)
-    UI.cancelButton = tk.Button(UI, width=20 ,text="Back", command=lambda:(UpdateWindowLocation(UI,windowLocation),
-                                                                             UI.destroy(),
-                                                                             NT_User_Interface.NT_UI_Main.MainGUI(windowLocation,nodes)))
+    UI.cancelButton = tk.Button(UI, width=20 ,text="Back", command=lambda:(UpdateWindowLocation(UI),                                                                             
+                                                                             NT_User_Interface.NT_UI_Main.MainGUI(UI.windowLocation,nodes),
+                                                                             UI.destroy()))
     UI.cancelButton.grid(row = 4, column = 2, pady = 2)
+
 
 #Define a function to close the window with confirmation window
 def NodeConnectionsGui(windowLocation,nodes):
 
     #Create Higher level Window
     UI = tk.Toplevel()
-    windowX = str(windowLocation[0])
-    windowY = str(windowLocation[1])
-    UI.geometry("300x80"+"+"+windowX+"+"+windowY)
+
+
+    #Configure Window
     UI.title('Select Node')
+    UI.windowLocation = windowLocation
+    UI.geometry("300x80"+"+"+str(UI.windowLocation[0])+"+"+str(UI.windowLocation[1]))
+
+
     UI.windowMessage = tk.Label(UI,text = "Choose a node to change")
     UI.windowMessage.pack()
 
@@ -182,16 +180,16 @@ def NodeConnectionsGui(windowLocation,nodes):
             if(node.name == selectedNode):
                 found = True
                 #pass through Target Node
-                ChangeNodeConnectionsGui(UpdateWindowLocation(UI,windowLocation),nodes,node)
+                ChangeNodeConnectionsGui(UpdateWindowLocation(UI),nodes,node)
                 UI.destroy()
                 break
         if(not found):
-            ErrorGUI(UpdateWindowLocation(UI,windowLocation),"No Node Selected")
+            ErrorGUI(UpdateWindowLocation(UI),"No Node Selected")
 
     configureButton = tk.Button(UI, width=20 ,text="Select", command=lambda:CheckIfNullEntry(UI,windowLocation,nodes))
     configureButton.pack(side=tk.LEFT)
 
-    cancelButton = tk.Button(UI, width=20 ,text="Cancel", command=lambda:(UpdateWindowLocation(UI,windowLocation),
-                                                                                        UI.destroy(),
-                                                                                        NT_User_Interface.NT_UI_Main.MainGUI(windowLocation,nodes)))
+    cancelButton = tk.Button(UI, width=20 ,text="Cancel", command=lambda:(UpdateWindowLocation(UI),
+                                                                          NT_User_Interface.NT_UI_Main.MainGUI(windowLocation,nodes),
+                                                                          UI.destroy()))
     cancelButton.pack(side=tk.LEFT)

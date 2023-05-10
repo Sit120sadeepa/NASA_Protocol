@@ -1,40 +1,34 @@
 #import libraies
 from tkinter import ttk
 import tkinter as tk
+import copy
+
+#Import Scripts from directory
 import NT_User_Interface.NT_UI_Main
 from NT_User_Interface.NT_UI_Error import ErrorGUI
+from NT_Node.NT_Node import *
+from NT_User_Interface.NT_UI_UpdateWindow import UpdateWindowLocation
 
-#function to prevent the window from moving on refresh
-def UpdateWindowLocation(UI,windowLocation):
-    windowLocation[0],windowLocation[1]=UI.winfo_x(),UI.winfo_y()
-    return windowLocation
 
 #This tool essentally creates a copy of the node, fills the ui with the information,
 #then deletes the old node creating a new one in its place
-class node():
-    def __init__(self):
-        self.name = ""
-        self.IPAddress = []
-        self.connectedNodes = []
-
-def AddNode(nodes,node):
-    nodes.append(node)
-
-def NodeConstructor():
-        return node()
 
 #Define a function to close the window with confirmation window
 def EditNodeGui(windowLocation,nodes,nodeName):
     for node in nodes:
         if( node.name == nodeName):
-            targetNode = node
-            break    
+            #remove node from list to allow overwrite
+            targetNode = copy.deepcopy(node)
+            nodes.remove(node)
+            break
+        
     #Create Higher level Window
     UI = tk.Toplevel()
-    windowX = str(windowLocation[0])
-    windowY = str(windowLocation[1])
-    UI.geometry("+"+windowX+"+"+windowY)
+
+    #Configure Window
     UI.title('Modify Existing Node')
+    UI.windowLocation = windowLocation
+    UI.geometry("+"+str(UI.windowLocation[0])+"+"+str(UI.windowLocation[1]))
 
     #Node Name Input Section
     totalColums = 7
@@ -84,53 +78,6 @@ def EditNodeGui(windowLocation,nodes,nodeName):
     UI.IPaddressBit4 = tk.Entry(UI, textvariable=oct4, width=input_size)
     UI.IPaddressBit4.grid(row = 5, column = 6,  pady = 2)
 
-    def inputValdation(UI,nodes):
-
-        nodeList = []
-        for node in nodes:
-            if(node.name == targetNode.name):
-                None
-            else:
-                nodeList.append(node.name)
-
-        invalid = False
-        nodeNameCharacterLimit = 16
-        nameInput = UI.nodeNameEntry.get()
-        if(len(nameInput)==0):
-                ErrorGUI(UpdateWindowLocation(UI,windowLocation),"Node name not entered")
-                return False
-            
-        for node in nodeList:
-            if(node==nameInput):
-                ErrorGUI(UpdateWindowLocation(UI,windowLocation),"Node "+nameInput+" Allready Exists")
-                return False
-
-        if(len(nameInput)>nodeNameCharacterLimit):
-            ErrorGUI(UpdateWindowLocation(UI,windowLocation),"Node Name Character limit Exceeded\n Character Limit : "+str(nodeNameCharacterLimit))
-            return False
-        
-        octets = [UI.IPaddressBit1.get(),UI.IPaddressBit2.get(),UI.IPaddressBit3.get(),UI.IPaddressBit4.get()]
-
-        for octet in octets:
-            if(len(octet)==0):
-                ErrorGUI(UpdateWindowLocation(UI,windowLocation),"IP address Not entered")
-                invalid = True
-                break
-            elif(not octet.isnumeric()):
-                ErrorGUI(UpdateWindowLocation(UI,windowLocation),"Ip address must only contain numbers")
-                invalid = True
-                break
-            elif(int(octet)>255 or int(octet)<0):
-                ErrorGUI(UpdateWindowLocation(UI,windowLocation),"One or more octets are out of range\n Range : 0-255")
-                invalid = True
-                break
-
-        if(invalid == True):
-            return False
-        else:
-            nodes.remove(targetNode)
-            return True
-
     def CreateNode(UI,nodes):
         if (inputValdation(UI,nodes)):
             octets = [UI.IPaddressBit1.get(),UI.IPaddressBit2.get(),UI.IPaddressBit3.get(),UI.IPaddressBit4.get()]
@@ -139,13 +86,15 @@ def EditNodeGui(windowLocation,nodes,nodeName):
             node.name = UI.nodeNameEntry.get()
             node.IPAddress = IPaddress
             AddNode(nodes,node)
-            UpdateWindowLocation(UI,windowLocation)
+            UpdateWindowLocation(UI)
             UI.destroy()
             NT_User_Interface.NT_UI_Main.MainGUI(windowLocation,nodes)
 
     UI.confirmbutton = tk.Button(UI, width=16, text="Apply", command=lambda:CreateNode(UI,nodes))
     UI.confirmbutton.grid(row = 6, column = 0, columnspan = 3, pady = 2)
-    UI.cancelButton = tk.Button(UI, width=16 ,text="Cancel", command=lambda:(UpdateWindowLocation(UI,windowLocation),
+    UI.cancelButton = tk.Button(UI, width=16 ,text="Cancel", command=lambda:(UpdateWindowLocation(UI),
+                                                                             #put unchanged node back into the list
+                                                                             nodes.append(targetNode),
                                                                              UI.destroy(),
                                                                              NT_User_Interface.NT_UI_Main.MainGUI(windowLocation,nodes)))
     UI.cancelButton.grid(row = 6, column = 4, columnspan = 3, pady = 2)
@@ -156,7 +105,7 @@ def CheckIfNullEntry(UI,windowLocation,nodes):
     for node in nodes:
         if(node.name == selectedNode):
             found = True
-            EditNodeGui(UpdateWindowLocation(UI,windowLocation),nodes,selectedNode)
+            EditNodeGui(UpdateWindowLocation(UI),nodes,selectedNode)
             UI.destroy()
             break
     if(not found):
@@ -166,10 +115,12 @@ def CheckIfNullEntry(UI,windowLocation,nodes):
 def ModifyNodeGui(windowLocation,nodes):
     #Create Higher level Window
     UI = tk.Toplevel()
-    windowX = str(windowLocation[0])
-    windowY = str(windowLocation[1])
-    UI.geometry("300x80"+"+"+windowX+"+"+windowY)
+    
+    #Configure Window
+    UI.windowLocation = windowLocation
+    UI.geometry("300x80"+"+"+str(UI.windowLocation[0])+"+"+str(UI.windowLocation[1]))
     UI.title('Modify Node')
+
     UI.windowMessage = tk.Label(UI,text = "Choose Node to Modify")
     UI.windowMessage.pack()
 
@@ -183,7 +134,7 @@ def ModifyNodeGui(windowLocation,nodes):
     configureButton = tk.Button(UI, width=20 ,text="Select", command=lambda:CheckIfNullEntry(UI,windowLocation,nodes))
     configureButton.pack(side=tk.LEFT)
 
-    cancelButton = tk.Button(UI, width=20 ,text="Cancel", command=lambda:(UpdateWindowLocation(UI,windowLocation),
+    cancelButton = tk.Button(UI, width=20 ,text="Cancel", command=lambda:(UpdateWindowLocation(UI),
                                                                                         UI.destroy(),
                                                                                         NT_User_Interface.NT_UI_Main.MainGUI(windowLocation,nodes)))
     cancelButton.pack(side=tk.LEFT)

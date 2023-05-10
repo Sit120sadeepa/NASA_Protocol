@@ -1,3 +1,5 @@
+#This script is used for drawing the primary user interface, it contains the buttons to load the various sub-programs of the application
+
 #import libraies
 import tkinter as tk
 
@@ -8,11 +10,7 @@ from NT_User_Interface.NT_UI_Node_Modify import ModifyNodeGui
 from NT_User_Interface.NT_UI_Graph import DrawGraph
 from NT_User_Interface.NT_UI_Error import ErrorGUI
 from NT_User_Interface.NT_UI_Node_Connections import NodeConnectionsGui
-
-#function to prevent the window from moving on refresh
-def UpdateWindowLocation(UI,windowLocation):
-    windowLocation[0],windowLocation[1]=UI.winfo_x(),UI.winfo_y()
-    return windowLocation
+from NT_User_Interface.NT_UI_UpdateWindow import UpdateWindowLocation
 
 #Define a function to close the window with confirmation window
 def ConfirmClose(windowLocation,UI):
@@ -25,33 +23,33 @@ def ConfirmClose(windowLocation,UI):
     closeWindow.geometry("+"+windowX+"+"+windowY)
     warningMessage = tk.Label(closeWindow, text="Close Program Y/N?")
     warningMessage.pack()
-    noButton = tk.Button(closeWindow, width=20 ,text="No", command=lambda:closeWindow.destroy())
-    noButton.pack(side=tk.LEFT)
     yesButton = tk.Button(closeWindow, width=20 ,text="Yes", command=lambda:(closeWindow.destroy(),UI.quit()))
     yesButton.pack(side=tk.LEFT)
+    noButton = tk.Button(closeWindow, width=20 ,text="No", command=lambda:closeWindow.destroy())
+    noButton.pack(side=tk.LEFT)
 
 #Node modifying functions should not be usable untill at least one node is present
 def RemoveNode(UI,windowLocation,nodes):
     if (len(nodes)<1):
-        ErrorGUI(UpdateWindowLocation(UI,windowLocation),"No nodes to remove")
+        ErrorGUI(UpdateWindowLocation(UI),"No nodes to remove")
     else:
-        UpdateWindowLocation(UI,windowLocation)
+        UpdateWindowLocation(UI)
         UI.destroy(),
         RemoveNodeGui(windowLocation,nodes)
 
 def ModifyNode(UI,windowLocation,nodes):
     if (len(nodes)<1):
-        ErrorGUI(UpdateWindowLocation(UI,windowLocation),"No nodes to modify")
+        ErrorGUI(UpdateWindowLocation(UI),"No nodes to modify")
     else:
-        UpdateWindowLocation(UI,windowLocation)
+        UpdateWindowLocation(UI)
         UI.destroy(),
         ModifyNodeGui(windowLocation,nodes)
 
 def ModifyNodeConnections(UI,windowLocation,nodes):
     if (len(nodes)<1):
-        ErrorGUI(UpdateWindowLocation(UI,windowLocation),"No nodes to modify")
+        ErrorGUI(UpdateWindowLocation(UI),"No nodes to modify")
     else:
-        UpdateWindowLocation(UI,windowLocation)
+        UpdateWindowLocation(UI)
         UI.destroy(),
         NodeConnectionsGui(windowLocation,nodes)
 
@@ -60,12 +58,16 @@ def ModifyNodeConnections(UI,windowLocation,nodes):
 #Main user interface for program
 def MainGUI(windowLocation,nodes):    #Tkinter GUI
 
+    #This GUI is based on a grid design, the columns are pre set using the total colums varible 
+    #however there can be an infinite number of additional rows.
+
     #Create instance of GUI class
     UI = tk.Tk()
-    #Set window location based on starting/updated position
+    #Set window location based on starting/updated position then store it
     UI.geometry("+"+str(windowLocation[0])+"+"+str(windowLocation[1]))
+    UI.windowLocation = windowLocation
 
-    #Configure Windows
+    #Change the text that sits at the top of the window
     UI.title('Node-tool')
 
     #List of the node names that exist in the list, used to display information to the user
@@ -78,6 +80,7 @@ def MainGUI(windowLocation,nodes):    #Tkinter GUI
     UI.nodeListHeadder = tk.Label(UI, text="Current Nodes")
     UI.nodeListHeadder.grid(row = 0, column = 0, columnspan = totalColums, pady = 2)
 
+    #Creates the list of nodes to show to the user, if there are no nodes a message will be displayed instead
     for node in nodes:
         nodeList.append(node.name)
     if (len(nodeList) ==0):
@@ -89,22 +92,27 @@ def MainGUI(windowLocation,nodes):    #Tkinter GUI
     buttonWidth = 20
 
     #Buttons that trigger the various functions of the app
-    UI.button = tk.Button(UI,width=buttonWidth , text="Add Node", command=lambda:(UpdateWindowLocation(UI,windowLocation),
+    UI.button = tk.Button(UI,width=buttonWidth , text="Add Node", command=lambda:(UpdateWindowLocation(UI),
                                                                UI.destroy(),
                                                                AddNodeGui(windowLocation,nodes)))
     UI.button.grid(row = 3, column = 0,pady = 2)
 
-    UI.button = tk.Button(UI,width=buttonWidth , text="Remove Node", command=lambda:RemoveNode(UI,UpdateWindowLocation(UI,windowLocation),nodes))
+    #Remove node button
+    UI.button = tk.Button(UI,width=buttonWidth , text="Remove Node", command=lambda:RemoveNode(UI,UpdateWindowLocation(UI),nodes))
     UI.button.grid(row = 3, column = 1,pady = 2)
 
-    UI.button = tk.Button(UI,width=buttonWidth ,text="Modify Node", command=lambda:ModifyNode(UI,UpdateWindowLocation(UI,windowLocation),nodes))
+    #Modify node button
+    UI.button = tk.Button(UI,width=buttonWidth ,text="Modify Node", command=lambda:ModifyNode(UI,UpdateWindowLocation(UI),nodes))
     UI.button.grid(row = 3, column = 2,pady = 2)
 
-    UI.button = tk.Button(UI, width=buttonWidth ,text="Change Node Connections", command=lambda:ModifyNodeConnections(UI,UpdateWindowLocation(UI,windowLocation),nodes))
+    #Change connections button
+    UI.button = tk.Button(UI, width=buttonWidth ,text="Change Node Connections", command=lambda:ModifyNodeConnections(UI,UpdateWindowLocation(UI),nodes))
     UI.button.grid(row = 4, column = 0,pady = 2)
 
+    #Visualise graph button
     UI.button = tk.Button(UI,width=buttonWidth ,text="Draw Network Graph", command=lambda:DrawGraph(UI,nodes))
     UI.button.grid(row = 4, column = 1,pady = 2)
 
-    UI.button = tk.Button(UI,width=buttonWidth ,text="Close Program", command=lambda:(UpdateWindowLocation(UI,windowLocation),ConfirmClose(windowLocation,UI)))
+    #quit program button
+    UI.button = tk.Button(UI,width=buttonWidth ,text="Quit", command=lambda:(UpdateWindowLocation(UI),ConfirmClose(windowLocation,UI)))
     UI.button.grid(row = 4, column = 2,pady = 2)

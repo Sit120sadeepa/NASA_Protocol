@@ -2,7 +2,7 @@ from copy import deepcopy
 import igraph as ig
 import matplotlib.pyplot as plt
 
-#Stuff for generating Graph
+#Stuff for generating the network visualisation to be passed to the UI
 
 def GenerateGraph(nodes):
     #Deep Clone
