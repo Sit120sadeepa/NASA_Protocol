@@ -46,8 +46,8 @@ def ModifyNode(UI,windowLocation,nodes):
         ModifyNodeGui(windowLocation,nodes)
 
 def ModifyNodeConnections(UI,windowLocation,nodes):
-    if (len(nodes)<1):
-        ErrorGUI(UpdateWindowLocation(UI),"No nodes to modify")
+    if (len(nodes)<2):
+        ErrorGUI(UpdateWindowLocation(UI),"Need at least 2 nodes")
     else:
         UpdateWindowLocation(UI)
         UI.destroy(),

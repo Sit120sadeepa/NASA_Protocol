@@ -1,5 +1,8 @@
 from NT_User_Interface.NT_UI_Error import ErrorGUI
 from NT_User_Interface.NT_UI_UpdateWindow import UpdateWindowLocation
+# declare constants 
+NAMECHARLIMIT = 32
+
 
 #Universal definitions of node functions
 class node():
@@ -24,15 +27,14 @@ def RemoveNode(nodes,nodeName):
 
 #input validation for IP address input for node
 def inputValdation(UI,nodes):
-    nodeList = []
+    ipList = []
     for node in nodes:
-        nodeList.append(node.name)
+        ipList.append(node.IPAddress)
 
     invalid = False
-    nodeNameCharacterLimit = 16
     nameInput = UI.nodeNameEntry.get()
     if(len(nameInput)==0):
-            ErrorGUI(UpdateWindowLocation(UI),"Node name not entered")
+            ErrorGUI(UpdateWindowLocation(UI),"No name entered")
             return False
 
     for node in nodes:
@@ -41,23 +43,28 @@ def inputValdation(UI,nodes):
             return False
 
 
-    if(len(nameInput)>nodeNameCharacterLimit):
-        ErrorGUI(UpdateWindowLocation(UI),"Node Name Character limit Exceeded\n Character Limit : "+str(nodeNameCharacterLimit))
+    if(len(nameInput)>NAMECHARLIMIT):
+        ErrorGUI(UpdateWindowLocation(UI),"Character limit Exceeded\n Maximum allowed characters : "+str(NAMECHARLIMIT))
         return False
         
     octets = [UI.IPaddressBit1.get(),UI.IPaddressBit2.get(),UI.IPaddressBit3.get(),UI.IPaddressBit4.get()]
 
     for octet in octets:
         if(len(octet)==0):
-            ErrorGUI(UpdateWindowLocation(UI),"IP address Not entered")
+            ErrorGUI(UpdateWindowLocation(UI),"No IP address entered")
             invalid = True
             break
         elif(not octet.isnumeric()):
-            ErrorGUI(UpdateWindowLocation(UI),"Ip address must only contain numbers")
+            ErrorGUI(UpdateWindowLocation(UI),"Octets must only contain integers")
             invalid = True
             break
         elif(int(octet)>255 or int(octet)<0):
             ErrorGUI(UpdateWindowLocation(UI),"One or more octets are out of range\n Range : 0-255")
+            invalid = True
+            break
+    for IP in ipList:
+        if(IP == octets):
+            ErrorGUI(UpdateWindowLocation(UI),"Duplicate IP on network")
             invalid = True
             break
 

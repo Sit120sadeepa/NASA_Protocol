@@ -21,7 +21,7 @@ def AddNodeGui(windowLocation,nodes):
     #Node Name Input Section
     totalColums = 7
 
-    UI.message = tk.Label(UI, text="Enter Node Name")
+    UI.message = tk.Label(UI, text="Enter Node Name (Max 32 char)")
     UI.message.grid(row = 0, column = 0, columnspan = totalColums, pady = 2)
 
     UI.nodeNameEntry = tk.Entry(UI, width=20)
