@@ -1776,6 +1776,12 @@ static int	bcbAttachAll(Bundle *bundle, size_t xmitRate)
 int bcbApplySenderPolRule(Bundle *bundle, BpSecPolRule *polRule, unsigned
 		char tgtNum)
 {
+    int isValidObject(Object obj) {
+        return obj != NULL;
+    }
+    int isValidSize(size_t size, size_t max_size) {
+        return size > 0 && size <= max_size;
+    }
 	/* Step 0: Sanity Checks */
 	CHKERR(bundle);
 	CHKERR(polRule);
@@ -1834,8 +1840,14 @@ int bcbApplySenderPolRule(Bundle *bundle, BpSecPolRule *polRule, unsigned
 	bcbObj = bcbFindNew(bundle, prof->profNbr, keyName);
 	if (bcbObj)
 	{
+		if (!isValidObject(bcbObj) || !isValidSize(sizeof(ExtensionBlock), sizeof(ExtensionBlock))) {
+    	return -1;
+		}
 		sdr_read(sdr, (char *) &bcbBlk, bcbObj,
 				sizeof(ExtensionBlock));
+        if (!isValidObject(bcbBlk.object) || !isValidSize(bcbBlk.size, sizeof(BpsecOutboundBlock))) {
+            return -1;
+        }
 		sdr_read(sdr, (char *) &asb, bcbBlk.object,
 				bcbBlk.size);
 	}
