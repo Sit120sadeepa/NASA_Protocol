@@ -1,0 +1,208 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>ltp - Licklider Transmission Protocol communications library</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:mingw-dvlpr@lists.sourceforge.net" />
+</head>
+
+<body style="background-color: white">
+
+<p><a name="__index__"></a></p>
+<!-- INDEX BEGIN -->
+<!--
+
+<ul>
+
+	<li><a href="#name">NAME</a></li>
+	<li><a href="#synopsis">SYNOPSIS</a></li>
+	<li><a href="#description">DESCRIPTION</a></li>
+	<li><a href="#see_also">SEE ALSO</a></li>
+</ul>
+-->
+<!-- INDEX END -->
+
+<p>
+</p>
+<h1><a name="name">NAME</a></h1>
+<p>ltp - Licklider Transmission Protocol (LTP) communications library</p>
+<p>
+</p>
+<hr />
+<h1><a name="synopsis">SYNOPSIS</a></h1>
+<pre>
+    #include &quot;ltp.h&quot;</pre>
+<pre>
+    typedef enum
+    {
+        LtpNoNotice = 0,
+        LtpExportSessionStart,
+        LtpXmitComplete,
+        LtpExportSessionCanceled,
+        LtpExportSessionComplete,
+        LtpRecvGreenSegment,
+        LtpRecvRedPart,
+        LtpImportSessionCanceled
+    } LtpNoticeType;</pre>
+<pre>
+    [see description for available functions]</pre>
+<p>
+</p>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p>The ltp library provides functions enabling application software to use LTP
+to send and receive information reliably over a long-latency link.  It
+conforms to the LTP specification as documented by the Delay-Tolerant
+Networking Research Group of the Internet Research Task Force.</p>
+<p>The LTP notion of <strong>engine ID</strong> corresponds closely to the Internet notion of
+a host, and in ION engine IDs are normally indistinguishable from node numbers
+including the node numbers in Bundle Protocol endpoint IDs conforming to
+the ``ipn'' scheme.</p>
+<p>The LTP notion of <strong>client ID</strong> corresponds closely to the Internet notion of
+``protocol number'' as used in the Internet Protocol.  It enables data from
+multiple applications -- clients -- to be multiplexed over a single reliable
+link.  However, for ION operations we normally use LTP exclusively for the
+transmission of Bundle Protocol data, identified by client ID = 1.</p>
+<dl>
+<dt><strong><a name="item_ltp_attach">int <code>ltp_attach()</code></a></strong>
+
+<dd>
+<p>Attaches the application to LTP functionality on the lcoal computer.  Returns
+0 on success, -1 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_ltp_detach">void <code>ltp_detach()</code></a></strong>
+
+<dd>
+<p>Terminates all access to LTP functionality on the local computer.</p>
+</dd>
+</li>
+<dt><strong><a name="item_ltp_engine_is_started">int <code>ltp_engine_is_started()</code></a></strong>
+
+<dd>
+<p>Returns 1 if the local LTP engine has been started and not yet stopped,
+0 otherwise.</p>
+</dd>
+</li>
+<dt><strong><a name="item_ltp_send">int ltp_send(uvast destinationEngineId, unsigned int clientId, Object clientServiceData, unsigned int redLength, LtpSessionId *sessionId)</a></strong>
+
+<dd>
+<p>Sends a client service data unit to the application that is waiting for
+data tagged with the indicated <em>clientId</em> as received at the remote LTP
+engine identified by <em>destinationEngineId</em>.</p>
+</dd>
+<dd>
+<p><em>clientServiceData</em> must be a ``zero-copy object'' reference as returned
+by ionCreateZco().  Note that LTP will privately make and destroy its own
+reference to the client service data object; the application is free to
+destroy its reference at any time.</p>
+</dd>
+<dd>
+<p><em>redLength</em> indicates the number of leading bytes of data in
+<em>clientServiceData</em> that are to be sent reliably, i.e., with selective
+retransmission in response to explicit or implicit negative acknowledgment
+as necessary.  All remaining bytes of data in <em>clientServiceData</em> will be
+sent as ``green'' data, i.e., unreliably.  If <em>redLength</em> is zero, the entire
+client service data unit will be sent unreliably.  If the entire client
+service data unit is to be sent reliably, <em>redLength</em> may be simply be set
+to LTP_ALL_RED (i.e., -1).</p>
+</dd>
+<dd>
+<p>On success, the function populates <em>*sessionId</em> with the source engine ID
+and the ``session number'' assigned to transmission of this client service
+data unit and returns zero.  The session number may be used to link future
+LTP processing events, such as transmission cancellation, to the affected
+client service data.  <a href="#item_ltp_send"><code>ltp_send()</code></a> returns -1 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_ltp_open">int ltp_open(unsigned int clientId)</a></strong>
+
+<dd>
+<p>Establishes the application's exclusive access to received service data
+units tagged with the indicated client service data ID.  At any time, only
+a single application task is permitted to receive service data units for
+any single client service data ID.</p>
+</dd>
+<dd>
+<p>Returns 0 on success, -1 on any error (e.g., the indicated client service
+is already being held open by some other application task).</p>
+</dd>
+</li>
+<dt><strong><a name="item_ltp_get_notice">int ltp_get_notice(unsigned int clientId, LtpNoticeType *type, LtpSessionId *sessionId, unsigned char *reasonCode, unsigned char *endOfBlock, unsigned int *dataOffset, unsigned int *dataLength, Object *data)</a></strong>
+
+<dd>
+<p>Receives notices of LTP processing events pertaining to the flow of service
+data units tagged with the indicated client service ID.  The nature of each
+event is indicated by <em>*type</em>.  Additional parameters characterizing the
+event are returned in <em>*sessionId</em>, <em>*reasonCode</em>, <em>*endOfBlock</em>,
+<em>*dataOffset</em>, <em>*dataLength</em>, and <em>*data</em> as relevant.</p>
+</dd>
+<dd>
+<p>The value returned in <em>*data</em> is always a zero-copy object; use the
+zco_* functions defined in ``zco.h'' to retrieve the content of that object.</p>
+</dd>
+<dd>
+<p>When the notice is an LtpRecvGreenSegment, the ZCO returned in <em>*data</em>
+contains the content of a single LTP green segment.  Reassembly of the
+green part of some block from these segments is the responsibility of
+the application.</p>
+</dd>
+<dd>
+<p>When the notice is an LtpRecvRedPart, the ZCO returned in <em>*data</em>
+contains the red part of a possibly aggregated block.  The ZCO's content
+may therefore comprise multiple service data objects.  Extraction of
+individual service data objects from the aggregated block is the
+responsibility of the application.  A simple way to do this is to
+prepend the length of the service data object to the object itself
+(using zco_prepend_header) before calling ltp_send, so that the
+receiving application can alternate extraction of object lengths and
+objects from the delivered block's red part.</p>
+</dd>
+<dd>
+<p>The cancellation of an export session may result in delivery of multiple
+LtpExportSessionCanceled notices, one for each service data unit in the
+export session's (potentially) aggregated block.  The ZCO returned in
+<em>*data</em> for each such notice is a service data unit ZCO that had previously
+been passed to ltp_send().</p>
+</dd>
+<dd>
+<p><a href="#item_ltp_get_notice"><code>ltp_get_notice()</code></a> always blocks indefinitely until an LTP processing event
+is delivered.</p>
+</dd>
+<dd>
+<p>Returns zero on success, -1 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_ltp_interrupt">void ltp_interrupt(unsigned int clientId)</a></strong>
+
+<dd>
+<p>Interrupts an <a href="#item_ltp_get_notice"><code>ltp_get_notice()</code></a> invocation.  This function is designed to be
+called from a signal handler; for this purpose, <em>clientId</em> may need to be
+obtained from a static variable.</p>
+</dd>
+</li>
+<dt><strong><a name="item_ltp_release_data">void ltp_release_data(Object data)</a></strong>
+
+<dd>
+<p>Releases the resources allocated to hold <em>data</em>, which must be a <strong>received</strong>
+client service data ZCO.</p>
+</dd>
+</li>
+<dt><strong><a name="item_ltp_close">void ltp_close(unsigned int clientId)</a></strong>
+
+<dd>
+<p>Terminates the application's exclusive access to received service data
+units tagged with the indicated client service data ID.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="see_also">SEE ALSO</a></h1>
+<p>ltpadmin(1), ltprc(5), <code>zco(3)</code></p>
+
+</body>
+
+</html>
