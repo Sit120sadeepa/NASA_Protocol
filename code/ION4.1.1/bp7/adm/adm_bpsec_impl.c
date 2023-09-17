@@ -1124,7 +1124,7 @@ tnv_t *dtn_bpsec_get_num_good_rx_bcb_blks_src(tnvc_t *parms)
 	 * |STOP CUSTOM FUNCTION get_num_good_rx_bcb_blks_src BODY
 	 * +-------------------------------------------------------------------------+
 	 */
-	return result;
+	//return result;
 }
 
 
@@ -1145,7 +1145,7 @@ tnv_t *dtn_bpsec_get_num_bad_rx_bcb_blks_src(tnvc_t *parms)
 	 * |STOP CUSTOM FUNCTION get_num_bad_rx_bcb_blks_src BODY
 	 * +-------------------------------------------------------------------------+
 	 */
-	return result;
+	//return result;
 }
 
 
@@ -1250,7 +1250,7 @@ tnv_t *dtn_bpsec_get_num_good_rx_bcb_bytes_src(tnvc_t *parms)
 	 * |STOP CUSTOM FUNCTION get_num_good_rx_bcb_bytes_src BODY
 	 * +-------------------------------------------------------------------------+
 	 */
-	return result;
+	//return result;
 }
 
 
