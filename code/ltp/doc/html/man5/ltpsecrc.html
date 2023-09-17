@@ -1,0 +1,189 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>ltpsecrc - LTP security policy management commands file</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:mingw-dvlpr@lists.sourceforge.net" />
+</head>
+
+<body style="background-color: white">
+
+<p><a name="__index__"></a></p>
+<!-- INDEX BEGIN -->
+<!--
+
+<ul>
+
+	<li><a href="#name">NAME</a></li>
+	<li><a href="#description">DESCRIPTION</a></li>
+	<li><a href="#commands">COMMANDS</a></li>
+	<li><a href="#see_also">SEE ALSO</a></li>
+</ul>
+-->
+<!-- INDEX END -->
+
+<p>
+</p>
+<h1><a name="name">NAME</a></h1>
+<p>ltpsecrc - LTP security policy management commands file</p>
+<p>
+</p>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p>LTP security policy management commands are passed to <strong>ltpsecadmin</strong> either
+in a file of text lines or interactively at <strong>ltpsecadmin</strong>'s command prompt
+(:).  Commands are interpreted line-by line, with exactly one command per
+line.  The formats and effects of the LTP security policy management commands
+are described below.</p>
+<p>
+</p>
+<hr />
+<h1><a name="commands">COMMANDS</a></h1>
+<dl>
+<dt><strong><a name="item__3f"><strong>?</strong></a></strong>
+
+<dd>
+<p>The <strong>help</strong> command.  This will display a listing of the commands and their
+formats.  It is the same as the <strong>h</strong> command.</p>
+</dd>
+</li>
+<dt><strong><a name="item__23"><strong>#</strong></a></strong>
+
+<dd>
+<p>Comment line.  Lines beginning with <strong>#</strong> are not interpreted.</p>
+</dd>
+</li>
+<dt><strong><a name="item_e"><strong>e</strong> { 1 | 0 }</a></strong>
+
+<dd>
+<p>Echo control.  Setting echo to 1 causes all output printed by ltpsecadmin to
+be logged as well as sent to stdout.  Setting echo to 0 disables this behavior.</p>
+</dd>
+</li>
+<dt><strong><a name="item_v"><strong>v</strong></a></strong>
+
+<dd>
+<p>Version number.  Prints out the version of ION currently installed.  HINT:
+combine with <strong>e 1</strong> command to log the version number at startup.</p>
+</dd>
+</li>
+<dt><strong><a name="item_a_ltprecvauthrule_ltp_engine_id_ciphersuite_nbr__5"><strong>a ltprecvauthrule</strong> <em>ltp_engine_id</em> <em>ciphersuite_nbr</em> <em>[key_name]</em></a></strong>
+
+<dd>
+<p>The <strong>add ltprecvauthrule</strong> command.  This command adds a rule specifying the
+manner in which LTP segment authentication will be applied to LTP segments
+received from the indicated LTP engine.</p>
+</dd>
+<dd>
+<p>A segment from the indicated LTP engine will only be deemed authentic if it
+contains an authentication extension computed via the ciphersuite identified
+by <em>ciphersuite_nbr</em> using the applicable key value.  If <em>ciphersuite_nbr</em>
+is 255 then the applicable key value is a hard-coded constant and <em>key_name</em>
+must be omitted; otherwise <em>key_name</em> is required and the applicable key
+value is the current value of the key named <em>key_name</em> in the local security
+policy database.</p>
+</dd>
+<dd>
+<p>Valid values of <em>ciphersuite_nbr</em> are:</p>
+</dd>
+<p>0: HMAC-SHA1-80
+1: RSA-SHA256
+255: NULL</p>
+<dt><strong><a name="item_c_ltprecvauthrule_ltp_engine_id_ciphersuite_nbr__5"><strong>c ltprecvauthrule</strong> <em>ltp_engine_id</em> <em>ciphersuite_nbr</em> <em>[key_name]</em></a></strong>
+
+<dd>
+<p>The <strong>change ltprecvauthrule</strong> command.  This command changes the parameters
+of the LTP segment authentication rule for the indicated LTP engine.</p>
+</dd>
+</li>
+<dt><strong><a name="item_d_ltprecvauthrule_ltp_engine_id"><strong>d ltprecvauthrule</strong> <em>ltp_engine_id</em></a></strong>
+
+<dd>
+<p>The <strong>delete ltprecvauthrule</strong> command.  This command deletes the LTP segment
+authentication rule for the indicated LTP engine.</p>
+</dd>
+</li>
+<dt><strong><a name="item_i_ltprecvauthrule_ltp_engine_id"><strong>i ltprecvauthrule</strong> <em>ltp_engine_id</em></a></strong>
+
+<dd>
+<p>This command will print information (the LTP engine id, ciphersuite
+number, and key name) about the LTP segment authentication rule for the
+indicated LTP engine.</p>
+</dd>
+</li>
+<dt><strong><a name="item_l_ltprecvauthrule"><strong>l ltprecvauthrule</strong></a></strong>
+
+<dd>
+<p>This command lists all LTP segment authentication rules in the security policy
+database.</p>
+</dd>
+</li>
+<dt><strong><a name="item_a_ltpxmitauthrule_ltp_engine_id_ciphersuite_nbr__5"><strong>a ltpxmitauthrule</strong> <em>ltp_engine_id</em> <em>ciphersuite_nbr</em> <em>[key_name]</em></a></strong>
+
+<dd>
+<p>The <strong>add ltpxmitauthrule</strong> command.  This command adds a rule specifying the
+manner in which LTP segments transmitted to the indicated LTP engine must be
+signed.</p>
+</dd>
+<dd>
+<p>Signing a segment destined for the indicated LTP engine entails computing an
+authentication extension via the ciphersuite identified by <em>ciphersuite_nbr</em>
+using the applicable key value.  If <em>ciphersuite_nbr</em> is 255 then the
+applicable key value is a hard-coded constant and <em>key_name</em> must be
+omitted; otherwise <em>key_name</em> is required and the applicable key
+value is the current value of the key named <em>key_name</em> in the local security
+policy database.</p>
+</dd>
+<dd>
+<p>Valid values of <em>ciphersuite_nbr</em> are:</p>
+</dd>
+<p>0: HMAC_SHA1-80
+1: RSA_SHA256
+255: NULL</p>
+<dt><strong><a name="item_c_ltpxmitauthrule_ltp_engine_id_ciphersuite_nbr__5"><strong>c ltpxmitauthrule</strong> <em>ltp_engine_id</em> <em>ciphersuite_nbr</em> <em>[key_name]</em></a></strong>
+
+<dd>
+<p>The <strong>change ltpxmitauthrule</strong> command.  This command changes the parameters
+of the LTP segment signing rule for the indicated LTP engine.</p>
+</dd>
+</li>
+<dt><strong><a name="item_d_ltpxmitauthrule_ltp_engine_id"><strong>d ltpxmitauthrule</strong> <em>ltp_engine_id</em></a></strong>
+
+<dd>
+<p>The <strong>delete ltpxmitauthrule</strong> command.  This command deletes the LTP segment
+signing rule for the indicated LTP engine.</p>
+</dd>
+</li>
+<dt><strong><a name="item_i_ltpxmitauthrule_ltp_engine_id"><strong>i ltpxmitauthrule</strong> <em>ltp_engine_id</em></a></strong>
+
+<dd>
+<p>This command will print information (the LTP engine id, ciphersuite
+number, and key name) about the LTP segment signing rule for the indicated
+LTP engine.</p>
+</dd>
+</li>
+<dt><strong><a name="item_l_ltpxmitauthrule"><strong>l ltpxmitauthrule</strong></a></strong>
+
+<dd>
+<p>This command lists all LTP segment signing rules in the security policy
+database.</p>
+</dd>
+</li>
+<dt><strong><a name="item_h"><strong>h</strong></a></strong>
+
+<dd>
+<p>The <strong>help</strong> command.  This will display a listing of the commands and their
+formats.  It is the same as the <strong>?</strong> command.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="see_also">SEE ALSO</a></h1>
+<p><code>ltpsecadmin(1)</code></p>
+
+</body>
+
+</html>
