@@ -1097,7 +1097,7 @@ tnv_t *dtn_bpsec_get_num_bad_tx_bcb_blks_src(tnvc_t *parms)
 	 * |START CUSTOM FUNCTION get_num_bad_tx_bcb_blks_src BODY
 	 * +-------------------------------------------------------------------------+
 	 */
-	return adm_bpsec_get_src_val(parms, BCB_TX_FAIL, SRC_BLK);
+	result = adm_bpsec_get_src_val(parms, BCB_TX_FAIL, SRC_BLK);
 	/*
 	 * +-------------------------------------------------------------------------+
 	 * |STOP CUSTOM FUNCTION get_num_bad_tx_bcb_blks_src BODY
@@ -1124,7 +1124,7 @@ tnv_t *dtn_bpsec_get_num_good_rx_bcb_blks_src(tnvc_t *parms)
 	 * |STOP CUSTOM FUNCTION get_num_good_rx_bcb_blks_src BODY
 	 * +-------------------------------------------------------------------------+
 	 */
-	//return result;
+	return result;
 }
 
 
@@ -1145,7 +1145,7 @@ tnv_t *dtn_bpsec_get_num_bad_rx_bcb_blks_src(tnvc_t *parms)
 	 * |STOP CUSTOM FUNCTION get_num_bad_rx_bcb_blks_src BODY
 	 * +-------------------------------------------------------------------------+
 	 */
-	//return result;
+	return result;
 }
 
 
@@ -1160,7 +1160,7 @@ tnv_t *dtn_bpsec_get_num_missing_rx_bcb_blks_src(tnvc_t *parms)
 	 * |START CUSTOM FUNCTION get_num_missing_rx_bcb_blks_src BODY
 	 * +-------------------------------------------------------------------------+
 	 */
-	return adm_bpsec_get_src_val(parms, BCB_RX_MISS, SRC_BLK);
+	result = adm_bpsec_get_src_val(parms, BCB_RX_MISS, SRC_BLK);
 	/*
 	 * +-------------------------------------------------------------------------+
 	 * |STOP CUSTOM FUNCTION get_num_missing_rx_bcb_blks_src BODY
@@ -1208,7 +1208,7 @@ tnv_t *dtn_bpsec_get_num_good_tx_bcb_bytes_src(tnvc_t *parms)
 	 * |STOP CUSTOM FUNCTION get_num_good_tx_bcb_bytes_src BODY
 	 * +-------------------------------------------------------------------------+
 	 */
-	//return result;
+	return result;
 }
 
 
@@ -1250,7 +1250,7 @@ tnv_t *dtn_bpsec_get_num_good_rx_bcb_bytes_src(tnvc_t *parms)
 	 * |STOP CUSTOM FUNCTION get_num_good_rx_bcb_bytes_src BODY
 	 * +-------------------------------------------------------------------------+
 	 */
-	//return result;
+	return result;
 }
 
 
@@ -1307,7 +1307,7 @@ tnv_t *dtn_bpsec_get_num_fwd_bcb_bytes_src(tnvc_t *parms)
 	 * |START CUSTOM FUNCTION get_num_fwd_bcb_bytes_src BODY
 	 * +-------------------------------------------------------------------------+
 	 */
-	return adm_bpsec_get_src_val(parms, BCB_FWD, SRC_BYTES);
+	result = adm_bpsec_get_src_val(parms, BCB_FWD, SRC_BYTES);
 	/*
 	 * +-------------------------------------------------------------------------+
 	 * |STOP CUSTOM FUNCTION get_num_fwd_bcb_bytes_src BODY
@@ -1355,7 +1355,7 @@ tnv_t *dtn_bpsec_get_num_bad_tx_bib_blks_src(tnvc_t *parms)
 	 * |STOP CUSTOM FUNCTION get_num_bad_tx_bib_blks_src BODY
 	 * +-------------------------------------------------------------------------+
 	 */
-	//return result;
+	return result;
 }
 
 
@@ -1370,7 +1370,7 @@ tnv_t *dtn_bpsec_get_num_good_rx_bib_blks_src(tnvc_t *parms)
 	 * |START CUSTOM FUNCTION get_num_good_rx_bib_blks_src BODY
 	 * +-------------------------------------------------------------------------+
 	 */
-	return adm_bpsec_get_src_val(parms, BIB_RX_PASS, SRC_BLK);
+	result = adm_bpsec_get_src_val(parms, BIB_RX_PASS, SRC_BLK);
 	/*
 	 * +-------------------------------------------------------------------------+
 	 * |STOP CUSTOM FUNCTION get_num_good_rx_bib_blks_src BODY
