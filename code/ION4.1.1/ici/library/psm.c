@@ -382,6 +382,8 @@ void	psm_erase(PsmPartition partition)
 	return (address < sizeof(PartitionMap) ? NULL
 			: (partition->space) + address);
 }*/
+
+//The following code is an attempt to verify the address and stop the recurring issue of out of bound access that was seen throughout coverity scanning
 void *psp(PsmPartition partition, PsmAddress address)
 {
     // Check if the partition is valid
