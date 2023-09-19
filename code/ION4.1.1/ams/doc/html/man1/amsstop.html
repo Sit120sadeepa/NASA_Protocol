@@ -1,0 +1,127 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>amsstop - Asynchronous Message Service message space shutdown utility</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:mingw-dvlpr@lists.sourceforge.net" />
+</head>
+
+<body style="background-color: white">
+
+<p><a name="__index__"></a></p>
+<!-- INDEX BEGIN -->
+<!--
+
+<ul>
+
+	<li><a href="#name">NAME</a></li>
+	<li><a href="#synopsis">SYNOPSIS</a></li>
+	<li><a href="#description">DESCRIPTION</a></li>
+	<li><a href="#exit_status">EXIT STATUS</a></li>
+	<li><a href="#files">FILES</a></li>
+	<li><a href="#environment">ENVIRONMENT</a></li>
+	<li><a href="#diagnostics">DIAGNOSTICS</a></li>
+	<li><a href="#bugs">BUGS</a></li>
+	<li><a href="#see_also">SEE ALSO</a></li>
+</ul>
+-->
+<!-- INDEX END -->
+
+<p>
+</p>
+<h1><a name="name">NAME</a></h1>
+<p>amsstop - Asynchronous Message Service (AMS) message space shutdown utility</p>
+<p>
+</p>
+<hr />
+<h1><a name="synopsis">SYNOPSIS</a></h1>
+<p><strong>amsstop</strong> <em>application_name</em> <em>authority_name</em></p>
+<p>
+</p>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p><strong>amsstop</strong> is a utility program that terminates the operation of all
+registrars and all application modules running in the message space which is
+that portion of the indicated AMS venture that is operating in the local
+continuum.  If one of the <strong>amsd</strong> tasks that are functioning as registrars
+for this venture is also functioning as the configuration server for
+the local continuum, then that configuration server is also terminated.</p>
+<p><em>application_name</em> and <em>authority_name</em> must identify an AMS venture that
+is known to operate in the local continuum, as noted in the MIB for the
+<strong>amsstop</strong> application module.</p>
+<p>A message space can only be shut down by <strong>amsstop</strong> if the subject ``amsstop''
+is defined in the MIBs of all modules in the message spaces.</p>
+<p>
+</p>
+<hr />
+<h1><a name="exit_status">EXIT STATUS</a></h1>
+<dl>
+<dt><strong><a name="item__220_22">``0''</a></strong>
+
+<dd>
+<p><strong>amsstop</strong> terminated normally.</p>
+</dd>
+</li>
+<dt><strong><a name="item__221_22">``1''</a></strong>
+
+<dd>
+<p>An anomalous exit status, indicating that <strong>amsstop</strong> was unable to register
+and therefore failed to shut down its message space, for reasons noted in the
+ion.log file.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="files">FILES</a></h1>
+<p>A MIB initialization file with the applicable default name (see <code>amsrc(5)</code>
+and <code>amsxml(5))</code> must be present.</p>
+<p>
+</p>
+<hr />
+<h1><a name="environment">ENVIRONMENT</a></h1>
+<p>No environment variables apply.</p>
+<p>
+</p>
+<hr />
+<h1><a name="diagnostics">DIAGNOSTICS</a></h1>
+<p>The following diagnostics may be issued to the <strong>ion.log</strong> log file:</p>
+<dl>
+<dt><strong><a name="item_amsstop_can_27t_register_2e">amsstop can't register.</a></strong>
+
+<dd>
+<p>This message indicates that <strong>amsstop</strong> was unable to register, possibly
+because the ``amsstop'' role is not defined in the MIB initialization file.</p>
+</dd>
+</li>
+<dt><strong><a name="item_amsstop_subject_undefined_2e">amsstop subject undefined.</a></strong>
+
+<dd>
+<p>This message indicates that <strong>amsstop</strong> was unable to stop the message space
+because the ``amsstop'' subject is not defined in the MIB initialization file.</p>
+</dd>
+</li>
+<dt><strong><a name="item_amsstop_can_27t_publish__27amsstop_27_message_2e">amsstop can't publish 'amsstop' message.</a></strong>
+
+<dd>
+<p>This message indicates that <strong>amsstop</strong> was unable to publish a message on
+subject 'amsstop' for reasons noted in the <strong>ion.log</strong> log file.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="bugs">BUGS</a></h1>
+<p>Report bugs to &lt;<a href="mailto:ion-dtn-support@lists.sourceforge.net">ion-dtn-support@lists.sourceforge.net</a>&gt;</p>
+<p>
+</p>
+<hr />
+<h1><a name="see_also">SEE ALSO</a></h1>
+<p><code>amsrc(5)</code></p>
+
+</body>
+
+</html>

@@ -1,0 +1,358 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>cfdptest - CFDP test shell for ION</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:mingw-dvlpr@lists.sourceforge.net" />
+</head>
+
+<body style="background-color: white">
+
+<p><a name="__index__"></a></p>
+<!-- INDEX BEGIN -->
+<!--
+
+<ul>
+
+	<li><a href="#name">NAME</a></li>
+	<li><a href="#synopsis">SYNOPSIS</a></li>
+	<li><a href="#description">DESCRIPTION</a></li>
+	<li><a href="#exit_status">EXIT STATUS</a></li>
+	<li><a href="#files">FILES</a></li>
+	<li><a href="#environment">ENVIRONMENT</a></li>
+	<li><a href="#diagnostics">DIAGNOSTICS</a></li>
+	<li><a href="#bugs">BUGS</a></li>
+	<li><a href="#see_also">SEE ALSO</a></li>
+</ul>
+-->
+<!-- INDEX END -->
+
+<p>
+</p>
+<h1><a name="name">NAME</a></h1>
+<p>cfdptest - CFDP test shell for ION</p>
+<p>
+</p>
+<hr />
+<h1><a name="synopsis">SYNOPSIS</a></h1>
+<p><strong>cfdptest</strong> [ <em>commands_filename</em> ]</p>
+<p>
+</p>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p><strong>cfdptest</strong> provides a mechanism for testing CFDP file transmission.  It can
+be used in either scripted or interactive mode.  All bundles containing CFDP
+PDUs are sent with custody transfer requested and with all bundle status
+reporting disabled.</p>
+<p>When scripted with <em>commands_filename</em>, <strong>cfdptest</strong> operates in response to
+CFDP management commands contained in the provided commands file.  Each line
+of text in the file is interpreted as a single command comprising several
+tokens: a one-character command code and, in most cases, one or more command
+arguments of one or more characters.  The commands configure and initiate
+CFDP file transmission operations.</p>
+<p>If no file is specified, <strong>cfdptest</strong> instead offers the user an interactive
+``shell'' for command entry.  <strong>cfdptest</strong> prints a prompt string (``: '') to
+stdout, accepts strings of text from stdin, and interprets each string as
+a command.</p>
+<p>The supported <strong>cfdptest</strong> commands (whether interactive or scripted) are as
+follows:</p>
+<dl>
+<dt><strong><a name="item__3f"><strong>?</strong></a></strong>
+
+<dd>
+<p>The <strong>help</strong> command.  This will display a listing of the commands and their
+formats.  It is the same as the <strong>h</strong> command.</p>
+</dd>
+</li>
+<dt><strong><a name="item_h"><strong>h</strong></a></strong>
+
+<dd>
+<p>An alternate form of the <strong>help</strong> command.</p>
+</dd>
+</li>
+<dt><strong><a name="item_z__5b_3cnumber_of_seconds_to_pause_3e_5d"><strong>z</strong> [&lt;number of seconds to pause&gt;]</a></strong>
+
+<dd>
+<p>The <strong>pause</strong> command.  When <strong>cfdptest</strong> is running in interactive mode,
+this command causes the console input processing thread to pause the
+indicated number of seconds (defaulting to 1) before processing the next
+command.  This is provided for use in test scripting.</p>
+</dd>
+</li>
+<dt><strong><a name="item_d__3cdestination_cfdp_entity_id_number_3e"><strong>d</strong> &lt;destination CFDP entity ID number&gt;</a></strong>
+
+<dd>
+<p>The <strong>destination</strong> command.  This command establishes the CFDP entity
+to which the next file transmission operation will be directed.  CFDP entity
+numbers in ION are, by convention, the same as BP node numbers.</p>
+</dd>
+</li>
+<dt><strong><a name="item_f__3csource_file_path_name_3e"><strong>f</strong> &lt;source file path name&gt;</a></strong>
+
+<dd>
+<p>The <strong>from</strong> command.  This command identifies the file that will be
+transmitted when the next file transmission operation is commanded.</p>
+</dd>
+</li>
+<dt><strong><a name="item_t__3cdestination_file_path_name_3e"><strong>t</strong> &lt;destination file path name&gt;</a></strong>
+
+<dd>
+<p>The <strong>to</strong> command.  This command provides the name for the file that will be
+created at the receiving entity when the next file transmission operation
+is commanded.</p>
+</dd>
+</li>
+<dt><strong><a name="item_l__3clifetime_in_seconds_3e"><strong>l</strong> &lt;lifetime in seconds&gt;</a></strong>
+
+<dd>
+<p>The <strong>time-to-live</strong> command.  This command establishes the time-to-live for
+all subsequently issued bundles containing CFDP PDUs.  If not specified, the
+default value 86400 (1 day) is used.</p>
+</dd>
+</li>
+<dt><strong><a name="item_p__3cpriority_3e"><strong>p</strong> &lt;priority&gt;</a></strong>
+
+<dd>
+<p>The <strong>priority</strong> command.  This command establishes the priority (class of
+service) for all subsequently issued bundles containing CFDP PDUs.  Valid
+values are 0, 1, and 2.  If not specified, priority is 1.</p>
+</dd>
+</li>
+<dt><strong><a name="item_o__3cordinal_3e"><strong>o</strong> &lt;ordinal&gt;</a></strong>
+
+<dd>
+<p>The <strong>ordinal</strong> command.  This command establishes the ``ordinal'' (sub-priority
+within priority 2) for all subsequently issued bundles containing CFDP PDUs.
+Valid values are 0-254.  If not specified, ordinal is 0.</p>
+</dd>
+</li>
+<dt><strong><a name="item_m__3cmode_3e"><strong>m</strong> &lt;mode&gt;</a></strong>
+
+<dd>
+<p>The <strong>mode</strong> command.  This command establishes the transmission mode
+(``best-effort'' or assured) for all subsequently issued bundles containing
+CFDP PDUs.  Valid values are 0 (assured, reliable, with reliability
+provided by a reliable DTN convergence layer protocol), 1 (best-effort,
+unreliable), and 2 (assured, reliable, but with reliability provided by BP
+custody transfer).  If not specified, transmission mode is 0.</p>
+</dd>
+</li>
+<dt><strong><a name="item_a__3clatency_in_seconds_3e"><strong>a</strong> &lt;latency in seconds&gt;</a></strong>
+
+<dd>
+<p>The <strong>closure latency</strong> command.  This command establishes the transaction
+closure latency for all subsequent file transmission operations.  When it is
+set to zero, the file transmission is ``open loop'' and the CFDP transaction
+at the sending entity finishes when the EOF is sent.  Otherwise, the
+receiving CFDP entity is being asked to send a ``Finished'' PDU back to the
+sending CFDP entity when the transaction finishes at the receiving entity.
+Normally the transaction finishes at the sending entity only when that
+Finished PDU is received.  However, when <em>closure latency</em> seconds elapse
+following transmission of the EOF PDU prior to receipt of the Finished PDU,
+the transaction finishes immediately with a Check Timer fault.</p>
+</dd>
+</li>
+<dt><strong><a name="item_n"><strong>n</strong> { 0 | 1 }</a></strong>
+
+<dd>
+<p>The <strong>segment metadata</strong> command.  This command controls the insertion of
+sample segment metadata -- a string representation of the current time --
+in every file data segment PDU.  A value of 1 enables segment metadata
+insertion, while a value of 0 disables it.</p>
+</dd>
+</li>
+<dt><strong><a name="item_g__3csrrflags_3e"><strong>g</strong> &lt;srrflags&gt;</a></strong>
+
+<dd>
+<p>The <strong>srrflags</strong> command.  This command establishes the BP status reporting
+that will be requested for all subsequently issued bundles containing
+CFDP PDUs.  <em>srrflags</em> must be a status reporting flags string as defined
+for bptrace(1): a sequence of status report flags, separated by commas,
+with no embedded whitespace.  Each status report flag must be one of the
+following: rcv, ct, fwd, dlv, del.</p>
+</dd>
+</li>
+<dt><strong><a name="item_c__3ccriticality_3e"><strong>c</strong> &lt;criticality&gt;</a></strong>
+
+<dd>
+<p>The <strong>criticality</strong> command.  This command establishes the criticality
+for all subsequently issued bundles containing CFDP PDUs.  Valid values
+are 0 (not critical) and 1 (critical).  If not specified, criticality is 0.</p>
+</dd>
+</li>
+<dt><strong><a name="item_r__3caction_code_nbr_3e__3cfirst_path_name_3e__3cs"><strong>r</strong> &lt;action code nbr&gt; &lt;first path name&gt; &lt;second path name&gt;</a></strong>
+
+<dd>
+<p>The <strong>filestore request</strong> command.  This command adds a filestore request to
+the metadata that will be issued when the next file transmission operation
+is commanded.  Action code numbers are:</p>
+</dd>
+<ol>
+<li><strong><a name="item__3d_create_file">= create file</a></strong>
+
+<li><strong><a name="item__3d_delete_file">= delete file</a></strong>
+
+<li><strong><a name="item__3d_rename_file">= rename file</a></strong>
+
+<li><strong><a name="item__3d_append_file">= append file</a></strong>
+
+<li><strong><a name="item__3d_replace_file">= replace file</a></strong>
+
+<li><strong><a name="item__3d_create_directory">= create directory</a></strong>
+
+<li><strong><a name="item__3d_remove_directory">= remove directory</a></strong>
+
+<li><strong><a name="item__3d_deny_file">= deny file</a></strong>
+
+<li><strong><a name="item__3d_deny_directory">= deny directory</a></strong>
+
+</ol>
+<dt><strong><a name="item_u__27_3cmessage_text_3e_27"><strong>u</strong> '&lt;message text&gt;'</a></strong>
+
+<dd>
+<p>The <strong>user message</strong> command.  This command adds a user message to the
+metadata that will be issued when the next file transmission operation
+is commanded.</p>
+</dd>
+</li>
+<dt><strong><a name="item__26"><strong>&amp;</strong></a></strong>
+
+<dd>
+<p>The <strong>send</strong> command.  This command initiates file transmission as configured
+by the most recent preceding <strong>d</strong>, <strong>f</strong>, <strong>t</strong>, and <strong>a</strong> commands.</p>
+</dd>
+</li>
+<dt><strong><a name="item__7c"><strong>|</strong></a></strong>
+
+<dd>
+<p>The <strong>get</strong> command.  This command causes a request for file transmission to
+the local node, subject to the parameters provided by the most recent preceding
+<strong>f</strong>, <strong>t</strong>, and <strong>a</strong> commands, to be sent to the entity identified by the
+most recent preceding <strong>d</strong> command.</p>
+</dd>
+<dd>
+<p><strong>NOTE</strong> that 'get' in CFDP is implemented very differently from 'send'.  The
+'send' operation is a native element of the CFDP protocol. The 'get' operation
+is implemented by sending to the responding entity a standardized sequence of
+message-to-user messages in a Metadata PDU - the <em>user application</em> at the
+responding entity receives those messages and initiates a 'send' to accomplish
+transmission of the file.  This means that 'send' can succeed even if no user
+application is running at the remote node, but 'get' cannot.</p>
+</dd>
+</li>
+<dt><strong><a name="item__5e"><strong>^</strong></a></strong>
+
+<dd>
+<p>The <strong>cancel</strong> command.  This command cancels the most recently initiated
+file transmission.</p>
+</dd>
+</li>
+<dt><strong><a name="item__25"><strong>%</strong></a></strong>
+
+<dd>
+<p>The <strong>suspend</strong> command.  This command suspends the most recently initiated
+file transmission.</p>
+</dd>
+</li>
+<dt><strong><a name="item__24"><strong>$</strong></a></strong>
+
+<dd>
+<p>The <strong>resume</strong> command.  This command resumes the most recently initiated
+file transmission.</p>
+</dd>
+</li>
+<dt><strong><a name="item__23"><strong>#</strong></a></strong>
+
+<dd>
+<p>The <strong>report</strong> command.  This command reports on the most recently initiated
+file transmission.</p>
+</dd>
+</li>
+<dt><strong><a name="item_q"><strong>q</strong></a></strong>
+
+<dd>
+<p>The <strong>quit</strong> command.  Terminates the cfdptest program.</p>
+</dd>
+</li>
+</dl>
+<p><strong>cfdptest</strong> in interactive mode also spawns a CFDP event handling thread.  The
+event thread receives CFDP service indications and simply prints lines of
+text to stdout to announce them.</p>
+<p><strong>NOTE</strong> that when <strong>cfdptest</strong> runs in scripted mode it does <strong>not</strong> spawn an
+event handling thread, which makes it possible for the CFDP events queue to
+grow indefinitely unless some other task consumes and reports on the events.
+One simple solution is to run an interactive <strong>cfdptest</strong> task in background,
+simply to keep the event queue cleared, while scripted non-interactive
+<strong>cfdptest</strong> tasks are run in the foreground.</p>
+<p>
+</p>
+<hr />
+<h1><a name="exit_status">EXIT STATUS</a></h1>
+<dl>
+<dt><strong><a name="item__220_22">``0''</a></strong>
+
+<dd>
+<p><strong>cfdptest</strong> has terminated.  Any problems encountered during operation
+will be noted in the <strong>ion.log</strong> log file.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="files">FILES</a></h1>
+<p>See above for details on valid <em>commands_filename</em> commands.</p>
+<p>
+</p>
+<hr />
+<h1><a name="environment">ENVIRONMENT</a></h1>
+<p>No environment variables apply.</p>
+<p>
+</p>
+<hr />
+<h1><a name="diagnostics">DIAGNOSTICS</a></h1>
+<p>Diagnostic messages produced by <strong>cfdptest</strong> are written to the ION log
+file <em>ion.log</em>.</p>
+<dl>
+<dt><strong><a name="item_can_27t_open_command_file_2e_2e_2e">Can't open command file...</a></strong>
+
+<dd>
+<p>The file identified by <em>commands_filename</em> doesn't exist.</p>
+</dd>
+</li>
+<dt><strong><a name="item_cfdptest_can_27t_initialize_cfdp_2e">cfdptest can't initialize CFDP.</a></strong>
+
+<dd>
+<p><strong>cfdpadmin</strong> has not yet initialized CFDP operations.</p>
+</dd>
+</li>
+<dt><strong><a name="item_can_27t_put_fdu_2e">Can't put FDU.</a></strong>
+
+<dd>
+<p>The attempt to initiate file transmission failed.  See the ION log for
+additional diagnostic messages from the CFDP library.</p>
+</dd>
+</li>
+<dt><strong><a name="item_failed_getting_cfdp_event_2e">Failed getting CFDP event.</a></strong>
+
+<dd>
+<p>The attempt to retrieve a CFDP service indication failed.  See the ION log for
+additional diagnostic messages from the CFDP library.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="bugs">BUGS</a></h1>
+<p>Report bugs to &lt;<a href="mailto:ion-dtn-support@lists.sourceforge.net">ion-dtn-support@lists.sourceforge.net</a>&gt;</p>
+<p>
+</p>
+<hr />
+<h1><a name="see_also">SEE ALSO</a></h1>
+<p>cfdpadmin(1), <code>cfdp(3)</code></p>
+
+</body>
+
+</html>

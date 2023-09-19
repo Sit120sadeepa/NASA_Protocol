@@ -1,0 +1,190 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>smrbtsh - shared-memory red-black tree test shell</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:mingw-dvlpr@lists.sourceforge.net" />
+</head>
+
+<body style="background-color: white">
+
+<p><a name="__index__"></a></p>
+<!-- INDEX BEGIN -->
+<!--
+
+<ul>
+
+	<li><a href="#name">NAME</a></li>
+	<li><a href="#synopsis">SYNOPSIS</a></li>
+	<li><a href="#description">DESCRIPTION</a></li>
+	<li><a href="#exit_status">EXIT STATUS</a></li>
+	<li><a href="#files">FILES</a></li>
+	<li><a href="#environment">ENVIRONMENT</a></li>
+	<li><a href="#diagnostics">DIAGNOSTICS</a></li>
+	<li><a href="#bugs">BUGS</a></li>
+	<li><a href="#see_also">SEE ALSO</a></li>
+</ul>
+-->
+<!-- INDEX END -->
+
+<p>
+</p>
+<h1><a name="name">NAME</a></h1>
+<p>smrbtsh - shared-memory red-black tree test shell</p>
+<p>
+</p>
+<hr />
+<h1><a name="synopsis">SYNOPSIS</a></h1>
+<p><strong>smrbtsh</strong> [<em>command_file_name</em>]</p>
+<p>
+</p>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p><strong>smrbtsh</strong> allocates a region of shared system memory, attaches to that
+region, places it under PSM management, creates a temporary ``test'' red-black
+tree in that memory region, and executes a series of shared-memory red-black
+tree commands that exercise various tree access and management functions.</p>
+<p>If <em>command_file_name</em> is provided, then the commands in the indicated file
+are executed and the program then terminates.  Upon termination, the shared
+memory region allocated to <strong>smrbtsh</strong> is detached and destroyed.</p>
+<p>Otherwise, <strong>smrbtsh</strong> offers the user an interactive ``shell'' for testing the
+smrbt functions in a conversational manner: <strong>smrbtsh</strong> prints a prompt string
+(``: '') to stdout, accepts a command from stdin, executes the command (possibly
+printing a diagnostic message), then prints another prompt string and so on.
+Upon execution of the 'q' command, the program terminates.</p>
+<p>The following commands are supported:</p>
+<dl>
+<dt><strong><a name="item_h"><strong>h</strong></a></strong>
+
+<dd>
+<p>The <strong>help</strong> command.  Causes <strong>smrbtsh</strong> to print a summary of available
+commands.  Same effect as the <strong>?</strong> command.</p>
+</dd>
+</li>
+<dt><strong><a name="item__3f"><strong>?</strong></a></strong>
+
+<dd>
+<p>Another <strong>help</strong> command.  Causes <strong>smrbtsh</strong> to print a summary of available
+commands.  Same effect as the <strong>h</strong> command.</p>
+</dd>
+</li>
+<dt><strong><a name="item_s__5bseed_value_5d"><strong>s</strong> [<em>seed_value</em>]</a></strong>
+
+<dd>
+<p>The <strong>seed</strong> command.  Seeds random data value generator, which is used to
+generate node values when the <strong>r</strong> command is used.  If <em>seed_value</em> is
+omitted, uses current time (as returned by <code>time(1))</code> as seed value.</p>
+</dd>
+</li>
+<dt><strong><a name="item_r__5bcount_5d"><strong>r</strong> [<em>count</em>]</a></strong>
+
+<dd>
+<p>The <strong>random</strong> command.  Inserts <em>count</em> new nodes into the red-black tree,
+using randomly selected unsigned long integers as the data values of the
+nodes; <em>count</em> defaults to 1 if omitted.</p>
+</dd>
+</li>
+<dt><strong><a name="item_i_data_value"><strong>i</strong> <em>data_value</em></a></strong>
+
+<dd>
+<p>The <strong>insert</strong> command.  Inserts a single new node into the red-black tree,
+using <em>data_value</em> as the data value of the node.</p>
+</dd>
+</li>
+<dt><strong><a name="item_f_data_value"><strong>f</strong> <em>data_value</em></a></strong>
+
+<dd>
+<p>The <strong>find</strong> command.  Finds the rbt node whose value is <em>data_value</em>,
+within the red-black tree, and prints the address of that node.  If the 
+node is not found, prints address zero and prints the address of the
+successor node in the tree.</p>
+</dd>
+</li>
+<dt><strong><a name="item_d_data_value"><strong>d</strong> <em>data_value</em></a></strong>
+
+<dd>
+<p>The <strong>delete</strong> command.  Deletes the rbt node whose data value is
+<em>data_value</em>.</p>
+</dd>
+</li>
+<dt><strong><a name="item_p"><strong>p</strong></a></strong>
+
+<dd>
+<p>The <strong>print</strong> command.  Prints the red-black tree, using indentation to
+indicate descent along paths of the tree.</p>
+</dd>
+<dd>
+<p>Note: this function is supported only if the <strong>smrbt</strong> library was built
+with compilation flag -DSMRBT_DEBUG=1.</p>
+</dd>
+</li>
+<dt><strong><a name="item_k"><strong>k</strong></a></strong>
+
+<dd>
+<p>The <strong>check</strong> command.  Examines the red-black tree, noting the first
+violation of red-black structure rules, if any.</p>
+</dd>
+<dd>
+<p>Note: this function is supported only if the <strong>smrbt</strong> library was built
+with compilation flag -DSMRBT_DEBUG=1.</p>
+</dd>
+</li>
+<dt><strong><a name="item_l"><strong>l</strong></a></strong>
+
+<dd>
+<p>The <strong>list</strong> command.  Lists all nodes in the red-black tree in traversal
+order, noting any nodes whose data values are not in ascending numerical
+order.</p>
+</dd>
+</li>
+<dt><strong><a name="item_q"><strong>q</strong></a></strong>
+
+<dd>
+<p>The <strong>quit</strong> command.  Detaches <strong>smrbtsh</strong> from the region of shared
+memory it is currently using, destroys that shared memory region, and
+terminates <strong>smrbtsh</strong>.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="exit_status">EXIT STATUS</a></h1>
+<dl>
+<dt><strong><a name="item__220_22">``0''</a></strong>
+
+<dd>
+<p><strong>smrbtsh</strong> has terminated.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="files">FILES</a></h1>
+<p>No configuration files are needed.</p>
+<p>
+</p>
+<hr />
+<h1><a name="environment">ENVIRONMENT</a></h1>
+<p>No environment variables apply.</p>
+<p>
+</p>
+<hr />
+<h1><a name="diagnostics">DIAGNOSTICS</a></h1>
+<p>No diagnostics apply.</p>
+<p>
+</p>
+<hr />
+<h1><a name="bugs">BUGS</a></h1>
+<p>Report bugs to &lt;<a href="mailto:ion-dtn-support@lists.sourceforge.net">ion-dtn-support@lists.sourceforge.net</a>&gt;</p>
+<p>
+</p>
+<hr />
+<h1><a name="see_also">SEE ALSO</a></h1>
+<p><code>smrbt(3)</code></p>
+
+</body>
+
+</html>

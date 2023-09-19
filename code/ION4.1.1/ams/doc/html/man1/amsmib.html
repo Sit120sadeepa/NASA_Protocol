@@ -1,0 +1,202 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>amsmib - Asynchronous Message Service MIB update utility</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:mingw-dvlpr@lists.sourceforge.net" />
+</head>
+
+<body style="background-color: white">
+
+<p><a name="__index__"></a></p>
+<!-- INDEX BEGIN -->
+<!--
+
+<ul>
+
+	<li><a href="#name">NAME</a></li>
+	<li><a href="#synopsis">SYNOPSIS</a></li>
+	<li><a href="#description">DESCRIPTION</a></li>
+	<li><a href="#exit_status">EXIT STATUS</a></li>
+	<li><a href="#files">FILES</a></li>
+	<li><a href="#environment">ENVIRONMENT</a></li>
+	<li><a href="#diagnostics">DIAGNOSTICS</a></li>
+	<li><a href="#bugs">BUGS</a></li>
+	<li><a href="#see_also">SEE ALSO</a></li>
+</ul>
+-->
+<!-- INDEX END -->
+
+<p>
+</p>
+<h1><a name="name">NAME</a></h1>
+<p>amsmib - Asynchronous Message Service (AMS) MIB update utility</p>
+<p>
+</p>
+<hr />
+<h1><a name="synopsis">SYNOPSIS</a></h1>
+<p><strong>amsmib</strong> <em>application_name</em> <em>authority_name</em> <em>role_name</em> <em>continuum_name</em> <em>unit_name</em> <em>file_name</em></p>
+<p>
+</p>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p><strong>amsmib</strong> is a utility program that announces relatively brief Management
+Information Base (MIB) updates to a select population of AMS modules.  Because
+<strong>amsd</strong> processes may run AAMS modules in background threads, and because a
+single MIB is shared in common among all threads of any process, <strong>amsmib</strong> may
+update the MIBs used by registrars and/or configuration servers as well.</p>
+<p>MIB updates can only be propagated to modules for which the subject ``amsmib''
+was defined in the MIB initialization files cited at module registration
+time.  All ION AMS modules implicitly invite messages on subject ``amsmib''
+(from all modules registered in role ``amsmib'' in all continua of the same
+venture) at registration time if subject ``amsmib'' and role ``amsmib'' are
+defined in the MIB.</p>
+<p><strong>amsmib</strong> registers in the root cell of the message space identified by
+<em>application_name</em> and <em>authority_name</em>, within the local continuum.  It
+registers in the role ``amsmib''; if this role is not defined in the (initial)
+MIB loaded by <strong>amsmib</strong> at registration time, then registration fails and
+<strong>amsmib</strong> terminates.</p>
+<p><strong>amsmib</strong> then reads into a memory buffer up to 4095 bytes of MIB update
+text from the file identified by <em>file_name</em>.  The MIB update text must
+conform to <code>amsxml(5)</code> or <code>amsrc(5)</code> syntax, depending on whether or not the
+intended recipient modules were compiled with the -DNOEXPAT option.</p>
+<p><strong>amsmib</strong> then ``announces'' (see <code>ams_announce()</code> in <code>ams(3))</code> the contents of the
+memory buffer to all modules of this same venture (identified by
+<em>application_name</em> and <em>authority_name</em>) that registered in the indicated
+role, in the indicated unit of the indicated continuum.  If <em>continuum_name</em>
+is ``'' then the message will be sent to modules in all continua.  If
+<em>role_name</em> is ``'' then all modules will be eligible to receive the message,
+regardless of the role in which they registered.  If <em>unit_name</em> is ``'' (the
+root unit) then all modules will be eligible to receive the message,
+regardless of the unit in which they registered.</p>
+<p>Upon reception of the announced message, each destination module will apply
+all of the MIB updates in the content of the message, in exactly the same
+way that its original MIB was loaded from the MIB initialization file when
+the module started running.</p>
+<p>If multiple modules are running in the same memory space (e.g., in different
+threads of the same process, or in different tasks on the same VxWorks target)
+then the updates will be applied multiple times, because all modules in the
+same memory space share a single MIB.  MIB updates are idempotent, so this
+is harmless (though some diagnostics may be printed).</p>
+<p>Moreover, an <strong>amsd</strong> daemon will have a relevant ``MIB update'' module running
+in a background thread if <em>application_name</em> and <em>authority_name</em> were cited 
+on the command line that started the daemon (provided the role ``amsd'' was
+defined in the initial MIB loaded at the time <strong>amsd</strong> began running).  The
+MIB exposed to the configuration server and/or registrar running in that
+daemon will likewise be updated upon reception of the announced message.</p>
+<p>The name of the subject of the announced mib update message is ``amsmib''; if
+this subject is not defined in the (initial) MIB loaded by <strong>amsmib</strong> then
+the message cannot be announced.  Nor can any potential recipient module
+receive the message if subject ``amsmib'' is not defined in that module's MIB.</p>
+<p>
+</p>
+<hr />
+<h1><a name="exit_status">EXIT STATUS</a></h1>
+<dl>
+<dt><strong><a name="item__220_22">``0''</a></strong>
+
+<dd>
+<p><strong>amsmib</strong> terminated normally.</p>
+</dd>
+</li>
+<dt><strong><a name="item__221_22">``1''</a></strong>
+
+<dd>
+<p>An anomalous exit status, indicating that <strong>amsmib</strong> failed to register.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="files">FILES</a></h1>
+<p>A MIB initialization file with the applicable default name (see <code>amsrc(5)</code> and
+<code>amsxml(5))</code> must be present.</p>
+<p>
+</p>
+<hr />
+<h1><a name="environment">ENVIRONMENT</a></h1>
+<p>No environment variables apply.</p>
+<p>
+</p>
+<hr />
+<h1><a name="diagnostics">DIAGNOSTICS</a></h1>
+<p>The following diagnostics may be issued to the <strong>ion.log</strong> log file:</p>
+<dl>
+<dt><strong><a name="item_amsmib_subject_undefined_2e">amsmib subject undefined.</a></strong>
+
+<dd>
+<p>The <strong>amsmib</strong> utility was unable to announce the MIB update message.</p>
+</dd>
+</li>
+<dt><strong><a name="item_amsmib_domain_role_unknown_2e">amsmib domain role unknown.</a></strong>
+
+<dd>
+<p>The <strong>amsmib</strong> utility was unable to announce the MIB update message.</p>
+</dd>
+</li>
+<dt><strong><a name="item_amsmib_domain_continuum_unknown_2e">amsmib domain continuum unknown.</a></strong>
+
+<dd>
+<p>The <strong>amsmib</strong> utility was unable to announce the MIB update message.</p>
+</dd>
+</li>
+<dt><strong><a name="item_amsmib_domain_unit_unknown_2e">amsmib domain unit unknown.</a></strong>
+
+<dd>
+<p>The <strong>amsmib</strong> utility was unable to announce the MIB update message.</p>
+</dd>
+</li>
+<dt><strong><a name="item_amsmib_can_27t_open_mib_file_2e">amsmib can't open MIB file.</a></strong>
+
+<dd>
+<p>The <strong>amsmib</strong> utility was unable to construct the MIB update message.</p>
+</dd>
+</li>
+<dt><strong><a name="item_mib_file_length__3e_4096_2e">MIB file length &gt; 4096.</a></strong>
+
+<dd>
+<p>The MIB update text file was too long to fit into the <strong>amsmib</strong> message buffer.</p>
+</dd>
+</li>
+<dt><strong><a name="item_can_27t_seek_to_end_of_mib_file_2e">Can't seek to end of MIB file.</a></strong>
+
+<dd>
+<p>I/O error in processing the MIB update text file.</p>
+</dd>
+</li>
+<dt><strong><a name="item_can_27t_read_mib_file_2e">Can't read MIB file.</a></strong>
+
+<dd>
+<p>I/O error in processing the MIB update text file.</p>
+</dd>
+</li>
+<dt><strong><a name="item_amsmib_can_27t_announce__27amsmib_27_message_2e">amsmib can't announce 'amsmib' message.</a></strong>
+
+<dd>
+<p>The <strong>amsmib</strong> utility was unable to announce the MIB update message, for
+reasons noted in the log file.</p>
+</dd>
+</li>
+<dt><strong><a name="item_amsmib_can_27t_register_2e">amsmib can't register.</a></strong>
+
+<dd>
+<p>The <strong>amsmib</strong> utility failed to register, for reasons noted in the log file.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="bugs">BUGS</a></h1>
+<p>Report bugs to &lt;<a href="mailto:ion-dtn-support@lists.sourceforge.net">ion-dtn-support@lists.sourceforge.net</a>&gt;</p>
+<p>
+</p>
+<hr />
+<h1><a name="see_also">SEE ALSO</a></h1>
+<p>amsd(1), ams(3), amsrc(5), <code>amsxml(5)</code></p>
+
+</body>
+
+</html>

@@ -1,0 +1,205 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>amsshell - Asynchronous Message Service</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:mingw-dvlpr@lists.sourceforge.net" />
+</head>
+
+<body style="background-color: white">
+
+<p><a name="__index__"></a></p>
+<!-- INDEX BEGIN -->
+<!--
+
+<ul>
+
+	<li><a href="#name">NAME</a></li>
+	<li><a href="#synopsis">SYNOPSIS</a></li>
+	<li><a href="#description">DESCRIPTION</a></li>
+	<li><a href="#exit_status">EXIT STATUS</a></li>
+	<li><a href="#files">FILES</a></li>
+	<li><a href="#environment">ENVIRONMENT</a></li>
+	<li><a href="#diagnostics">DIAGNOSTICS</a></li>
+	<li><a href="#bugs">BUGS</a></li>
+	<li><a href="#see_also">SEE ALSO</a></li>
+</ul>
+-->
+<!-- INDEX END -->
+
+<p>
+</p>
+<h1><a name="name">NAME</a></h1>
+<p>amsshell - Asynchronous Message Service (AMS) test message sender (UNIX)</p>
+<p>
+</p>
+<hr />
+<h1><a name="synopsis">SYNOPSIS</a></h1>
+<p><strong>amsshell</strong> <em>unit_name</em> <em>role_name</em> <em>application_name</em> <em>authority_name</em> <em>[{ p | s | q | a }]</em></p>
+<p>
+</p>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p><strong>amsshell</strong> is a message issuance program designed to test AMS functionality.</p>
+<p>When <strong>amsshell</strong> is started, it registers as an application module in the
+unit identified by <em>unit_name</em> of the venture identified by
+<em>application_name</em> and <em>authority_name</em>; the role in which it registers
+must be indicated in <em>role_name</em>.  A configuration server for the local
+continuum and a registrar for the indicated unit of the indicated venture
+(which may both be instantiated in a single <strong>amsd</strong> daemon task) must be
+running in order for <strong>amsshell</strong> to run.</p>
+<p><strong>amsshell</strong> runs as two threads: a background thread that receives watches
+for AMS configuration events (including shutdown), together with a foreground
+thread that acquires operating parameters and message content in lines of
+console input to control the issuance of messages.</p>
+<p>The first character of each line of input from stdin to the <strong>amsshell</strong>
+indicates the significance of that line:</p>
+<dl>
+<dt><strong><a name="item__3d"><strong>=</strong></a></strong>
+
+<dd>
+<p>Sets the name of the subject on which all messages are to be issued, until
+superseded by another ``='' line.  The subject name must begin at the
+second character of this line.  Optionally, subject name may be followed
+by a single ' ' (space) character and then the text of the first message
+to be issued on this subject, which is to be issued immediately.</p>
+</dd>
+</li>
+<dt><strong><a name="item_r"><strong>r</strong></a></strong>
+
+<dd>
+<p>Sets the number of the role constraining the domain of message issuance.
+The role number must begin at the second character of this line.</p>
+</dd>
+</li>
+<dt><strong><a name="item_c"><strong>c</strong></a></strong>
+
+<dd>
+<p>Sets the number of the continuum constraining the domain of message issuance.
+The continuum number must begin at the second character of this line.</p>
+</dd>
+</li>
+<dt><strong><a name="item_u"><strong>u</strong></a></strong>
+
+<dd>
+<p>Sets the number of the unit constraining the domain of message issuance.
+The unit number must begin at the second character of this line.</p>
+</dd>
+</li>
+<dt><strong><a name="item_m"><strong>m</strong></a></strong>
+
+<dd>
+<p>Sets the number of the module to which subsequent messages are to be issued.
+The module number must begin at the second character of this line.</p>
+</dd>
+</li>
+<dt><strong><a name="item__2e"><strong>.</strong></a></strong>
+
+<dd>
+<p>Terminates <strong>amsshell</strong>.</p>
+</dd>
+</li>
+</dl>
+<p>When the first character of a line of input from stdin is none of the
+above, the entire line is taken to be the text of a message that is
+to be issued immediately, on the previously specified subject, to the
+previously specified module (if applicable), and subject to the previously
+specified domain (if applicable).</p>
+<p>By default, <strong>amsshell</strong> runs in ``publish'' mode: when a message is to be
+issued, it is simply published.  This behavior can be overridden by
+providing a fifth command-line argument to <strong>amsshell</strong> - a ``mode''
+indicator.  The supported modes are as follows:</p>
+<dl>
+<dt><strong><a name="item_p"><strong>p</strong></a></strong>
+
+<dd>
+<p>This is ``publish'' mode.  Every message is published.</p>
+</dd>
+</li>
+<dt><strong><a name="item_s"><strong>s</strong></a></strong>
+
+<dd>
+<p>This is ``send'' mode.  Every message is sent privately to the application
+module identified by the specified module, unit, and continuum numbers.</p>
+</dd>
+</li>
+<dt><strong><a name="item_q"><strong>q</strong></a></strong>
+
+<dd>
+<p>This is ``query'' mode.  Every message is sent privately to the application
+module identified by the specified module, unit, and continuum numbers,
+and <strong>amsshell</strong> then waits for a reply message before continuing.</p>
+</dd>
+</li>
+<dt><strong><a name="item_a"><strong>a</strong></a></strong>
+
+<dd>
+<p>This is ``announce'' mode.  Every message is announced to all modules in
+the domain established by the previously specified role, unit, and
+continuum numbers.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="exit_status">EXIT STATUS</a></h1>
+<dl>
+<dt><strong><a name="item__2d1">-1</a></strong>
+
+<dd>
+<p><strong>amsshell</strong> terminated with an error as noted in the ion.log file.</p>
+</dd>
+</li>
+<dt><strong><a name="item__220_22">``0''</a></strong>
+
+<dd>
+<p><strong>amsshell</strong> terminated normally.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="files">FILES</a></h1>
+<p>A MIB initialization file with the applicable default name (see <code>amsrc(5))</code>
+must be present.</p>
+<p>
+</p>
+<hr />
+<h1><a name="environment">ENVIRONMENT</a></h1>
+<p>No environment variables apply.</p>
+<p>
+</p>
+<hr />
+<h1><a name="diagnostics">DIAGNOSTICS</a></h1>
+<dl>
+<dt><strong><a name="item_amsshell_can_27t_register_2e">amsshell can't register.</a></strong>
+
+<dd>
+<p><strong>amsshell</strong> failed to register, for reasons noted in the ion.log file.</p>
+</dd>
+</li>
+<dt><strong><a name="item_amsshell_can_27t_set_event_manager_2e">amsshell can't set event manager.</a></strong>
+
+<dd>
+<p><strong>amsshell</strong> failed to start its background thread, for reasons noted in
+the ion.log file.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="bugs">BUGS</a></h1>
+<p>Report bugs to &lt;<a href="mailto:ion-dtn-support@lists.sourceforge.net">ion-dtn-support@lists.sourceforge.net</a>&gt;</p>
+<p>
+</p>
+<hr />
+<h1><a name="see_also">SEE ALSO</a></h1>
+<p>amslog(1), <code>amsrc(5)</code></p>
+
+</body>
+
+</html>

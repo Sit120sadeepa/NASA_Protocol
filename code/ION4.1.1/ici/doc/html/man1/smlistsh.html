@@ -1,0 +1,199 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>smlistsh - shared-memory linked list test shell</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:mingw-dvlpr@lists.sourceforge.net" />
+</head>
+
+<body style="background-color: white">
+
+<p><a name="__index__"></a></p>
+<!-- INDEX BEGIN -->
+<!--
+
+<ul>
+
+	<li><a href="#name">NAME</a></li>
+	<li><a href="#synopsis">SYNOPSIS</a></li>
+	<li><a href="#description">DESCRIPTION</a></li>
+	<li><a href="#exit_status">EXIT STATUS</a></li>
+	<li><a href="#files">FILES</a></li>
+	<li><a href="#environment">ENVIRONMENT</a></li>
+	<li><a href="#diagnostics">DIAGNOSTICS</a></li>
+	<li><a href="#bugs">BUGS</a></li>
+	<li><a href="#see_also">SEE ALSO</a></li>
+</ul>
+-->
+<!-- INDEX END -->
+
+<p>
+</p>
+<h1><a name="name">NAME</a></h1>
+<p>smlistsh - shared-memory linked list test shell</p>
+<p>
+</p>
+<hr />
+<h1><a name="synopsis">SYNOPSIS</a></h1>
+<p><strong>smlistsh</strong> <em>partition_size</em></p>
+<p>
+</p>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p><strong>smlistsh</strong> attaches to a region of system memory (allocating it if
+necessary, and placing it under PSM management as necessary) and offers
+the user an interactive ``shell'' for testing various shared-memory linked
+list management functions.</p>
+<p><strong>smlistsh</strong> prints a prompt string (``: '') to stdout, accepts a command from 
+stdin, executes the command (possibly printing a diagnostic message), 
+then prints another prompt string and so on.</p>
+<p>The following commands are supported:</p>
+<dl>
+<dt><strong><a name="item_h"><strong>h</strong></a></strong>
+
+<dd>
+<p>The <strong>help</strong> command.  Causes <strong>smlistsh</strong> to print a summary of available
+commands.  Same effect as the <strong>?</strong> command.</p>
+</dd>
+</li>
+<dt><strong><a name="item__3f"><strong>?</strong></a></strong>
+
+<dd>
+<p>Another <strong>help</strong> command.  Causes <strong>smlistsh</strong> to print a summary of available
+commands.  Same effect as the <strong>h</strong> command.</p>
+</dd>
+</li>
+<dt><strong><a name="item_k"><strong>k</strong></a></strong>
+
+<dd>
+<p>The <strong>key</strong> command.  Computes and prints an unused shared-memory key, for
+possible use in attaching to a shared-memory region.</p>
+</dd>
+</li>
+<dt><strong><a name="item__2b_key_value_size"><strong>+</strong> <em>key_value</em> <em>size</em></a></strong>
+
+<dd>
+<p>The <strong>attach</strong> command.  Attaches <strong>smlistsh</strong> to a region of shared memory.
+<em>key_value</em> identifies an existing shared-memory region, in the event
+that you want to attach to an existing shared-memory region (possibly created
+by another <strong>smlistsh</strong> process running on the same computer).  To create and
+attach to a new shared-memory region that other processes can attach to,
+use a <em>key_value</em> as returned by the <strong>key</strong> command and supply the <em>size</em>
+of the new region.  If you want to create and attach to a new shared-memory
+region that is for strictly private use, use -1 as key and supply the <em>size</em>
+of the new region.</p>
+</dd>
+</li>
+<dt><strong><a name="item__2d"><strong>-</strong></a></strong>
+
+<dd>
+<p>The <strong>detach</strong> command.  Detaches <strong>smlistsh</strong> from the region of shared
+memory it is currently using, but does not free any memory.</p>
+</dd>
+</li>
+<dt><strong><a name="item_n"><strong>n</strong></a></strong>
+
+<dd>
+<p>The <strong>new</strong> command.  Creates a new shared-memory list to operate on, within
+the currently attached shared-memory region.  Prints the address of the list.</p>
+</dd>
+</li>
+<dt><strong><a name="item_s_list_address"><strong>s</strong> <em>list_address</em></a></strong>
+
+<dd>
+<p>The <strong>share</strong> command.  Selects an existing shared-memory list to operate on,
+within the currently attached shared-memory region.</p>
+</dd>
+</li>
+<dt><strong><a name="item_a_element_value"><strong>a</strong> <em>element_value</em></a></strong>
+
+<dd>
+<p>The <strong>append</strong> command.  Appends a new list element, containing
+<em>element_value</em>, to the list on which <strong>smlistsh</strong> is currently operating.</p>
+</dd>
+</li>
+<dt><strong><a name="item_p_element_value"><strong>p</strong> <em>element_value</em></a></strong>
+
+<dd>
+<p>The <strong>prepend</strong> command.  Prepends a new list element, containing
+<em>element_value</em>, to the list on which <strong>smlistsh</strong> is currently operating.</p>
+</dd>
+</li>
+<dt><strong><a name="item_w"><strong>w</strong></a></strong>
+
+<dd>
+<p>The <strong>walk</strong> command.  Prints the addresses and contents of all elements of
+the list on which <strong>smlistsh</strong> is currently operating.</p>
+</dd>
+</li>
+<dt><strong><a name="item_f_element_value"><strong>f</strong> <em>element_value</em></a></strong>
+
+<dd>
+<p>The <strong>find</strong> command.  Finds the list element that contains <em>element_value</em>,
+within the list on which <strong>smlistsh</strong> is currently operating, and prints
+the address of that list element.</p>
+</dd>
+</li>
+<dt><strong><a name="item_d_element_address"><strong>d</strong> <em>element_address</em></a></strong>
+
+<dd>
+<p>The <strong>delete</strong> command.  Deletes the list element located at <em>element_address</em>.</p>
+</dd>
+</li>
+<dt><strong><a name="item_r"><strong>r</strong></a></strong>
+
+<dd>
+<p>The <strong>report</strong> command.  Prints a partition usage report, as per psm_report(3).</p>
+</dd>
+</li>
+<dt><strong><a name="item_q"><strong>q</strong></a></strong>
+
+<dd>
+<p>The <strong>quit</strong> command.  Detaches <strong>smlistsh</strong> from the region of shared
+memory it is currently using (without freeing any memory) and terminates
+<strong>smlistsh</strong>.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="exit_status">EXIT STATUS</a></h1>
+<dl>
+<dt><strong><a name="item__220_22">``0''</a></strong>
+
+<dd>
+<p><strong>smlistsh</strong> has terminated.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="files">FILES</a></h1>
+<p>No configuration files are needed.</p>
+<p>
+</p>
+<hr />
+<h1><a name="environment">ENVIRONMENT</a></h1>
+<p>No environment variables apply.</p>
+<p>
+</p>
+<hr />
+<h1><a name="diagnostics">DIAGNOSTICS</a></h1>
+<p>No diagnostics apply.</p>
+<p>
+</p>
+<hr />
+<h1><a name="bugs">BUGS</a></h1>
+<p>Report bugs to &lt;<a href="mailto:ion-dtn-support@lists.sourceforge.net">ion-dtn-support@lists.sourceforge.net</a>&gt;</p>
+<p>
+</p>
+<hr />
+<h1><a name="see_also">SEE ALSO</a></h1>
+<p><code>smlist(3)</code></p>
+
+</body>
+
+</html>

@@ -1,0 +1,159 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>sdrhash - Simple Data Recorder hash table management functions</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:mingw-dvlpr@lists.sourceforge.net" />
+</head>
+
+<body style="background-color: white">
+
+<p><a name="__index__"></a></p>
+<!-- INDEX BEGIN -->
+<!--
+
+<ul>
+
+	<li><a href="#name">NAME</a></li>
+	<li><a href="#synopsis">SYNOPSIS</a></li>
+	<li><a href="#description">DESCRIPTION</a></li>
+	<li><a href="#see_also">SEE ALSO</a></li>
+</ul>
+-->
+<!-- INDEX END -->
+
+<p>
+</p>
+<h1><a name="name">NAME</a></h1>
+<p>sdrhash - Simple Data Recorder hash table management functions</p>
+<p>
+</p>
+<hr />
+<h1><a name="synopsis">SYNOPSIS</a></h1>
+<pre>
+    #include &quot;sdr.h&quot;</pre>
+<pre>
+    Object  sdr_hash_create        (Sdr sdr, int keyLength,
+                                        int estNbrOfEntries,
+                                        int meanSearchLength);
+    int     sdr_hash_insert        (Sdr sdr, Object hash, char *key,
+                                        Address value, Object *entry);
+    int     sdr_hash_delete_entry  (Sdr sdr, Object entry);
+    int     sdr_hash_entry_value   (Sdr sdr, Object hash, Object entry);
+    int     sdr_hash_retrieve      (Sdr sdr, Object hash, char *key,
+                                        Address *value, Object *entry);
+    int     sdr_hash_count         (Sdr sdr, Object hash);
+    int     sdr_hash_revise        (Sdr sdr, Object hash, char *key,
+                                        Address value);
+    int     sdr_hash_remove        (Sdr sdr, Object hash, char *key,
+                                        Address *value);
+    int     sdr_hash_destroy       (Sdr sdr, Object hash);</pre>
+<p>
+</p>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p>The SDR hash functions manage hash table objects in an SDR.</p>
+<p>Hash tables associate values with keys.  A value is always in the form of
+an SDR Address, nominally the address of some stored object identified by
+the associated key, but the actual significance of a value may be anything
+that fits into a <em>long</em>.  A key is always an array of from 1 to
+255 bytes, which may have any semantics at all.</p>
+<p>Keys must be unique; no two distinct entries in an SDR hash table may have
+the same key.  Any attempt to insert a duplicate entry in an SDR hash
+table will be rejected.</p>
+<p>All keys must be of the same length, and that length must be declared at
+the time the hash table is created.  Invoking a hash table function with a
+key that is shorter than the declared length will have unpredictable results.</p>
+<p>An SDR hash table is an array of linked lists.  The location of a given
+value in the hash table is automatically determined by computing a ``hash''
+of the key, dividing the hash by the number of linked lists in the array,
+using the remainder as an index to the corresponding linked list, and
+then sequentially searching through the list entries until the entry with
+the matching key is found.</p>
+<p>The number of linked lists in the array is automatically computed at the
+time the hash table is created, based on the estimated maximum number of
+entries you expect to store in the table and the mean linked list length
+(i.e., mean search time) you prefer.  Increasing the maximum number of
+entries in the table and decreasing the mean linked list length both tend
+to increase the amount of SDR heap space occupied by the hash table.</p>
+<dl>
+<dt><strong><a name="item_sdr_hash_create">Object sdr_hash_create(Sdr sdr, int keyLength, int estNbrOfEntries, int meanSearchLength)</a></strong>
+
+<dd>
+<p>Creates an SDR hash table.  Returns the SDR address of the new hash table
+on success, zero on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_sdr_hash_insert">int sdr_hash_insert(Sdr sdr, Object hash, char *key, Address value, Object *entry)</a></strong>
+
+<dd>
+<p>Inserts an entry into the hash table identified by <em>hash</em>.  On success,
+places the address of the new hash table entry in <em>entry</em> and returns zero.
+Returns -1 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_sdr_hash_delete_entry">int sdr_hash_delete_entry(Sdr sdr, Object entry)</a></strong>
+
+<dd>
+<p>Deletes the hash table entry identified by <em>entry</em>.  Returns zero on
+success, -1 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_sdr_hash_entry_value">Address sdr_hash_entry_value(Sdr sdr, Object hash, Object entry)</a></strong>
+
+<dd>
+<p>Returns the value of the hash table entry identified by <em>entry</em>.</p>
+</dd>
+</li>
+<dt><strong><a name="item_sdr_hash_retrieve">int sdr_hash_retrieve(Sdr sdr, Object hash, char *key, Address *value, Object *entry)</a></strong>
+
+<dd>
+<p>Searches for the value associated with <em>key</em> in this hash table, storing it in
+<em>value</em> if found.  If the entry matching <em>key</em> was found, places the
+address of the hash table entry in <em>entry</em> and returns 1.  Returns zero if
+no such entry exists, -1 on any other failure.</p>
+</dd>
+</li>
+<dt><strong><a name="item_sdr_hash_count">int sdr_hash_count(Sdr sdr, Object hash)</a></strong>
+
+<dd>
+<p>Returns the number of entries in the hash table identified by <em>hash</em>.</p>
+</dd>
+</li>
+<dt><strong><a name="item_sdr_hash_revise">int sdr_hash_revise(Sdr sdr, Object hash, char *key, Address value)</a></strong>
+
+<dd>
+<p>Searches for the hash table entry matching <em>key</em> in this hash table,
+replacing the associated value with <em>value</em> if found.  Returns 1 if the
+entry matching <em>key</em> was found, zero if no such entry exists, -1 on
+any other failure.</p>
+</dd>
+</li>
+<dt><strong><a name="item_sdr_hash_remove">int sdr_hash_remove(Sdr sdr, Object hash, char *key, Address *value)</a></strong>
+
+<dd>
+<p>Searches for the hash table entry matching <em>key</em> in this hash table; if the
+entry is found, stores its value in <em>value</em>, deletes the entry, and returns
+1.  Returns zero if no such entry exists, -1 on any other failure.</p>
+</dd>
+</li>
+<dt><strong><a name="item_sdr_hash_destroy">void sdr_hash_destroy(Sdr sdr, Object hash);</a></strong>
+
+<dd>
+<p>Destroys <em>hash</em>, destroying all entries in all linked lists of the
+array and destroying the hash table array structure itself.  DO NOT
+use <code>sdr_free()</code> to destroy a hash table, as this would leave the hash
+table's content allocated yet unreferenced.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="see_also">SEE ALSO</a></h1>
+<p>sdr(3), sdrlist(3), <code>sdrtable(3)</code></p>
+
+</body>
+
+</html>

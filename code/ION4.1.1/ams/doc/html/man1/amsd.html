@@ -1,0 +1,139 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>amsd - AMS configuration server and/or registrar daemon</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:mingw-dvlpr@lists.sourceforge.net" />
+</head>
+
+<body style="background-color: white">
+
+<p><a name="__index__"></a></p>
+<!-- INDEX BEGIN -->
+<!--
+
+<ul>
+
+	<li><a href="#name">NAME</a></li>
+	<li><a href="#synopsis">SYNOPSIS</a></li>
+	<li><a href="#description">DESCRIPTION</a></li>
+	<li><a href="#exit_status">EXIT STATUS</a></li>
+	<li><a href="#files">FILES</a></li>
+	<li><a href="#environment">ENVIRONMENT</a></li>
+	<li><a href="#diagnostics">DIAGNOSTICS</a></li>
+	<li><a href="#bugs">BUGS</a></li>
+	<li><a href="#see_also">SEE ALSO</a></li>
+</ul>
+-->
+<!-- INDEX END -->
+
+<p>
+</p>
+<h1><a name="name">NAME</a></h1>
+<p>amsd - AMS configuration server and/or registrar daemon</p>
+<p>
+</p>
+<hr />
+<h1><a name="synopsis">SYNOPSIS</a></h1>
+<p><strong>amsd</strong> { @ | <em>MIB_source_name</em> } { . | @ | <em>config_server_endpoint_spec</em> } [<em>application_name</em> <em>authority_name</em> <em>registrar_unit_name</em>]</p>
+<p>
+</p>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p><strong>amsd</strong> is a background ``daemon'' task that functions as an AMS ``configuration
+server'' in the local continuum, as an AMS ``registrar'' in a specified cell,
+or both.</p>
+<p>If <em>MIB_source_name</em> is specified, it must name a MIB initialization file
+in the correct format for <strong>amsd</strong>, either <code>amsrc(5)</code> or amsxml(5), depending on
+whether or not -DNOEXPAT was set at compile time.  Otherwise <strong>@</strong> is required;
+in this case, the built-in default MIB is loaded.</p>
+<p>If this <strong>amsd</strong> task is <strong>NOT</strong> to run as a configuration server then the
+second command-line argument must be a '.' character.  Otherwise the second
+command-line argument must be either '@' or <em>config_server_endpoint_spec</em>.
+If '@' then the endpoint specification for this configuration server is
+automatically computed as the default endpoint specification for the primary
+transport service as noted in the MIB: ``<em>hostname</em>:2357''.</p>
+<p>If an AMS module is <strong>NOT</strong> to be run in a background thread for this daemon
+(enabling shutdown by <code>amsstop(1)</code> and/or runtime MIB update by amsmib(1)), 
+then either the last three command-line arguments must be omitted or else the
+``amsd'' role must not be defined in the MIB loaded for this daemon.  Otherwise
+the <em>application_name</em> and <em>authority_name</em> arguments are required and
+the ``amsd'' role must be defined in the MIB.</p>
+<p>If this <strong>amsd</strong> task is <strong>NOT</strong> to run as a registrar then the last
+command-line argument must be omitted.  Otherwise the last three command-line
+arguments are required and they must identify a unit in an AMS venture for
+the indicated application and authority that is known to operate in the local
+continuum, as noted in the MIB.  Note that the unit name for the ``root unit''
+of a venture is the zero-length string ``''.</p>
+<p>
+</p>
+<hr />
+<h1><a name="exit_status">EXIT STATUS</a></h1>
+<dl>
+<dt><strong><a name="item__220_22">``0''</a></strong>
+
+<dd>
+<p><strong>amsd</strong> terminated without error.</p>
+</dd>
+</li>
+<dt><strong><a name="item__2d1">-1</a></strong>
+
+<dd>
+<p><strong>amsd</strong> terminated due to an anomaly as noted in the <strong>ion.log</strong> file.  If this
+termination was not commanded, investigate and solve the problem identified
+in the log file and restart <strong>amsd</strong>.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="files">FILES</a></h1>
+<p>If <em>MIB source name</em> is specified, then a file of this name must be present.
+Otherwise a MIB initialization file with the applicable default name (see
+<code>amsrc(5))</code> must be present.</p>
+<p>
+</p>
+<hr />
+<h1><a name="environment">ENVIRONMENT</a></h1>
+<p>No environment variables apply.</p>
+<p>
+</p>
+<hr />
+<h1><a name="diagnostics">DIAGNOSTICS</a></h1>
+<p>The following diagnostics may be issued to the <strong>ion.log</strong> log file:</p>
+<dl>
+<dt><strong><a name="item_amsd_can_27t_load_mib_2e">amsd can't load MIB.</a></strong>
+
+<dd>
+<p>MIB initialization file was missing, unreadable, or invalid.</p>
+</dd>
+</li>
+<dt><strong><a name="item_amsd_can_27t_start_cs_2e">amsd can't start CS.</a></strong>
+
+<dd>
+<p>Configuration server initialization failed for reasons noted in ion.log file.</p>
+</dd>
+</li>
+<dt><strong><a name="item_amsd_can_27t_start_rs_2e">amsd can't start RS.</a></strong>
+
+<dd>
+<p>Registrar initialization failed for reasons noted in ion.log file.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="bugs">BUGS</a></h1>
+<p>Report bugs to &lt;<a href="mailto:ion-dtn-support@lists.sourceforge.net">ion-dtn-support@lists.sourceforge.net</a>&gt;</p>
+<p>
+</p>
+<hr />
+<h1><a name="see_also">SEE ALSO</a></h1>
+<p>amsmib(1), amsstop(1), amsrc(5), <code>amsxml(5)</code></p>
+
+</body>
+
+</html>

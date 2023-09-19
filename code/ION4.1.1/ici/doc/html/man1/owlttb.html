@@ -1,0 +1,234 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>owlttb - one-way light time transmission delay simulator</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:mingw-dvlpr@lists.sourceforge.net" />
+</head>
+
+<body style="background-color: white">
+
+<p><a name="__index__"></a></p>
+<!-- INDEX BEGIN -->
+<!--
+
+<ul>
+
+	<li><a href="#name">NAME</a></li>
+	<li><a href="#synopsis">SYNOPSIS</a></li>
+	<li><a href="#description">DESCRIPTION</a></li>
+	<li><a href="#exit_status">EXIT STATUS</a></li>
+	<li><a href="#examples">EXAMPLES</a></li>
+	<li><a href="#files">FILES</a></li>
+	<li><a href="#environment">ENVIRONMENT</a></li>
+	<li><a href="#diagnostics">DIAGNOSTICS</a></li>
+	<li><a href="#bugs">BUGS</a></li>
+</ul>
+-->
+<!-- INDEX END -->
+
+<p>
+</p>
+<h1><a name="name">NAME</a></h1>
+<p>owlttb - one-way light time transmission delay simulator</p>
+<p>
+</p>
+<hr />
+<h1><a name="synopsis">SYNOPSIS</a></h1>
+<p><strong>owlttb</strong> <em>own_uplink_port#</em> <em>own_downlink_port#</em> <em>dest_uplink_IP_address</em> <em>dest_uplink_port#</em> <em>dest_downlink_IP_address</em> <em>dest_downlink_port#</em> <em>owlt_sec.</em> [-v]</p>
+<p>
+</p>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p><strong>owlttb</strong> delays delivery of data between an NTTI and a NetAcquire box (or
+two, one for uplink and one for downlink) by a specified length of time,
+simulating the signal propagation delay imposed by distance between the nodes.</p>
+<p>Its operation is configured by the command-line parameters, except that the
+delay interval itself may be changed while the program is running.  <strong>owlttb</strong>
+offers a command prompt (:), and when a new value of one-way light time is
+entered at this prompt the new delay interval takes effect immediately.</p>
+<dl>
+<dt><strong><a name="item_traffic"><em>own_uplink_port#</em> identifies the port on <strong>owlttb</strong> accepts the NTTI's TCP connection for uplink traffic (i.e., data destined for the NetAcquire box).</a></strong>
+
+<dt><strong><em>own_downlink_port#</em> identifies the port on <strong>owlttb</strong> accepts the NTTI's TCP connection for downlink traffic (i.e., data issued by the NetAcquire box).</strong>
+
+<dt><strong><a name="item_address"><em>dest_uplink_IP_address</em> is the IP address (a dotted string) identifying the NetAcquire box to which <strong>owlttb</strong> will transmit uplink traffic.</a></strong>
+
+<dt><strong><a name="item_dest_uplink_port_23_identifies_the_tcp_port_to_whi"><em>dest_uplink_port#</em> identifies the TCP port to which <strong>owlttb</strong> will connect in order to transmit uplink traffic to NetAcquire.</a></strong>
+
+<dt><strong><em>dest_downlink_IP_address</em> is the IP address (a dotted string) identifying the NetAcquire box from which <strong>owlttb</strong> will receive downlink traffic.</strong>
+
+<dt><strong><a name="item_dest_downlink_port_23_identifies_the_tcp_port_to_w"><em>dest_downlink_port#</em> identifies the TCP port to which <strong>owlttb</strong> will connect in order to receive downlink traffic from NetAcquire.</a></strong>
+
+<dt><strong><a name="item_owlt_specifies_the_number_of_seconds_to_wait_befor"><em>owlt</em> specifies the number of seconds to wait before forwarding each received segment of TCP traffic.</a></strong>
+
+</dl>
+<p>The optional <strong>-v</strong> (``verbose'') parameter causes <strong>owlttb</strong> to print a
+message whenever it receives, sends, or discards (due to absence of a
+connected downlink client) a segment of TCP traffic.</p>
+<p><strong>owlttb</strong> is designed to run indefinitely.  To terminate the program, just
+use control-C to kill it or enter ``q'' at the prompt.</p>
+<p>
+</p>
+<hr />
+<h1><a name="exit_status">EXIT STATUS</a></h1>
+<dl>
+<dt><strong><a name="item__220_22_nominal_termination_2e">``0''
+Nominal termination.</a></strong>
+
+<dt><strong><a name="item__221_22_termination_due_to_an_error_condition_2c_a">``1''
+Termination due to an error condition, as noted in printed messages.</a></strong>
+
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="examples">EXAMPLES</a></h1>
+<p>Here is a sample owlttb command:</p>
+<dl>
+<dt><strong><a name="item_owlttb_2901_2902_137_2e7_2e8_2e19_10001_137_2e7_2e">owlttb 2901 2902 137.7.8.19 10001 137.7.8.19 10002 75</a></strong>
+
+</dl>
+<p>This command indicates that <strong>owlttb</strong> will accept an uplink traffic connection
+on port 2901, forwarding the received uplink traffic to port 10001 on the
+NetAcquire box at 137.7.8.19, and it will accept a downlink traffic connection
+on port 2902, delivering over that connection all downlink traffic that it
+receives from connecting to port 10002 on the NetAcquire box at 137.7.8.19.
+75 seconds of delay (simulating a distance of 75 light seconds) will be
+imposed on this transmission activity.</p>
+<p>
+</p>
+<hr />
+<h1><a name="files">FILES</a></h1>
+<p>Not applicable.</p>
+<p>
+</p>
+<hr />
+<h1><a name="environment">ENVIRONMENT</a></h1>
+<p>No environment variables apply.</p>
+<p>
+</p>
+<hr />
+<h1><a name="diagnostics">DIAGNOSTICS</a></h1>
+<p>The following diagnostics may be printed to stdout:</p>
+<dl>
+<dt><strong><a name="item_owlttb_can_27t_spawn_uplink_thread">owlttb can't spawn uplink thread</a></strong>
+
+<dd>
+<p>The program terminates.</p>
+</dd>
+</li>
+<dt><strong><a name="item_owlttb_can_27t_spawn_uplink_sender_thread">owlttb can't spawn uplink sender thread</a></strong>
+
+<dd>
+<p>The program terminates.</p>
+</dd>
+</li>
+<dt><strong><a name="item_owlttb_can_27t_spawn_downlink_thread">owlttb can't spawn downlink thread</a></strong>
+
+<dd>
+<p>The program terminates.</p>
+</dd>
+</li>
+<dt><strong><a name="item_owlttb_can_27t_spawn_downlink_receiver_thread">owlttb can't spawn downlink receiver thread</a></strong>
+
+<dd>
+<p>The program terminates.</p>
+</dd>
+</li>
+<dt><strong><a name="item_owlttb_can_27t_spawn_downlink_sender_thread">owlttb can't spawn downlink sender thread</a></strong>
+
+<dd>
+<p>The program terminates.</p>
+</dd>
+</li>
+<dt><strong><a name="item_owlttb_fgets_failed">owlttb fgets failed</a></strong>
+
+<dd>
+<p>The program terminates.</p>
+</dd>
+</li>
+<dt><strong><a name="item_owlttb_out_of_memory_2e">owlttb out of memory.</a></strong>
+
+<dd>
+<p>The program terminates.</p>
+</dd>
+</li>
+<dt><strong><a name="item_owlttb_lost_uplink_client_2e">owlttb lost uplink client.</a></strong>
+
+<dd>
+<p>This is an informational message.  The NTTI may reconnect at any time.</p>
+</dd>
+</li>
+<dt><strong><a name="item_owlttb_lost_downlink_client">owlttb lost downlink client</a></strong>
+
+<dd>
+<p>This is an informational message.  The NTTI may reconnect at any time.</p>
+</dd>
+</li>
+<dt><strong><a name="item_owlttb_can_27t_open_tcp_socket_to_netacquire">owlttb can't open TCP socket to NetAcquire</a></strong>
+
+<dd>
+<p>The program terminates.</p>
+</dd>
+</li>
+<dt><strong><a name="item_owlttb_can_27t_connect_tcp_socket_to_netacquire">owlttb can't connect TCP socket to NetAcquire</a></strong>
+
+<dd>
+<p>The program terminates.</p>
+</dd>
+</li>
+<dt><strong><a name="item_write">owlttb <code>write()</code> error on socket</a></strong>
+
+<dd>
+<p>The program terminates if it was writing to NetAcquire; otherwise it
+simply recognizes that the client NTTI has disconnected.</p>
+</dd>
+</li>
+<dt><strong><a name="item_read">owlttb <code>read()</code> error on socket</a></strong>
+
+<dd>
+<p>The program terminates.</p>
+</dd>
+</li>
+<dt><strong><a name="item_owlttb_can_27t_open_uplink_dialup_socket">owlttb can't open uplink dialup socket</a></strong>
+
+<dd>
+<p>The program terminates.</p>
+</dd>
+</li>
+<dt><strong><a name="item_owlttb_can_27t_initialize_uplink_dialup_socket">owlttb can't initialize uplink dialup socket</a></strong>
+
+<dd>
+<p>The program terminates.</p>
+</dd>
+</li>
+<dt><strong><a name="item_owlttb_can_27t_open_downlink_dialup_socket">owlttb can't open downlink dialup socket</a></strong>
+
+<dd>
+<p>The program terminates.</p>
+</dd>
+</li>
+<dt><strong><a name="item_owlttb_can_27t_initialize_downlink_dialup_socket">owlttb can't initialize downlink dialup socket</a></strong>
+
+<dd>
+<p>The program terminates.</p>
+</dd>
+</li>
+<dt><strong><a name="item_accept">owlttb <code>accept()</code> failed</a></strong>
+
+<dd>
+<p>The program terminates.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="bugs">BUGS</a></h1>
+<p>Report bugs to &lt;<a href="mailto:ion-dtn-support@lists.sourceforge.net">ion-dtn-support@lists.sourceforge.net</a>&gt;</p>
+
+</body>
+
+</html>

@@ -1,0 +1,138 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>file2dgr - DGR transmission test program</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:mingw-dvlpr@lists.sourceforge.net" />
+</head>
+
+<body style="background-color: white">
+
+<p><a name="__index__"></a></p>
+<!-- INDEX BEGIN -->
+<!--
+
+<ul>
+
+	<li><a href="#name">NAME</a></li>
+	<li><a href="#synopsis">SYNOPSIS</a></li>
+	<li><a href="#description">DESCRIPTION</a></li>
+	<li><a href="#exit_status">EXIT STATUS</a></li>
+	<li><a href="#files">FILES</a></li>
+	<li><a href="#environment">ENVIRONMENT</a></li>
+	<li><a href="#diagnostics">DIAGNOSTICS</a></li>
+	<li><a href="#bugs">BUGS</a></li>
+	<li><a href="#see_also">SEE ALSO</a></li>
+</ul>
+-->
+<!-- INDEX END -->
+
+<p>
+</p>
+<h1><a name="name">NAME</a></h1>
+<p>file2dgr - DGR transmission test program</p>
+<p>
+</p>
+<hr />
+<h1><a name="synopsis">SYNOPSIS</a></h1>
+<p><strong>file2dgr</strong> <em>remoteHostName</em> <em>fileName</em> [<em>nbrOfCycles</em>]</p>
+<p>
+</p>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p><strong>file2dgr</strong> uses DGR to send <em>nbrOfCycles</em> copies of the text of the file
+named <em>fileName</em> to the <strong>dgr2file</strong> process running on the computer identified
+by <em>remoteHostName</em>.  If not specified (or if less than 1), <em>nbrOfCycles</em>
+defaults to 1.  After sending all lines of the file, <strong>file2dgr</strong> sends a
+datagram containing an EOF string (the ASCII text ``*** End of the file ***'')
+before reopening the file and starting transmission of the next copy.</p>
+<p>When all copies of the file have been sent, <strong>file2dgr</strong> prints a performance
+report:</p>
+<pre>
+        Bytes sent = I&lt;byteCount&gt;, usec elapsed = I&lt;elapsedTime&gt;.</pre>
+<pre>
+        Sending I&lt;dataRate&gt; bits per second.</pre>
+<p>
+</p>
+<hr />
+<h1><a name="exit_status">EXIT STATUS</a></h1>
+<dl>
+<dt><strong><a name="item__220_22">``0''</a></strong>
+
+<dd>
+<p><strong>file2dgr</strong> has terminated.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="files">FILES</a></h1>
+<p>No configuration files are needed.</p>
+<p>
+</p>
+<hr />
+<h1><a name="environment">ENVIRONMENT</a></h1>
+<p>No environment variables apply.</p>
+<p>
+</p>
+<hr />
+<h1><a name="diagnostics">DIAGNOSTICS</a></h1>
+<p>Diagnostic messages produced by <strong>file2dgr</strong> are written to the ION log
+file <em>ion.log</em>.</p>
+<dl>
+<dt><strong><a name="item_can_27t_open_dgr_service_2e">Can't open dgr service.</a></strong>
+
+<dd>
+<p>ION system error.  Check for earlier diagnostic messages describing
+the cause of the error; correct problem and rerun.</p>
+</dd>
+</li>
+<dt><strong><a name="item_can_27t_open_input_file">Can't open input file</a></strong>
+
+<dd>
+<p>Operating system error.  Check errtext, correct problem, and rerun.</p>
+</dd>
+</li>
+<dt><strong><a name="item_can_27t_acquire_dgr_working_memory_2e">Can't acquire DGR working memory.</a></strong>
+
+<dd>
+<p>ION system error.  Check for earlier diagnostic messages describing
+the cause of the error; correct problem and rerun.</p>
+</dd>
+</li>
+<dt><strong><a name="item_can_27t_reopen_input_file">Can't reopen input file</a></strong>
+
+<dd>
+<p>Operating system error.  Check errtext, correct problem, and rerun.</p>
+</dd>
+</li>
+<dt><strong><a name="item_can_27t_read_from_input_file">Can't read from input file</a></strong>
+
+<dd>
+<p>Operating system error.  Check errtext, correct problem, and rerun.</p>
+</dd>
+</li>
+<dt><strong><a name="item_dgr_send_failed_2e">dgr_send failed.</a></strong>
+
+<dd>
+<p>ION system error.  Check for earlier diagnostic messages describing
+the cause of the error; correct problem and rerun.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="bugs">BUGS</a></h1>
+<p>Report bugs to &lt;<a href="mailto:ion-dtn-support@lists.sourceforge.net">ion-dtn-support@lists.sourceforge.net</a>&gt;</p>
+<p>
+</p>
+<hr />
+<h1><a name="see_also">SEE ALSO</a></h1>
+<p>file2dgr(1), <code>dgr(3)</code></p>
+
+</body>
+
+</html>

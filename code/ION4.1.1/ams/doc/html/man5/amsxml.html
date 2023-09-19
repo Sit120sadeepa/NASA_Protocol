@@ -1,0 +1,126 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>amsxml - CCSDS Asynchronous Message Service MIB initialization XML file</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:mingw-dvlpr@lists.sourceforge.net" />
+</head>
+
+<body style="background-color: white">
+
+<p><a name="__index__"></a></p>
+<!-- INDEX BEGIN -->
+<!--
+
+<ul>
+
+	<li><a href="#name">NAME</a></li>
+	<li><a href="#description">DESCRIPTION</a></li>
+	<li><a href="#example">EXAMPLE</a></li>
+	<li><a href="#see_also">SEE ALSO</a></li>
+</ul>
+-->
+<!-- INDEX END -->
+
+<p>
+</p>
+<h1><a name="name">NAME</a></h1>
+<p>amsxml - CCSDS Asynchronous Message Service MIB initialization XML file</p>
+<p>
+</p>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p>The Management Information Base (MIB) for an AMS communicating entity (either
+<strong>amsd</strong> or an AMS application module) must contain enough information to
+enable the entity to initiate participation in AMS message exchange, such
+as the network location of the configuration server and the roles and message
+subjects defined for some venture.</p>
+<p>AMS entities automatically load their MIBs from initialization files at
+startup.  When AMS is built with the -DNOEXPAT compiler option set, the
+MIB initialization file must conform to the <em>amsrc</em> syntax described
+in amsrc(5); otherwise the <em>expat</em> XML parsing library must be linked into
+the AMS executable and the MIB initialization file must conform to the
+<em>amsxml</em> syntax described below.</p>
+<p>The XML statements in the MIB initialization file constitute <em>elements</em> of
+MIB update information, each of which may have one or more <em>attributes</em>.  An
+element may also have sub-elements that are listed within the declaration of
+the parent element, and so on.</p>
+<p>Two types of elements are recognized in the MIB initialization file:
+control elements and configuration elements.  A control element establishes
+the update context within which the configuration elements nested within
+it are processed, while a configuration element declares values for one
+or more items of AMS configuration information in the MIB.</p>
+<p>For a discussion of the recognized control elements and configuration elements
+of the MIB initialization file, see the <code>amsrc(5)</code> man page.  <strong>NOTE</strong>, though,
+that all elements of an XML-based MIB initialization file <strong>must</strong> be
+sub-elements of a single sub-element of the XML extension type <strong>ams_load_mib</strong>
+in order for the file to be parsed successfully by expat.</p>
+<p>
+</p>
+<hr />
+<h1><a name="example">EXAMPLE</a></h1>
+<p>&lt;?xml version=``1.0'' standalone=``yes''?&gt;</p>
+<p>&lt;ams_mib_load&gt;</p>
+<pre>
+        &lt;ams_mib_init continuum_nbr=&quot;2&quot; ptsname=&quot;dgr&quot;/&gt;</pre>
+<pre>
+        &lt;ams_mib_add&gt;</pre>
+<pre>
+                &lt;continuum nbr=&quot;1&quot; name=&quot;apl&quot; desc=&quot;APL&quot;/&gt;</pre>
+<pre>
+                &lt;csendpoint epspec=&quot;beaumont.stepsoncats.com:2357&quot;/&gt;</pre>
+<pre>
+                &lt;application name=&quot;amsdemo&quot; /&gt;</pre>
+<pre>
+                &lt;venture nbr=&quot;1&quot; appname=&quot;amsdemo&quot; authname=&quot;test&quot;&gt;</pre>
+<pre>
+                        &lt;role nbr=&quot;2&quot; name=&quot;shell&quot;/&gt;</pre>
+<pre>
+                        &lt;role nbr=&quot;3&quot; name=&quot;log&quot;/&gt;</pre>
+<pre>
+                        &lt;role nbr=&quot;4&quot; name=&quot;pitch&quot;/&gt;</pre>
+<pre>
+                        &lt;role nbr=&quot;5&quot; name=&quot;catch&quot;/&gt;</pre>
+<pre>
+                        &lt;role nbr=&quot;6&quot; name=&quot;benchs&quot;/&gt;</pre>
+<pre>
+                        &lt;role nbr=&quot;7&quot; name=&quot;benchr&quot;/&gt;</pre>
+<pre>
+                        &lt;role nbr=&quot;96&quot; name=&quot;amsd&quot;/&gt;</pre>
+<pre>
+                        &lt;role nbr=&quot;97&quot; name=&quot;amsmib&quot;/&gt;</pre>
+<pre>
+                        &lt;role nbr=&quot;98&quot; name=&quot;amsstop&quot;/&gt;</pre>
+<pre>
+                        &lt;subject nbr=&quot;1&quot; name=&quot;text&quot; desc=&quot;ASCII text&quot;/&gt;</pre>
+<pre>
+                        &lt;subject nbr=&quot;2&quot; name=&quot;noise&quot; desc=&quot;more ASCII text&quot;/&gt;</pre>
+<pre>
+                        &lt;subject nbr=&quot;3&quot; name=&quot;bench&quot; desc=&quot;numbered msgs&quot;/&gt;</pre>
+<pre>
+                        &lt;subject nbr=&quot;97&quot; name=&quot;amsmib&quot; desc=&quot;MIB updates&quot;/&gt;</pre>
+<pre>
+                        &lt;subject nbr=&quot;98&quot; name=&quot;amsstop&quot; desc=&quot;shutdown&quot;/&gt;</pre>
+<pre>
+                        &lt;unit nbr=&quot;1&quot; name=&quot;orbiters&quot;/&gt;</pre>
+<pre>
+                        &lt;unit nbr=&quot;2&quot; name=&quot;orbiters.near&quot;/&gt;</pre>
+<pre>
+                        &lt;unit nbr=&quot;3&quot; name=&quot;orbiters.far&quot;/&gt;</pre>
+<pre>
+                        &lt;msgspace nbr=&quot;2&quot;/&gt;</pre>
+<pre>
+                &lt;/venture&gt;</pre>
+<pre>
+        &lt;/ams_mib_add&gt;</pre>
+<p>&lt;/ams_mib_load&gt;</p>
+<p>
+</p>
+<hr />
+<h1><a name="see_also">SEE ALSO</a></h1>
+<p><code>amsrc(5)</code></p>
+
+</body>
+
+</html>

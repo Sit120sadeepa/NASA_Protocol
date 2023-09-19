@@ -1,0 +1,142 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>ramsgate - Remote AMS gateway daemon</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:mingw-dvlpr@lists.sourceforge.net" />
+</head>
+
+<body style="background-color: white">
+
+<p><a name="__index__"></a></p>
+<!-- INDEX BEGIN -->
+<!--
+
+<ul>
+
+	<li><a href="#name">NAME</a></li>
+	<li><a href="#synopsis">SYNOPSIS</a></li>
+	<li><a href="#description">DESCRIPTION</a></li>
+	<li><a href="#exit_status">EXIT STATUS</a></li>
+	<li><a href="#files">FILES</a></li>
+	<li><a href="#environment">ENVIRONMENT</a></li>
+	<li><a href="#diagnostics">DIAGNOSTICS</a></li>
+	<li><a href="#bugs">BUGS</a></li>
+	<li><a href="#see_also">SEE ALSO</a></li>
+</ul>
+-->
+<!-- INDEX END -->
+
+<p>
+</p>
+<h1><a name="name">NAME</a></h1>
+<p>ramsgate - Remote AMS gateway daemon</p>
+<p>
+</p>
+<hr />
+<h1><a name="synopsis">SYNOPSIS</a></h1>
+<p><strong>ramsgate</strong> <em>application_name</em> <em>authority_name</em> [<em>bundles_TTL</em>]</p>
+<p>
+</p>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p><strong>ramsgate</strong> is a background ``daemon'' task that functions as a Remote AMS
+gateway.  <em>application_name</em> and <em>authority_name</em> must identify an AMS
+venture that is known to operate in the local continuum, as noted in the
+MIB for the <strong>ramsgate</strong> application module.</p>
+<p><strong>ramsgate</strong> will register as an application module in the root unit of
+the indicated venture, so a configuration server for the local continuum
+and a registrar for the root unit of the indicated venture (which may
+both be instantiated in a single <strong>amsd</strong> daemon task) must be running
+in order for <strong>ramsgate</strong> to commence operations.</p>
+<p><strong>ramsgate</strong> with communicate with other RAMS gateway modules in other
+continua by means of the RAMS network protocol noted in the RAMS gateway
+endpoint ID for the local continuum, as identified (explicitly or implicitly)
+in the MIB.</p>
+<p>If the RAMS network protocol is ``bp'' (i.e., the DTN Bundle Protocol), then
+an ION Bundle Protocol node must be operating on the local computer and that
+node must be registered in the BP endpoint identified by the RAMS gateway
+endpoint ID for the local continuum.  Moreover, in this case the value of
+<em>bundles_TTL</em> - if specified - will be taken as the lifetime in seconds that
+is to be declared for all ``bundles'' issued by <strong>ramsgate</strong>; <em>bundles_TTL</em>
+defaults to 86400 seconds (one day) if omitted.</p>
+<p>
+</p>
+<hr />
+<h1><a name="exit_status">EXIT STATUS</a></h1>
+<dl>
+<dt><strong><a name="item__220_22">``0''</a></strong>
+
+<dd>
+<p><strong>ramsgate</strong> terminated normally.</p>
+</dd>
+</li>
+<dt><strong><a name="item__221_22">``1''</a></strong>
+
+<dd>
+<p><strong>ramsgate</strong> failed, for reasons noted in the ion.log file; the task
+terminated.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="files">FILES</a></h1>
+<p>A MIB initialization file with the applicable default name (see <code>amsrc(5))</code>
+must be present.</p>
+<p><strong>ramsgate</strong> records all ``petitions'' (requests for data on behalf of AMS
+modules in other continua) in a file named ``petition.log''.  At startup,
+the <strong>ramsgate</strong> daemon automatically reads and processes all petitions
+in the petition.log file just as if they were received in real time.  <strong>Note</strong>
+that this means that you can cause petitions to be, in effect, ``pre-received''
+by simply editing this file prior to startup.  This can be an especially
+effective way to configure a RAMS network in which long signal propagation
+times would otherwise retard real-time petitioning and thus delay the onset
+of fully functional message exchange.</p>
+<p>
+</p>
+<hr />
+<h1><a name="environment">ENVIRONMENT</a></h1>
+<p>No environment variables apply.</p>
+<p>
+</p>
+<hr />
+<h1><a name="diagnostics">DIAGNOSTICS</a></h1>
+<p>The following diagnostics may be issued to the <strong>ion.log</strong> log file:</p>
+<dl>
+<dt><strong><a name="item_ramsgate_can_27t_run_2e">ramsgate can't run.</a></strong>
+
+<dd>
+<p>RAMS gateway functionality failed, for reasons noted in the ion.log file.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="bugs">BUGS</a></h1>
+<p>Note that the AMS design principle of receiving messages immediately and
+enqueuing them for eventual ingestion by the application module - rather
+than imposing application-layer flow control on AMS message traffic - enables
+high performance but makes <strong>ramsgate</strong> vulnerable to message spikes.  Since
+production and transmission of bundles is typically slower than AMS message
+reception over TCP service, the ION working memory and/or heap space available
+for AMS event insertion and/or bundle production can be quickly exhausted if
+a high rate of application message production is sustained for a long enough
+time.  Mechanisms for defending against this sort of failure are under study,
+but for now the best mitigations are simply to (a) build with compiler option
+-DAMS_INDUSTRIAL=1, (b) allocate as much space as possible to ION working
+memory and SDR heap (see <code>ionconfig(5))</code> and (c) limit the rate of AMS message
+issuance.</p>
+<p>Report bugs to &lt;<a href="mailto:ion-dtn-support@lists.sourceforge.net">ion-dtn-support@lists.sourceforge.net</a>&gt;</p>
+<p>
+</p>
+<hr />
+<h1><a name="see_also">SEE ALSO</a></h1>
+<p>amsrc(5), <code>petition_log(5)</code></p>
+
+</body>
+
+</html>

@@ -1,0 +1,652 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>ams - CCSDS Asynchronous Message Service communications library</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:mingw-dvlpr@lists.sourceforge.net" />
+</head>
+
+<body style="background-color: white">
+
+<p><a name="__index__"></a></p>
+<!-- INDEX BEGIN -->
+<!--
+
+<ul>
+
+	<li><a href="#name">NAME</a></li>
+	<li><a href="#synopsis">SYNOPSIS</a></li>
+	<li><a href="#description">DESCRIPTION</a></li>
+	<li><a href="#see_also">SEE ALSO</a></li>
+</ul>
+-->
+<!-- INDEX END -->
+
+<p>
+</p>
+<h1><a name="name">NAME</a></h1>
+<p>ams - CCSDS Asynchronous Message <code>Service(AMS)</code> communications library</p>
+<p>
+</p>
+<hr />
+<h1><a name="synopsis">SYNOPSIS</a></h1>
+<pre>
+    #include &quot;ams.h&quot;</pre>
+<pre>
+    typedef void                (*AmsMsgHandler)(AmsModule module,
+                                        void *userData,
+                                        AmsEvent *eventRef,
+                                        int continuumNbr,
+                                        int unitNbr,
+                                        int moduleNbr,
+                                        int subjectNbr,
+                                        int contentLength,
+                                        char *content,
+                                        int context,
+                                        AmsMsgType msgType,
+                                        int priority,
+                                        unsigned char flowLabel);</pre>
+<pre>
+    typedef void                (*AmsRegistrationHandler)(AmsModule module,
+                                        void *userData,
+                                        AmsEvent *eventRef,
+                                        int unitNbr,
+                                        int moduleNbr,
+                                        int roleNbr);</pre>
+<pre>
+    typedef void                (*AmsUnregistrationHandler)(AmsModule module,
+                                        void *userData,
+                                        AmsEvent *eventRef,
+                                        int unitNbr,
+                                        int moduleNbr);</pre>
+<pre>
+    typedef void                (*AmsInvitationHandler)(AmsModule module,
+                                        void *userData,
+                                        AmsEvent *eventRef,
+                                        int unitNbr,
+                                        int moduleNbr,
+                                        int domainRoleNbr,
+                                        int domainContinuumNbr,
+                                        int domainUnitNbr,
+                                        int subjectNbr,
+                                        int priority,
+                                        unsigned char flowLabel,
+                                        AmsSequence sequence,
+                                        AmsDiligence diligence);</pre>
+<pre>
+    typedef void                (*AmsDisinvitationHandler)(AmsModule module,
+                                        void *userData,
+                                        AmsEvent *eventRef,
+                                        int unitNbr,
+                                        int moduleNbr,
+                                        int domainRoleNbr,
+                                        int domainContinuumNbr,
+                                        int domainUnitNbr,
+                                        int subjectNbr);</pre>
+<pre>
+    typedef void                (*AmsSubscriptionHandler)(AmsModule module,
+                                        void *userData,
+                                        AmsEvent *eventRef,
+                                        int unitNbr,
+                                        int moduleNbr,
+                                        int domainRoleNbr,
+                                        int domainContinuumNbr,
+                                        int domainUnitNbr,
+                                        int subjectNbr,
+                                        int priority,
+                                        unsigned char flowLabel,
+                                        AmsSequence sequence,
+                                        AmsDiligence diligence);</pre>
+<pre>
+    typedef void                (*AmsUnsubscriptionHandler)(AmsModule module,
+                                        void *userData,
+                                        AmsEvent *eventRef,
+                                        int unitNbr,
+                                        int moduleNbr,
+                                        int domainRoleNbr,
+                                        int domainContinuumNbr,
+                                        int domainUnitNbr,
+                                        int subjectNbr);</pre>
+<pre>
+    typedef void                (*AmsUserEventHandler)(AmsModule module,
+                                        void *userData,
+                                        AmsEvent *eventRef,
+                                        int code,
+                                        int dataLength,
+                                        char *data);</pre>
+<pre>
+    typedef void                (*AmsMgtErrHandler)(void *userData,
+                                        AmsEvent *eventRef);</pre>
+<pre>
+    typedef struct
+    {
+        AmsMsgHandler                   msgHandler;
+        void                            *msgHandlerUserData;
+        AmsRegistrationHandler          registrationHandler;
+        void                            *registrationHandlerUserData;
+        AmsUnregistrationHandler        unregistrationHandler;
+        void                            *unregistrationHandlerUserData;
+        AmsInvitationHandler            invitationHandler;
+        void                            *invitationHandlerUserData;
+        AmsDisinvitationHandler         disinvitationHandler;
+        void                            *disinvitationHandlerUserData;
+        AmsSubscriptionHandler          subscriptionHandler;
+        void                            *subscriptionHandlerUserData;
+        AmsUnsubscriptionHandler        unsubscriptionHandler;
+        void                            *unsubscriptionHandlerUserData;
+        AmsUserEventHandler             userEventHandler;
+        void                            *userEventHandlerUserData;
+        AmsMgtErrHandler                errHandler;
+        void                            *errHandlerUserData;
+    } AmsEventMgt;</pre>
+<pre>
+    typedef enum
+    {
+        AmsArrivalOrder = 0,
+        AmsTransmissionOrder
+    } AmsSequence;</pre>
+<pre>
+    typedef enum
+    {
+        AmsBestEffort = 0,
+        AmsAssured
+    } AmsDiligence;</pre>
+<pre>
+    typedef enum
+    {
+        AmsRegistrationState,
+        AmsInvitationState,
+        AmsSubscriptionState
+    } AmsStateType;</pre>
+<pre>
+    typedef enum
+    {
+        AmsStateBegins = 1,
+        AmsStateEnds
+    } AmsChangeType;</pre>
+<pre>
+    typedef enum
+    {
+        AmsMsgUnary = 0,
+        AmsMsgQuery,
+        AmsMsgReply,
+        AmsMsgNone
+    } AmsMsgType;</pre>
+<pre>
+    [see description for available functions]</pre>
+<p>
+</p>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p>The ams library provides functions enabling application software to use AMS
+to send and receive brief messages, up to 65000 bytes in length.  It conforms
+to AMS Blue Book, including support for Remote AMS (RAMS).</p>
+<p>In the ION implementation of RAMS, the ``RAMS network protocol'' may be either
+the DTN Bundle Protocol (RFC 5050) or -- mainly for testing purposes -- the
+User Datagram Protocol (RFC 768).  BP is the default.  When BP is used as
+the RAMS network protocol, endpoints are by default assumed to conform to
+the ``ipn'' endpoint identifier scheme with <strong>node number</strong> set to the AMS
+<strong>continuum number</strong> and <strong>service number</strong> set to the AMS <strong>venture number</strong>.</p>
+<p>Note that RAMS functionality is enabled by instantiating a <strong>ramsgate</strong> daemon,
+which is simply an AMS application program that acts as a gateway between the
+local AMS message space and the RAMS network.</p>
+<p>AMS differs from other ION packages in that there is no utilization of
+non-volatile storage (aside from the BP functionality in RAMS, if applicable).
+Since there is no non-volatile AMS database, there is no AMS administration
+program and there are no library functions for attaching to or detaching
+from such a database.  AMS is instantiated by commencing operation of the
+AMS real-time daemon <strong>amsd</strong>; once <strong>amsd</strong> is running, AMS application
+programs (``modules'') can be started.  All management of AMS operational
+state is performed automatically in real time.</p>
+<p>However, <strong>amsd</strong> and the AMS application programs all require
+access to a common store of configuration data at startup in order to load
+their Management Information Bases.  This configuration data must reside in
+a readable file, which may take either of two forms: a file of XML statements
+conforming to the scheme described in the <code>amsxml(5)</code> man page, or a file of
+simple but less powerful configuration statements as described in the <code>amsrc(5)</code>
+man page.  The <strong>amsxml</strong> alternative requires that the <strong>expat</strong> XML parsing
+system be installed; the <strong>amsrc</strong> alternative was developed to simplify
+deployment of AMS in environments in which <strong>expat</strong> is not readily supported.
+Selection of the configuration file format is a compile-time decision,
+implemented by setting (or not setting) the -DNOEXPAT compiler option.</p>
+<p>The path name of the applicable configuration file may be passed as a
+command-line parameter to <strong>amsd</strong> and as a registration function parameter
+by any AMS application program.  Note, though, that <strong>ramsgate</strong> and the
+AMS test and utility programs included in ION always assume that the
+configuration file resides in the current working directory and that it is
+named ``mib.amsrc'' if AMS was built with -DNOEXPAT, ``amsmib.xml'' otherwise.</p>
+<p>The transport services that are made available to AMS communicating entities
+are declared by the transportServiceLoaders array in the libams.c source
+file.  This array is fixed at compile time.  The order of preference of the
+transport services in the array is hard-coded, but the inclusion or omission 
+of individual transport services is controlled by setting compiler options.
+The ``udp'' transport service -- nominally the most preferred because it
+imposes the least processing and transmission overhead -- is included by
+setting the -DUDPTS option.  The ``dgr'' service is included by setting the
+-DDGRTS option.  The ``vmq'' (VxWorks message queue) service, supported only
+on VxWorks, is included by setting the -DVMQTS option.  The ``tcp'' transport
+service -- selected only when its quality of service is required -- is
+included by setting the -DTCPTS option.</p>
+<p>The operating state of any single AMS application program is managed in
+an opaque AmsModule object.  This object is returned when the application
+begins AMS operations (that is, registers) and must be provided as an
+argument to most AMS functions.</p>
+<dl>
+<dt><strong><a name="item_ams_register">int ams_register(char *mibSource, char *tsorder, char *applicationName, char *authorityName, char *unitName, char *roleName, AmsModule *module)</a></strong>
+
+<dd>
+<p>Registers the application within a cell (identified by <em>unitName</em>) of a
+message space that is that portion of the venture identified by
+<em>applicationName</em> and <em>authorityName</em> that runs within the local AMS
+continuum.  <em>roleName</em> identifies the role that this application will
+perform in this venture.  The operating state of the registered application
+is returned in <em>module</em>.</p>
+</dd>
+<dd>
+<p>The application module's identifying parameters are validated against the
+configuration information in the applicable Management Information Base,
+which is automatically loaded from the file whose pathname is provided
+in <em>mibSource</em>.  If <em>mibSource</em> is the zero-length string (``'') then
+the default configuration file name is used as noted above.  If
+<em>mibSource</em> is NULL then a rudimentary hard-coded default MIB, useful
+for basic testing purposes, is loaded.  This default MIB defines a single
+venture for application ``amsdemo'' and authority ``test'', using only the
+``dgr'' transport service, with the configuration server residing on the
+local host machine; subject ``text'' and roles ``shell'', ``log'', ``pitch'',
+and ``catch'' are defined.</p>
+</dd>
+<dd>
+<p>The <em>tsorder</em> argument is normally NULL.  If non-NULL it must be a
+NULL-terminated string of ASCII numeric digits '0' through '9' identifying
+an alternative transport service preference order that overrides the standard
+transport service preference order defined by the hard-coded array of
+transportServiceLoaders in the libams.c source file.  Each character of
+the <em>tsorder</em> string must represent the index position of one of the
+transport services within the array.  For example, if services ``udp'', ``dgr'',
+``vmq'', and ``tcp'' are all available in the array, a <em>tsorder</em> string of ``32'' 
+would indicate that this application will only communicate using the tcp
+and vmq services; services 0 (udp) and 1 (dgr) will not be used, and tcp
+is preferred to vmq when both are candidate services for transmission of
+a given message.</p>
+</dd>
+<dd>
+<p>Returns 0 on success.  On any error, sets <em>module</em> to NULL and returns -1.</p>
+</dd>
+</li>
+<dt><strong><a name="item_ams_unregister">int ams_unregister(AmsModule module)</a></strong>
+
+<dd>
+<p>Reverses the operation of ams_unregister(), destroying <em>module</em>.  Returns
+0 on success, -1 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_ams_invite">int ams_invite(AmsModule module, int roleNbr, int continuumNbr, int unitNbr, int subjectNbr, int priority, unsigned char flowLabel, AmsSequence sequence, AmsDiligence diligence)</a></strong>
+
+<dd>
+<p>Announces this module's agreement to receive messages on the subject
+identified by <em>subjectNbr</em>.</p>
+</dd>
+<dd>
+<p>The invitation is extended only to modules registered in the role identified
+by <em>roleNbr</em> (where 0 indicates ``all roles''), operating in the continuum
+identifed by <em>continuumNbr</em> (where 0 indicates ``all continua''), and
+registered within the unit identified by <em>unitNbr</em> (where 0 indicates
+the venture's root unit) or any of that unit's subunits.  These parameters
+define the ``domain'' of the invitation.</p>
+</dd>
+<dd>
+<p>Such messages should be sent at the priority indicated by <em>priority</em> with
+flow label as indicated by <em>flowLabel</em> and with quality of service as
+indicated by <em>sequence</em> and <em>diligence</em>.  <em>priority</em> must be an integer
+in the range 1-15, where priority 1 indicates the greatest urgency.  Flow
+labels are passed through to transport services and are opaque to AMS itself;
+in the absence of defined flow labels, a value of 0 is typically used.  These
+parameters define the ``class of service'' of the invitation.</p>
+</dd>
+<dd>
+<p>Returns 0 on success, -1 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_ams_disinvite">int ams_disinvite(AmsModule module, int roleNbr, int continuumNbr, int unitNbr, int subjectNbr)</a></strong>
+
+<dd>
+<p>Rescinds the invitation characterized by the indicated subject and
+domain.  Returns 0 on success, -1 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_ams_subscribe">int ams_subscribe(AmsModule module, int roleNbr, int continuumNbr, int unitNbr, int subjectNbr, int priority, unsigned char flowLabel, AmsSequence sequence, AmsDiligence diligence)</a></strong>
+
+<dd>
+<p>Announces this module's subscription to messages on the indicated subject,
+constrained by the indicated domain, and transmitted subject to the indicated
+class of service.  Note that subscriptions differ from invitations in that 
+reception of these messages is actively solicited, not just permitted.</p>
+</dd>
+<dd>
+<p>Returns 0 on success, -1 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_ams_unsubscribe">int ams_unsubscribe(AmsModule module, int roleNbr, int continuumNbr, int unitNbr, int subjectNbr)</a></strong>
+
+<dd>
+<p>Cancels the subscription characterized by the indicated subject and
+domain.  Returns 0 on success, -1 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_ams_publish">int ams_publish(AmsModule module, int subjectNbr, int priority, unsigned char flowLabel, int contentLength, char *content, int context)</a></strong>
+
+<dd>
+<p>Publishes <em>contentLength</em> bytes of data starting at <em>content</em> as the content
+of a message that is sent to all modules whose subscriptions to <em>subjectNbr</em>
+are characterized by a domain that includes this module.  <em>priority</em> and
+<em>flowLabel</em>, if non-zero, override class of service as requested in the
+subscriptions.  <em>context</em> is an opaque ``hint'' to the receiving modules;
+its use is application-specific.</p>
+</dd>
+<dd>
+<p>Returns 0 on success, -1 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_ams_send">int ams_send(AmsModule module, int continuumNbr, int unitNbr, int moduleNbr, int subjectNbr, int priority, unsigned char flowLabel, int contentLength, char *content, int context)</a></strong>
+
+<dd>
+<p>Sends <em>contentLength</em> bytes of data starting at <em>content</em> as the content
+of a message that is transmitted privately to the module in the continuum
+identified by <em>continuumNbr</em> (where 0 indicates ``the local continuum'') that
+is identified by <em>unitNbr</em> and <em>moduleNbr</em> -- provided that <em>module</em> is
+in the domain of one of that module's invitations on <em>subjectNbr</em>.
+<em>priority</em> and <em>flowLabel</em>, if non-zero, override class of service as
+requested in the invitation.  <em>context</em> is an opaque ``hint'' to the receiving
+module; its use is application-specific.</p>
+</dd>
+<dd>
+<p>Returns 0 on success, -1 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_ams_query">int ams_query(AmsModule module, int continuumNbr, int unitNbr, int moduleNbr, int subjectNbr, int priority, unsigned char flowLabel, int contentLength, char *content, int context, int term, AmsEvent *event)</a></strong>
+
+<dd>
+<p>Sends a message exactly is described above for ams_send(), but additionally
+suspends the delivery and processing of newly received messages until either
+(a) a ``reply'' message sent in response to this message is received or (b) the
+time interval indicated by <em>term</em>, in seconds, expires.  The event (reply or
+timeout) that ends the suspension of processing is provided in <em>event</em> (as
+if from <a href="#item_ams_get_event"><code>ams_get_event()</code></a> when the function returns.</p>
+</dd>
+<dd>
+<p>If <em>term</em> is AMS_BLOCKING then the timeout interval is indefinite; only
+reception of a reply message enables the function to return.  If <em>term</em> is
+AMS_POLL then the function returns immediately, without waiting for a reply
+message.</p>
+</dd>
+<dd>
+<p>Returns 0 on success, -1 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_ams_reply">int ams_reply(AmsModule module, AmsEvent msg, int subjectNbr, int priority, unsigned char flowLabel, int contentLength, char *content)</a></strong>
+
+<dd>
+<p>Sends a message exactly is described above for ams_send(), except that the
+destination of the message is the sender of the message identified by <em>msg</em>
+and the ``context'' value included in the message is the context that was
+provided in <em>msg</em>.  This message is identified as a ``reply'' message that
+will end the processing suspension resulting from transmission of <em>msg</em> if
+that message was issued by means of <a href="#item_ams_query"><code>ams_query()</code></a> rather than ams_send().</p>
+</dd>
+<dd>
+<p>Returns 0 on success, -1 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_ams_announce">int ams_announce(AmsModule module, int roleNbr, int continuumNbr, int unitNbr, int subjectNbr, int priority, unsigned char flowLabel, int contentLength, char *content, int context)</a></strong>
+
+<dd>
+<p>Sends a message exactly is described above for ams_send(), except that one
+copy of the message is sent to every module in the domain of this function
+(role, continuum, unit) whose invitation for messages on this subject is
+itself characterized by a domain that includes the the sending module, rather
+than to any specific module.</p>
+</dd>
+<dd>
+<p>Returns 0 on success, -1 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_ams_get_event">int ams_get_event(AmsModule module, int term, AmsEvent *event)</a></strong>
+
+<dd>
+<p>Returns in <em>event</em> the next event in the queue of AMS events pending delivery
+to this module.  If the event queue is empty at the time this function is
+called, processing is suspended until either an event is queued or the time
+interval indicated by <em>term</em>, in seconds, expires.  See <a href="#item_ams_query"><code>ams_query()</code></a> above
+for the semantics of <em>term</em>.  When the function returns on expiration of
+<em>term</em>, an event of type TIMEOUT_EVT is returned in <em>event</em>.  Otherwise
+the event will be of type AMS_MSG_EVT (indicating arrival of a message),
+NOTICE_EVT (indicating a change in the configuration of the message space),
+or USER_DEFINED_EVT (indicating that application code posted an event).</p>
+</dd>
+<dd>
+<p>The nature of the event returned by <a href="#item_ams_get_event"><code>ams_get_event()</code></a> can be determined by
+passing <em>event</em> to <a href="#item_ams_get_event_type"><code>ams_get_event_type()</code></a> as described below.  Event type can
+then be used to determine whether the information content of the event
+must be obtained by calling ams_parse_msg(), ams_parse_notice(), or
+ams_parse_user_event().</p>
+</dd>
+<dd>
+<p>In any case, the memory occupied by <em>event</em> must be released after the
+event object is no longer needed.  The <a href="#item_ams_recycle_event"><code>ams_recycle_event()</code></a> function is
+invoked for this purpose.</p>
+</dd>
+<dd>
+<p>Returns 0 on success, -1 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_ams_get_event_type">int ams_get_event_type(AmsEvent event)</a></strong>
+
+<dd>
+<p>Returns the event type of <em>event</em>, or -1 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_ams_parse_msg">int ams_parse_msg(AmsEvent event, int *continuumNbr, int *unitNbr, int *moduleNbr, int *subjectNbr, int *contentLength, char **content, int *context, AmsMsgType *msgType, int *priority, unsigned char *flowLabel);</a></strong>
+
+<dd>
+<p>Extracts all relevant information pertaining to the AMS message encapsulated
+in <em>event</em>, populating the indicated fields.  Must only be called when
+the event type of <em>event</em> is known to be AMS_MSG_EVT.</p>
+</dd>
+<dd>
+<p>Returns 0 on success, -1 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_ams_parse_notice">int ams_parse_notice(AmsEvent event, AmsStateType *state, AmsChangeType *change, int *unitNbr, int *moduleNbr, int *roleNbr, int *domainContinuumNbr, int *domainUnitNbr, int *subjectNbr, int *priority, unsigned char *flowLabel, AmsSequence *sequence, AmsDiligence *diligence)</a></strong>
+
+<dd>
+<p>Extracts all relevant information pertaining to the AMS configuration change
+notice encapsulated in <em>event</em>, populating the relevant fields.  Must only
+be called when the event type of <em>event</em> is known to be NOTICE_EVT.</p>
+</dd>
+<dd>
+<p>Note that different fields will be populated depending on the nature of the
+notice in <em>event</em>.  <em>state</em> will be set to AmsRegistrationState,
+AmsInvitationState, or AmsSubscription state depending on whether the
+notice pertains to a change in module registration, a change in invitations,
+or a change in subscriptions.  <em>change</em> will be set to AmsStateBegins or
+AmsStateEnds depending on whether the notice pertains to the initiation or
+termination of a registration, invitation, or subscription.</p>
+</dd>
+<dd>
+<p>Returns 0 on success, -1 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_ams_post_user_event">int ams_post_user_event(AmsModule module, int userEventCode, int userEventDataLength, char *userEventData, int priority)</a></strong>
+
+<dd>
+<p>Posts a ``user event'' whose content is the <em>userEventDataLength</em> bytes of
+data starting at <em>userEventData</em>.  <em>userEventCode</em> is an application-specific
+value that is opaque to AMS.  <em>priority</em> determines the event's position in
+the queue of events pending delivery to this module; it may be any integer
+in the range 0-15, where 0 indicates the greatest urgency.  (Note that user
+events can be delivered ahead of all message reception events if necessary.)</p>
+</dd>
+<dd>
+<p>Returns 0 on success, -1 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_ams_parse_user_event">int ams_parse_user_event(AmsEvent event, int *code, int *dataLength, char **data)</a></strong>
+
+<dd>
+<p>Extracts all relevant information pertaining to the user event encapsulated
+in <em>event</em>, populating the indicated fields.  Must only be called when
+the event type of <em>event</em> is known to be USER_DEFINED_EVT.</p>
+</dd>
+<dd>
+<p>Returns 0 on success, -1 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_ams_recycle_event">int ams_recycle_event(AmsEvent event)</a></strong>
+
+<dd>
+<p>Releases all memory occupied by <em>event</em>.  Returns 0 on success, -1 on any
+error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_ams_set_event_mgr">int ams_set_event_mgr(AmsModule module, AmsEventMgt *rules)</a></strong>
+
+<dd>
+<p>Starts a background thread that processes events queued for this module,
+handling each event in the manner indicated by <em>rules</em>.  Returns 0 on
+success, -1 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_ams_remove_event_mgr">void ams_remove_event_mgr(AmsModule module)</a></strong>
+
+<dd>
+<p>Terminates the background thread established to process events queued for
+this module.  Returns 0 on success, -1 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_ams_get_module_nbr">int ams_get_module_nbr(AmsModule module)</a></strong>
+
+<dd>
+<p>Returns the module number assigned to this module upon registration, or -1
+on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_ams_get_unit_nbr">int ams_get_unit_nbr(AmsModule module)</a></strong>
+
+<dd>
+<p>Returns the unit number assigned to the unit within which this module
+registered, or -1 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_ams_list_msgspaces">Lyst ams_list_msgspaces(AmsModule module)</a></strong>
+
+<dd>
+<p>Returns a dynamically allocated linked list of all message spaces identified
+in the MIB for this module, or -1 on any error.  See <code>lyst(3)</code> for operations
+that can be performed on the returned linked list.</p>
+</dd>
+</li>
+<dt><strong><a name="item_ams_get_continuum_nbr">int <code>ams_get_continuum_nbr()</code></a></strong>
+
+<dd>
+<p>Returns the continuum number assigned to the continuum within which this
+module operates, or -1 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_ams_rams_net_is_tree">int ams_rams_net_is_tree(AmsModule module)</a></strong>
+
+<dd>
+<p>Returns 1 if the RAMS net for the venture in which this module is registered
+is configured as a tree, 0 if that RAMS net is configured as a mesh, -1 on
+any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_ams_continuum_is_neighbor">int ams_continuum_is_neighbor(int continuumNbr)</a></strong>
+
+<dd>
+<p>Returns 1 if <em>continuumNbr</em> identifies a continuum whose RAMS gateways
+are immediate neighbors (within the applicable RAMS networks) of the
+RAMS gateways in the local continuum.  Returns 0 otherwise.</p>
+</dd>
+</li>
+<dt><strong><a name="item_ams_get_role_name">char *ams_get_role_name(AmsModule module, int unitNbr, int moduleNbr)</a></strong>
+
+<dd>
+<p>Returns the name of the role in which the module identified by <em>unitNbr</em> and
+<em>moduleNbr</em> registered, or NULL on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_ams_subunit_of">int ams_subunit_of(AmsModule module, int argUnitNbr, int refUnitNbr)</a></strong>
+
+<dd>
+<p>Returns 1 if <em>argUnitNbr</em> identifies a unit that is wholly contained within
+the unit identified by <em>refUnitNbr</em>, in the venture within which this
+module is registered.  Returns 0 otherwise.</p>
+</dd>
+</li>
+<dt><strong><a name="item_ams_lookup_unit_nbr">int ams_lookup_unit_nbr(AmsModule module, char *unitName)</a></strong>
+
+<dd>
+<p>Returns the number assigned to the unit identified by <em>unitName</em>, in
+the venture within which this module is registered, or -1 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_ams_lookup_role_nbr">int ams_lookup_role_nbr(AmsModule module, char *roleName)</a></strong>
+
+<dd>
+<p>Returns the number assigned to the role identified by <em>roleName</em>, in
+the venture within which this module is registered, or -1 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_ams_lookup_subject_nbr">int ams_lookup_subject_nbr(AmsModule module, char *subjectName)</a></strong>
+
+<dd>
+<p>Returns the number assigned to the subject identified by <em>subjectName</em>, in
+the venture within which this module is registered, or -1 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_ams_lookup_continuum_nbr">int ams_lookup_continuum_nbr(AmsModule module, char *continuumName)</a></strong>
+
+<dd>
+<p>Returns the number of the continuum identified by <em>continuumName</em>, or -1
+on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_ams_lookup_unit_name">char *ams_lookup_unit_name(AmsModule module, int unitNbr)</a></strong>
+
+<dd>
+<p>Returns the name of the unit identified by <em>unitNbr</em>, in
+the venture within which this module is registered, or -1 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_ams_lookup_role_name">char *ams_lookup_role_name(AmsModule module, int roleNbr)</a></strong>
+
+<dd>
+<p>Returns the name of the role identified by <em>roleNbr</em>, in
+the venture within which this module is registered, or -1 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_ams_lookup_subject_name">char *ams_lookup_subject_name(AmsModule module, int subjectNbr)</a></strong>
+
+<dd>
+<p>Returns the name of the subject identified by <em>subjectNbr</em>, in
+the venture within which this module is registered, or -1 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_ams_lookup_continuum_name">char *ams_lookup_continuum_name(AmsModule module, int continuumNbr)</a></strong>
+
+<dd>
+<p>Returns the name of the continuum identified by <em>continuumNbr</em>, or -1
+on any error.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="see_also">SEE ALSO</a></h1>
+<p>amsd(1), ramsgate(1), amsxml(5), <code>amsrc(5)</code></p>
+
+</body>
+
+</html>

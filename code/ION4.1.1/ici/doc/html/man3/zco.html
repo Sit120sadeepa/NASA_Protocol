@@ -1,0 +1,579 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>zco - library for manipulating zero-copy objects</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:mingw-dvlpr@lists.sourceforge.net" />
+</head>
+
+<body style="background-color: white">
+
+<p><a name="__index__"></a></p>
+<!-- INDEX BEGIN -->
+<!--
+
+<ul>
+
+	<li><a href="#name">NAME</a></li>
+	<li><a href="#synopsis">SYNOPSIS</a></li>
+	<li><a href="#description">DESCRIPTION</a></li>
+	<li><a href="#see_also">SEE ALSO</a></li>
+</ul>
+-->
+<!-- INDEX END -->
+
+<p>
+</p>
+<h1><a name="name">NAME</a></h1>
+<p>zco - library for manipulating zero-copy objects</p>
+<p>
+</p>
+<hr />
+<h1><a name="synopsis">SYNOPSIS</a></h1>
+<pre>
+    #include &quot;zco.h&quot;</pre>
+<pre>
+    typedef enum
+    {
+        ZcoInbound = 0,
+        ZcoOutbound = 1,
+        ZcoUnknown = 2
+    } ZcoAcct;</pre>
+<pre>
+    typedef enum
+    {
+        ZcoFileSource = 1,
+        ZcoBulkSource = 2,
+        ZcoObjSource = 3,
+        ZcoSdrSource = 4,
+        ZcoZcoSource = 5
+    } ZcoMedium;</pre>
+<pre>
+    typedef void (*ZcoCallback)(ZcoAcct);</pre>
+<pre>
+    [see description for available functions]</pre>
+<p>
+</p>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p>``Zero-copy objects'' (ZCOs) are abstract data access representations
+designed to minimize I/O in the encapsulation of application source
+data within one or more layers of communication protocol structure.  ZCOs
+are constructed within the heap space of an SDR to which implementations
+of all layers of the stack must have access.  Each ZCO contains information
+enabling access to the source data objects, together with (a) a linked list
+of zero or more ``extents'' that reference portions of these source data
+objects and (b) linked lists of protocol header and trailer capsules that
+have been explicitly attached to the ZCO since its creation.  The
+concatenation of the headers (in ascending stack sequence), source data
+object extents, and trailers (in descending stack sequence) is what is to
+be transmitted or has been received.</p>
+<p>Each source data object may be either a file (identified by pathname
+stored in a ``file reference'' object in SDR heap) or an item in mass
+storage (identified by item number, with implementation-specific
+semantics, stored in a ``bulk reference'' object in SDR heap) or an
+object in SDR heap space (identified by heap address stored in an
+``object reference'' object in SDR heap) or an array of bytes in SDR
+heap space (identified by heap address).  Each protocol header or
+trailer capsule indicates the length and the address (within SDR
+heap space) of a single protocol header or trailer at some layer
+of the stack.  Note that the source data object for each ZCO extent
+is specified indirectly, by reference to a content lien reference
+structure that refers to a heap space object, mass storage item, or file;
+the reference structures contain the actual locations of the source data
+together with reference counts, enabling any number of ``clones'' of a
+given ZCO extent to be constructed without consuming additional resources.
+These reference counts ensure that the reference structures and the
+source data items they refer to are deleted automatically when (and
+only when) all ZCO extents that reference them have been deleted.</p>
+<p>Note that the safety of shared access to a ZCO is protected by the
+fact that the ZCO resides in SDR heap space and therefore cannot be modified
+other than in the course of an SDR transaction, which serializes
+access.  Moreover, extraction of data from a ZCO may entail the reading
+of file-based source data extents, which may cause file progress to
+be updated in one or more file reference objects in the SDR heap.  For
+this reason, all ZCO ``transmit'' and ``receive'' functions must be performed
+within SDR transactions.</p>
+<p>Note also that ZCO can more broadly be used as a general-purpose
+reference counting system for non-volatile data objects, where a
+need for such a system is identified.</p>
+<p>The total volume of file system space, mass storage space, and SDR heap
+space that may be occupied by inbound and (separately) outbound ZCO extents
+are system configuration parameters that may be set by ZCO library
+functions.  Those limits are enforced when extents are appended to ZCOs:
+total inbound and outbound ZCO file space, mass storage, and SDR heap
+occupancy are updated continuously as ZCOs are created and destroyed,
+and the formation of a new extent is prohibited when the length of the
+extent exceeds the difference between the applicable limit and the
+corresponding current occupancy total.  Doing separate accounting for
+inbound and outbound ZCOs enables inbound ZCOs to be formed (for data
+reception purposes) even when the total current volume of outbound ZCOs
+has reached its limit, and vice versa.</p>
+<dl>
+<dt><strong><a name="item_zco_register_callback">void zco_register_callback(ZcoCallback notify)</a></strong>
+
+<dd>
+<p>This function registers the ``callback'' function that the ZCO system will
+invoke every time a ZCO is destroyed, making ZCO file, bulk, and/or heap space
+available for the formation of new ZCO extents.  This mechanism can be
+used, for example, to notify tasks that are waiting for ZCO space to be
+made available so that they can resume some communication protocol
+procedure.</p>
+</dd>
+</li>
+<dt><strong><a name="item_zco_unregister_callback">void zco_unregister_callback( )</a></strong>
+
+<dd>
+<p>This function simply unregisters the currently registered callback function
+for ZCO destruction.</p>
+</dd>
+</li>
+<dt><strong><a name="item_zco_create_file_ref">Object zco_create_file_ref(Sdr sdr, char *pathName, char *cleanupScript, ZcoAcct acct)</a></strong>
+
+<dd>
+<p>Creates and returns a new file reference object, which can be used as the
+source data extent location for creating a ZCO whose source data object is
+the file identified by <em>pathName</em>.  <em>cleanupScript</em>, if not NULL, is invoked
+at the moment the last ZCO that cites this file reference is destroyed
+[normally upon delivery either down to the ``ZCO transition layer'' of the
+protocol stack or up to a ZCO-capable application].  A zero-length string
+is interpreted as implicit direction to delete the referenced file when
+the file reference object is destroyed.  Maximum length of <em>cleanupScript</em>
+is 255.  <em>acct</em> must be ZcoInbound or ZcoOutbound, depending on whether
+the first ZCO that will reference this object will be inbound or outbound.
+Returns SDR location of file reference object on success, 0 on any
+error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_zco_revise_file_ref">Object zco_revise_file_ref(Sdr sdr, Object fileRef, char *pathName, char *cleanupScript)</a></strong>
+
+<dd>
+<p>Changes the <em>pathName</em> and <em>cleanupScript</em> of the indicated file
+reference.  The new values of these fields are validated as for
+zco_create_file_ref().  Returns 0 on success, -1 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_zco_file_ref_path">char *zco_file_ref_path(Sdr sdr, Object fileRef, char *buffer, int buflen)</a></strong>
+
+<dd>
+<p>Retrieves the pathName associated with <em>fileRef</em> and stores it in <em>buffer</em>,
+truncating it to fit (as indicated by <em>buflen</em>) and NULL-terminating it.  On
+success, returns <em>buffer</em>; returns NULL on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_zco_file_ref_xmit_eof">int zco_file_ref_xmit_eof(Sdr sdr, Object fileRef)</a></strong>
+
+<dd>
+<p>Returns 1 if the last octet of the referenced file (as determined at the
+time the file reference object was created) has been read by ZCO via a
+reader with file offset tracking turned on.  Otherwise returns zero.</p>
+</dd>
+</li>
+<dt><strong><a name="item_zco_destroy_file_ref">void zco_destroy_file_ref(Sdr sdr, Object fileRef)</a></strong>
+
+<dd>
+<p>If the file reference object residing at location <em>fileRef</em> within
+the indicated Sdr is no longer in use (no longer referenced by any ZCO),
+destroys this file reference object immediately.  Otherwise, flags this
+file reference object for destruction as soon as the last reference to
+it is removed.</p>
+</dd>
+</li>
+<dt><strong><a name="item_zco_create_bulk_ref">Object zco_create_bulk_ref(Sdr sdr, unsigned long item, vast length, ZcoAcct acct)</a></strong>
+
+<dd>
+<p>Creates and returns a new bulk reference object, which can be used as the
+source data extent location for creating a ZCO whose source data object is
+the mass storage item of length <em>length</em> identified by <em>item</em> (the semantics
+of which are implementation-dependent).  Note that the referenced item is
+automatically destroyed at the time that the last ZCO that cites this bulk
+reference is destroyed (normally upon delivery either down to the ``ZCO
+transition layer'' of the protocol stack or up to a ZCO-capable application).
+<em>acct</em> must be ZcoInbound or ZcoOutbound, depending on whether the first
+ZCO that will reference this object will be inbound or outbound.  Returns
+SDR location of bulk reference object on success, 0 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_zco_destroy_bulk_ref">void zco_destroy_bulk_ref(Sdr sdr, Object bulkRef)</a></strong>
+
+<dd>
+<p>If the bulk reference object residing at location <em>bulkRef</em> within
+the indicated Sdr is no longer in use (no longer referenced by any ZCO),
+destroys this bulk reference object immediately.  Otherwise, flags this
+bulk reference object for destruction as soon as the last reference to
+it is removed.</p>
+</dd>
+</li>
+<dt><strong><a name="item_zco_create_obj_ref">Object zco_create_obj_ref(Sdr sdr, Object object, vast length, ZcoAcct acct)</a></strong>
+
+<dd>
+<p>Creates and returns a new object reference object, which can be used as the
+source data extent location for creating a ZCO whose source data object is
+the SDR heap object of length <em>length</em> identified by <em>object</em>.  Note that
+the referenced object is automatically freed at the time that the last ZCO
+that cites this object reference is destroyed (normally upon delivery either
+down to the ``ZCO transition layer'' of the protocol stack or up to a
+ZCO-capable application).  <em>acct</em> must be ZcoInbound or ZcoOutbound,
+depending on whether the first ZCO that will reference this object will
+be inbound or outbound.  Returns SDR location of object reference object
+on success, 0 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_zco_destroy_obj_ref">void zco_destroy_obj_ref(Sdr sdr, Object objRef)</a></strong>
+
+<dd>
+<p>If the object reference object residing at location <em>objRef</em> within
+the indicated Sdr is no longer in use (no longer referenced by any ZCO),
+destroys this object reference object immediately.  Otherwise, flags this
+object reference object for destruction as soon as the last reference to
+it is removed.</p>
+</dd>
+</li>
+<dt><strong><a name="item_zco_status">void zco_status(Sdr sdr)</a></strong>
+
+<dd>
+<p>Uses the ION logging function to write a report of the current contents of
+the ZCO space accounting database.</p>
+</dd>
+</li>
+<dt><strong><a name="item_zco_get_file_occupancy">vast zco_get_file_occupancy(Sdr sdr, ZcoAcct acct)</a></strong>
+
+<dd>
+<p>Returns the total number of file system space bytes occupied by ZCOs (inbound
+or outbound) created in this Sdr.</p>
+</dd>
+</li>
+<dt><strong><a name="item_zco_set_max_file_occupancy">void zco_set_max_file_occupancy(Sdr sdr, vast occupancy, ZcoAcct acct)</a></strong>
+
+<dd>
+<p>Declares the total number of file system space bytes that may be occupied by
+ZCOs (inbound or outbound) created in this Sdr.</p>
+</dd>
+</li>
+<dt><strong><a name="item_zco_get_max_file_occupancy">vast zco_get_max_file_occupancy(Sdr sdr, ZcoAcct acct)</a></strong>
+
+<dd>
+<p>Returns the total number of file system space bytes that may be occupied by
+ZCOs (inbound or outbound) created in this Sdr.</p>
+</dd>
+</li>
+<dt><strong><a name="item_zco_enough_file_space">int zco_enough_file_space(Sdr sdr, vast length, ZcoAcct acct)</a></strong>
+
+<dd>
+<p>Returns 1 if the total remaining file system space available for ZCOs (inbound
+or outbound) in this Sdr is greater than <em>length</em>.  Returns 0 otherwise.</p>
+</dd>
+</li>
+<dt><strong><a name="item_zco_get_bulk_occupancy">vast zco_get_bulk_occupancy(Sdr sdr, ZcoAcct acct)</a></strong>
+
+<dd>
+<p>Returns the total number of mass storage space bytes occupied by ZCOs (inbound
+or outbound) created in this Sdr.</p>
+</dd>
+</li>
+<dt><strong><a name="item_zco_set_max_bulk_occupancy">void zco_set_max_bulk_occupancy(Sdr sdr, vast occupancy, ZcoAcct acct)</a></strong>
+
+<dd>
+<p>Declares the total number of mass storage space bytes that may be occupied by
+ZCOs (inbound or outbound) created in this Sdr.</p>
+</dd>
+</li>
+<dt><strong><a name="item_zco_get_max_bulk_occupancy">vast zco_get_max_bulk_occupancy(Sdr sdr, ZcoAcct acct)</a></strong>
+
+<dd>
+<p>Returns the total number of mass storage space bytes that may be occupied by
+ZCOs (inbound or outbound) created in this Sdr.</p>
+</dd>
+</li>
+<dt><strong><a name="item_zco_enough_bulk_space">int zco_enough_bulk_space(Sdr sdr, vast length, ZcoAcct acct)</a></strong>
+
+<dd>
+<p>Returns 1 if the total remaining mass storage space available for ZCOs (inbound
+or outbound) in this Sdr is greater than <em>length</em>.  Returns 0 otherwise.</p>
+</dd>
+</li>
+<dt><strong><a name="item_zco_get_heap_occupancy">vast zco_get_heap_occupancy(Sdr sdr, ZcoAcct acct)</a></strong>
+
+<dd>
+<p>Returns the total number of SDR heap space bytes occupied by ZCOs (inbound or
+outbound) created in this Sdr.</p>
+</dd>
+</li>
+<dt><strong><a name="item_zco_set_max_heap_occupancy">void zco_set_max_heap_occupancy(Sdr sdr, vast occupancy, ZcoAcct acct)</a></strong>
+
+<dd>
+<p>Declares the total number of SDR heap space bytes that may be occupied by
+ZCOs (inbound or outbound) created in this Sdr.</p>
+</dd>
+</li>
+<dt><strong><a name="item_zco_get_max_heap_occupancy">vast zco_get_max_heap_occupancy(Sdr sdr, ZcoAcct acct)</a></strong>
+
+<dd>
+<p>Returns the total number of SDR heap space bytes that may be occupied by
+ZCOs (inbound or outbound) created in this Sdr.</p>
+</dd>
+</li>
+<dt><strong><a name="item_zco_enough_heap_space">int zco_enough_heap_space(Sdr sdr, vast length, ZcoAcct acct)</a></strong>
+
+<dd>
+<p>Returns 1 if the total remaining SDR heap space available for ZCOs (inbound or
+outbound) in this Sdr is greater than <em>length</em>.  Returns 0 otherwise.</p>
+</dd>
+</li>
+<dt><strong><a name="item_zco_extent_too_large">int zco_extent_too_large(Sdr sdr, ZcoMedium source, vast length, ZcoAcct acct)</a></strong>
+
+<dd>
+<p>Returns 1 if the total remaining space available for ZCOs (inbound or outbound)
+is NOT enough to contain a new extent of the indicated length in the indicated
+source medium.  Returns 0 otherwise.</p>
+</dd>
+</li>
+<dt><strong><a name="item_zco_get_aggregate_length">int zco_get_aggregate_length(Sdr sdr, Object location, vast offset, vast length, vast *fileSpaceOccupied, vast *bulkSpaceOccupied, vast *heapSpaceOccupied)</a></strong>
+
+<dd>
+<p>Populates <em>*fileSpaceOccupied</em>, <em>*bulkSpaceOccupied</em>, and
+<em>*heapSpaceOccupied</em> with the total number of ZCO space bytes occupied by
+the extents of the zco at <em>location</em>, from <em>offset</em> to <em>offset + length</em>.
+If <em>offset</em> isn't the start of an extent or <em>offset + length</em> isn't the
+end of an extent, returns -1 in all three fields.</p>
+</dd>
+</li>
+<dt><strong><a name="item_zco_create">Object zco_create(Sdr sdr, ZcoMedium firstExtentSourceMedium, Object firstExtentLocation, vast firstExtentOffset, vast firstExtentLength, ZcoAcct acct)</a></strong>
+
+<dd>
+<p>Creates a new inbound or outbound ZCO.  <em>firstExtentLocation</em> and
+<em>firstExtentLength</em> must either both be zero (indicating that
+<a href="#item_zco_append_extent"><code>zco_append_extent()</code></a> will be used to insert the first source data extent
+later) or else both be non-zero.  If <em>firstExtentLocation</em> is non-zero,
+then (a) <em>firstExtentLocation</em> must be the SDR location of a file
+reference object, bulk reference object, object reference object, SDR heap
+object, or ZCO, depending on the value of <em>firstExtentSourceMedium</em>, and
+(b) <em>firstExtentOffset</em> indicates how many leading bytes of the source
+data object should be skipped over when adding the initial source data
+extent to the new ZCO.  A negative value for
+<em>firstExtentLength</em> indicates that the extent is already known not to be
+too large for the available ZCO space, and the actual length of the extent
+is the additive inverse of this value.  On success, returns the SDR location
+of the new ZCO.  Returns 0 if there is insufficient ZCO space for creation
+of the new ZCO; returns ((Object) -1) on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_zco_append_extent">int zco_append_extent(Sdr sdr, Object zco, ZcoMedium sourceMedium, Object location, vast offset, vast length)</a></strong>
+
+<dd>
+<p>Appends the indicated source data extent to the indicated ZCO, as described
+for zco_create().  Both the <em>location</em> and <em>length</em> of the source data
+must be non-zero.  A negative value for <em>length</em> indicates that the extent
+is already known not to be too large for the available ZCO space, and the
+actual length of the extent is the additive inverse of this value.  For
+constraints on the value of <em>location</em>, see zco_create().  Returns
+<em>length</em> on success, 0 if there is insufficient ZCO space for creation of
+the new source data extent, -1 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_zco_prepend_header">int zco_prepend_header(Sdr sdr, Object zco, char *header, vast length)</a></strong>
+
+<dt><strong><a name="item_zco_append_trailer">int zco_append_trailer(Sdr sdr, Object zco, char *trailer, vast length)</a></strong>
+
+<dt><strong><a name="item_zco_discard_first_header">void zco_discard_first_header(Sdr sdr, Object zco)</a></strong>
+
+<dt><strong><a name="item_zco_discard_last_trailer">void zco_discard_last_trailer(Sdr sdr, Object zco)</a></strong>
+
+<dd>
+<p>These functions attach and remove the ZCO's headers and trailers.  <em>header</em>
+and <em>trailer</em> are assumed to be arrays of octets, not necessarily text.  
+Attaching a header or trailer causes it to be written to the SDR.  The
+prepend and append functions return 0 on success, -1 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_zco_header_text">Object zco_header_text(Sdr sdr, Object zco, int skip, vast *length)</a></strong>
+
+<dd>
+<p>Skips over the first <em>skip</em> headers of <em>zco</em> and returns the address of
+the text of the next header, placing the length of the header's text in
+<em>*length</em>.  Returns 0 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_zco_trailer_text">Object zco_trailer_text(Sdr sdr, Object zco, int skip, vast *length)</a></strong>
+
+<dd>
+<p>Skips over the first <em>skip</em> trailers of <em>zco</em> and returns the address of
+the text of the next trailer, placing the length of the trailer's text in
+<em>*length</em>.  Returns 0 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_zco_destroy">void zco_destroy(Sdr sdr, Object zco)</a></strong>
+
+<dd>
+<p>Destroys the indicated Zco.  This reduces the reference counts for all
+files and SDR objects referenced in the ZCO's extents, resulting in the
+freeing of SDR objects and (optionally) the deletion of files as those
+reference count drop to zero.</p>
+</dd>
+</li>
+<dt><strong><a name="item_zco_bond">void zco_bond(Sdr sdr, Object zco)</a></strong>
+
+<dd>
+<p>Converts all headers and trailers of the indicated Zco to source data extents.
+Use this function to ensure that known header and trailer data are included
+when the ZCO is cloned.</p>
+</dd>
+</li>
+<dt><strong><a name="item_zco_revise">int zco_revise(Sdr sdr, Object zco, vast offset, char *buffer, vast length)</a></strong>
+
+<dd>
+<p>Writes the contents of <em>buffer</em>, for length <em>length</em>, into <em>zco</em> at offset
+<em>offset</em>.  Returns 0 on success, -1 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_zco_clone">Object zco_clone(Sdr sdr, Object zco, vast offset, vast length)</a></strong>
+
+<dd>
+<p>Creates a new ZCO whose source data is a copy of a subset of the source
+data of the referenced ZCO.  This procedure is required whenever it is
+necessary to process the ZCO's source data in multiple different ways, for
+different purposes, and therefore the ZCO must be in multiple states at the
+same time.  Portions of the source data extents of the original ZCO are
+copied as necessary, but no header or trailer capsules are copied.  Returns
+SDR location of the new ZCO on success, (Object) -1 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_zco_clone_source_data">vast zco_clone_source_data(Sdr sdr, Object toZco, Object fromZco, vast offset, vast length)</a></strong>
+
+<dd>
+<p>Appends to <em>toZco</em> a copy of a subset of the source data of <em>fromZCO</em>.
+Portions of the source data extents of <em>fromZCO</em> are copied as necessary.
+Returns total data length cloned, or -1 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_zco_length">vast zco_length(Sdr sdr, Object zco)</a></strong>
+
+<dd>
+<p>Returns length of entire ZCO, including all headers and trailers and
+all source data extents.  This is the size of the object that would be
+formed by concatenating the text of all headers, trailers, and source
+data extents into a single serialized object.</p>
+</dd>
+</li>
+<dt><strong><a name="item_zco_source_data_length">vast zco_source_data_length(Sdr sdr, Object zco)</a></strong>
+
+<dd>
+<p>Returns length of entire ZCO minus the lengths of all attached header and
+trailer capsules.  This is the size of the object that would be formed by
+concatenating the text of all source data extents (including those that
+are presumed to contain header or trailer text attached elsewhere) into
+a single serialized object.</p>
+</dd>
+</li>
+<dt><strong><a name="item_zco_acct">ZcoAcct zco_acct(Sdr sdr, Object zco)</a></strong>
+
+<dd>
+<p>Returns an indicator as to whether <em>zco</em> is inbound or outbound.</p>
+</dd>
+</li>
+<dt><strong><a name="item_zco_start_transmitting">void zco_start_transmitting(Object zco, ZcoReader *reader)</a></strong>
+
+<dd>
+<p>Used by underlying protocol layer to start extraction of an outbound ZCO's
+bytes (both from header and trailer capsules and from source data extents) for
+``transmission'' -- i.e., the copying of bytes into a memory buffer for
+delivery to some non-ZCO-aware protocol implementation.  Initializes
+reading at the first byte of the total concatenated ZCO object.  Populates
+<em>reader</em>, which is used to keep track of ``transmission'' progress via this
+ZCO reference.</p>
+</dd>
+<dd>
+<p>Note that this function can be called multiple times to restart reading at
+the start of the ZCO.  Note also that multiple ZcoReader objects may be used
+concurrently, by the same task or different tasks, to advance through the
+ZCO independently.</p>
+</dd>
+</li>
+<dt><strong><a name="item_zco_track_file_offset">void zco_track_file_offset(ZcoReader *reader)</a></strong>
+
+<dd>
+<p>Turns on file offset tracking for this reader.</p>
+</dd>
+</li>
+<dt><strong><a name="item_zco_transmit">vast zco_transmit(Sdr sdr, ZcoReader *reader, vast length, char *buffer)</a></strong>
+
+<dd>
+<p>Copies <em>length</em> as-yet-uncopied bytes of the total concatenated ZCO
+(referenced by <em>reader</em>) into <em>buffer</em>.  If <em>buffer</em> is NULL, skips
+over <em>length</em> bytes without copying.  Returns the number of bytes copied
+(or skipped) on success, 0 on any file access error, -1 on any other error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_zco_start_receiving">void zco_start_receiving(Object zco, ZcoReader *reader)</a></strong>
+
+<dd>
+<p>Used by overlying protocol layer to start extraction of an inbound ZCO's
+bytes for ``reception'' -- i.e., the copying of bytes into a memory buffer
+for delivery to a protocol header parser, to a protocol trailer parser,
+or to the ultimate recipient (application).  Initializes reading of
+headers, source data, and trailers at the first byte of the concatenated
+ZCO objects.  Populates <em>reader</em>, which is used to keep track of ``reception''
+progress via this ZCO reference and is required.</p>
+</dd>
+</li>
+<dt><strong><a name="item_zco_receive_headers">vast zco_receive_headers(Sdr sdr, ZcoReader *reader, vast length, char *buffer)</a></strong>
+
+<dd>
+<p>Copies <em>length</em> as-yet-uncopied bytes of presumptive protocol header text
+from ZCO source data extents into <em>buffer</em>.  If <em>buffer</em> is NULL, skips
+over <em>length</em> bytes without copying.  Returns number of bytes copied (or
+skipped) on success, 0 on any file access error, -1 on any other error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_zco_delimit_source">void zco_delimit_source(Sdr sdr, Object zco, vast offset, vast length)</a></strong>
+
+<dd>
+<p>Sets the computed offset and length of actual source data in the ZCO,
+thereby implicitly establishing the total length of the ZCO's concatenated
+protocol headers as <em>offset</em> and the location of the ZCO's innermost
+protocol trailer as the sum of <em>offset</em> and <em>length</em>.  Offset and length
+are typically determined from the information carried in received presumptive
+protocol header text.</p>
+</dd>
+</li>
+<dt><strong><a name="item_zco_receive_source">vast zco_receive_source(Sdr sdr, ZcoReader *reader, vast length, char *buffer)</a></strong>
+
+<dd>
+<p>Copies <em>length</em> as-yet-uncopied bytes of source data from ZCO extents into
+<em>buffer</em>.  If <em>buffer</em> is NULL, skips over <em>length</em> bytes without
+copying.  Returns number of bytes copied (or skipped) on success, 0 on any
+file access error, -1 on any other error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_zco_receive_trailers">vast zco_receive_trailers(Sdr sdr, ZcoReader *reader, vast length, char *buffer)</a></strong>
+
+<dd>
+<p>Copies <em>length</em> as-yet-uncopied bytes of trailer data from ZCO extents into
+<em>buffer</em>.  If <em>buffer</em> is NULL, skips over <em>length</em> bytes without copying.
+Returns number of bytes copied (or skipped) on success, 0 on any file access
+error, -1 on any other error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_zco_strip">void zco_strip(Sdr sdr, Object zco)</a></strong>
+
+<dd>
+<p>Deletes all source data extents that contain only header or trailer data and
+adjusts the offsets and/or lengths of all remaining extents to exclude any
+known header or trailer data.  This function is useful when handling a ZCO
+that was received from an underlying protocol layer rather than from an
+overlying application or protocol layer; use it before starting the
+transmission of the ZCO to another node or before enqueuing it for
+reception by an overlying application or protocol layer.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="see_also">SEE ALSO</a></h1>
+<p><code>sdr(3)</code></p>
+
+</body>
+
+</html>

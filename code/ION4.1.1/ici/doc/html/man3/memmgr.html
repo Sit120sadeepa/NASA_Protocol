@@ -1,0 +1,262 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>memmgr - memory manager abstraction functions</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:mingw-dvlpr@lists.sourceforge.net" />
+</head>
+
+<body style="background-color: white">
+
+<p><a name="__index__"></a></p>
+<!-- INDEX BEGIN -->
+<!--
+
+<ul>
+
+	<li><a href="#name">NAME</a></li>
+	<li><a href="#synopsis">SYNOPSIS</a></li>
+	<li><a href="#description">DESCRIPTION</a></li>
+	<li><a href="#example">EXAMPLE</a></li>
+	<li><a href="#see_also">SEE ALSO</a></li>
+</ul>
+-->
+<!-- INDEX END -->
+
+<p>
+</p>
+<h1><a name="name">NAME</a></h1>
+<p>memmgr - memory manager abstraction functions</p>
+<p>
+</p>
+<hr />
+<h1><a name="synopsis">SYNOPSIS</a></h1>
+<pre>
+    #include &quot;memmgr.h&quot;</pre>
+<pre>
+    typedef void *(* MemAllocator)
+        (char *fileName, int lineNbr, size_t size);
+    typedef void (* MemDeallocator)
+        (char *fileName, int lineNbr, void * blk);
+    typedef void *(* MemAtoPConverter) (unsigned int address);
+    typedef unsigned int (* MemPtoAConverter) (void * pointer);</pre>
+<pre>
+    unsigned int memmgr_add       (char *name,
+                                   MemAllocator take, 
+                                   MemDeallocator release, 
+                                   MemAtoPConverter AtoP, 
+                                   MemPtoAConverter PtoA);
+    int memmgr_find               (char *name);
+    char *memmgr_name             (int mgrId);
+    MemAllocator memmgr_take      (int mgrId);
+    MemDeallocator memmgr_release (int mgrId);
+    MemAtoPConverter memmgr_AtoP  (int mgrId);
+    MemPtoAConverter memmgr_PtoA  (int mgrId;</pre>
+<pre>
+    int memmgr_open               (int memKey,
+                                   unsigned long memSize,
+                                   char **memPtr,
+                                   int *smId,
+                                   char *partitionName,
+                                   PsmPartition *partition,
+                                   int *memMgr,
+                                   MemAllocator afn,
+                                   MemDeallocator ffn,
+                                   MemAtoPConverter apfn,
+                                   MemPtoAConverter pafn);
+    void memmgr_destroy           (int smId,
+                                   PsmPartition *partition);</pre>
+<p>
+</p>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p>``memmgr'' is an abstraction layer for administration of memory
+management.  It enables multiple memory managers to coexist
+in a single application.  Each memory manager specification is required to
+include pointers to a memory allocation function, a memory deallocation
+function, and functions for translating between local memory pointers
+and ``addresses'', which are abstract memory locations that have private
+meaning to the manager.  The allocation function
+is expected to return a block of memory of size ``size'' (in
+bytes), initialized to all binary zeroes.  The <em>fileName</em> and <em>lineNbr</em>
+arguments to the allocation and deallocation functions are expected to
+be the values of __FILE__ and __LINE__ at the point at which the functions
+are called; this supports any memory usage tracing via <code>sptrace(3)</code> that
+may be implemented by the underlying memory management system.</p>
+<p>Memory managers are identified by number and by name.  The identifying
+number for a memory manager is an index into a private, fixed-length
+array of up to 8 memory manager configuration structures; that is,
+memory manager number must be in the range 0-7.  However, memory
+manager numbers are assigned dynamically and not always predictably.
+To enable multiple applications to use the same memory manager for
+a given segment of shared memory, a memory manager may be located by
+a predefined name of up to 15 characters that is known to all the applications.</p>
+<p>The memory manager with manager number 0 is always available; its
+name is ``std''.  Its memory allocation function is calloc(), its
+deallocation function is free(), and its pointer/address translation
+functions are merely casts.</p>
+<dl>
+<dt><strong><a name="item_memmgr_add">unsigned int memmgr_add(char *name,
+                              MemAllocator take, 
+                              MemDeallocator release, 
+                              MemAtoPConverter AtoP, 
+                              MemPtoAConverter PtoA)</a></strong>
+
+<dd>
+<p>Add a memory manager to the memory manager array, if not already defined;
+attempting to add a previously added memory manager is not considered an
+error.  <em>name</em> is the name of the memory manager.
+<em>take</em> is a pointer to the manager's memory allocation
+function; <em>release</em> is a pointer to the manager's
+memory deallocation function.  <em>AtoP</em> is a pointer to
+the manager's function for converting an address 
+to a local memory pointer; <em>PtoA</em> is a pointer to
+the manager's pointer-to-address converter function.
+Returns the memory manager ID number assigned to the named manager,
+or -1 on any error.</p>
+</dd>
+<dd>
+<p><em>NOTE</em>: <a href="#item_memmgr_add"><code>memmgr_add()</code></a> is NOT thread-safe.  In a multithreaded execution
+image (e.g., VxWorks), all memory managers should be loaded <em>before</em>
+any subordinate threads or tasks are spawned.</p>
+</dd>
+</li>
+<dt><strong><a name="item_memmgr_find">int memmgr_find(char *name)</a></strong>
+
+<dd>
+<p>Return the memmgr ID of the named manager, or -1 if not found.</p>
+</dd>
+</li>
+<dt><strong><a name="item_memmgr_name">char *memmgr_name(int mgrId)</a></strong>
+
+<dd>
+<p>Return the name of the manager given by <em>mgrId</em>.</p>
+</dd>
+</li>
+<dt><strong><a name="item_memmgr_take">MemAllocator memmgr_take(int mgrId)</a></strong>
+
+<dd>
+<p>Return the allocator function pointer for the manager given by <em>mgrId</em>.</p>
+</dd>
+</li>
+<dt><strong><a name="item_memmgr_release">memDeallocator memmgr_release(int mgrId)</a></strong>
+
+<dd>
+<p>Return the deallocator function pointer for the manager given by <em>mgrId</em>.</p>
+</dd>
+</li>
+<dt><strong><a name="item_memmgr_atop">MemAtoPConverter memmgr_AtoP(int mgrId)</a></strong>
+
+<dd>
+<p>Return the address-to-pointer converter function
+pointer for the manager given by <em>mgrId</em>.</p>
+</dd>
+</li>
+<dt><strong><a name="item_memmgr_ptoa">MemPtoAConverter memmgr_PtoA(int mgrId)</a></strong>
+
+<dd>
+<p>Return the pointer-to-address converter function
+pointer for the manager given by <em>mgrId</em>.</p>
+</dd>
+</li>
+<dt><strong><a name="item_memmgr_open">int memmgr_open(int memKey,
+                      unsigned long memSize,
+                      char **memPtr,
+                      int *smId,
+                      char *partitionName,
+                      PsmPartition *partition,
+                      int *memMgr,
+                      MemAllocator afn,
+                      MemDeallocator ffn,
+                      MemAtoPConverter apfn,
+                      MemPtoAConverter pafn);</a></strong>
+
+<dd>
+<p><a href="#item_memmgr_open"><code>memmgr_open()</code></a> opens one avenue of access to a PSM managed region of shared
+memory, initializing as necessary.</p>
+</dd>
+<dd>
+<p>In order for multiple tasks to share access to this memory region, all must
+cite the same <em>memkey</em> and <em>partitionName</em> when they call memmgr_open().  If
+shared access is not necessary, then <em>memKey</em> can be SM_NO_KEY and
+<em>partitionName</em> can be any valid partition name.</p>
+</dd>
+<dd>
+<p>If it is known that a prior invocation of <a href="#item_memmgr_open"><code>memmgr_open()</code></a> has already
+initialized the region, then <em>memSize</em> can be zero and <em>memPtr</em>
+must be NULL.  Otherwise <em>memSize</em> is required and the required value
+of <em>memPtr</em> depends on whether or not the memory that is to be shared
+and managed has already been allocated (e.g., it's a fixed region of bus
+memory).  If so, then the memory pointer variable that <em>memPtr</em> points
+to must contain the address of that memory region.  Otherwise, <em>*memPtr</em>
+must contain NULL.</p>
+</dd>
+<dd>
+<p><a href="#item_memmgr_open"><code>memmgr_open()</code></a> will allocate system memory as necessary and will in
+any case return the address of the shared memory region in <em>*memPtr</em>.</p>
+</dd>
+<dd>
+<p>If the shared memory is newly allocated or otherwise not yet under
+PSM management, then <a href="#item_memmgr_open"><code>memmgr_open()</code></a> will invoke <code>psm_manage()</code> to manage
+the shared memory region.  It will also add a catalogue for the managed
+shared memory region as necessary.</p>
+</dd>
+<dd>
+<p>If <em>memMgr</em> is non-NULL, then <a href="#item_memmgr_open"><code>memmgr_open()</code></a> will additionally call
+<a href="#item_memmgr_add"><code>memmgr_add()</code></a> to establish a new memory manager for this managed shared
+memory region, as necessary.  The index of the applicable memory manager
+will be returned in <em>memMgr</em>.  If that memory manager is newly created,
+then the supplied <em>afn</em>, <em>ffn</em>, <em>apfn</em>, and <em>pafn</em> functions (which
+can be written with reference to the memory manager index value returned
+in <em>memMgr</em>) have been established as the memory management functions
+for local private access to this managed shared memory region.</p>
+</dd>
+<dd>
+<p>Returns 0 on success, -1 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_memmgr_destroy">void memmgr_destroy(int smId, PsmPartition *partition);</a></strong>
+
+<dd>
+<p><a href="#item_memmgr_destroy"><code>memmgr_destroy()</code></a> terminates all access to a PSM managed region of shared
+memory, invoking <code>psm_erase()</code> to destroy the partition and <code>sm_ShmDestroy()</code>
+to destroy the shared memory object.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="example">EXAMPLE</a></h1>
+<pre>
+    /* this example uses the calloc/free memory manager, which is
+     * called &quot;std&quot;, and is always defined in memmgr. */</pre>
+<pre>
+     #include &quot;memmgr.h&quot;</pre>
+<pre>
+     main() 
+     {
+         int mgrId;
+         MemAllocator myalloc;
+         MemDeallocator myfree;
+         char *newBlock;</pre>
+<pre>
+         mgrId = memmgr_find(&quot;std&quot;);
+         myalloc = memmgr_take(mgrId);
+         myfree = memmgr_release(mgrId);
+         ...</pre>
+<pre>
+         newBlock = myalloc(5000);
+         ...
+         myfree(newBlock);
+     }</pre>
+<p>
+</p>
+<hr />
+<h1><a name="see_also">SEE ALSO</a></h1>
+<p><code>psm(3)</code></p>
+
+</body>
+
+</html>

@@ -1,0 +1,210 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>tcarc - Trusted Collective authority configuration commands file</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:mingw-dvlpr@lists.sourceforge.net" />
+</head>
+
+<body style="background-color: white">
+
+<p><a name="__index__"></a></p>
+<!-- INDEX BEGIN -->
+<!--
+
+<ul>
+
+	<li><a href="#name">NAME</a></li>
+	<li><a href="#description">DESCRIPTION</a></li>
+	<li><a href="#commands">COMMANDS</a></li>
+	<li><a href="#examples">EXAMPLES</a></li>
+	<li><a href="#see_also">SEE ALSO</a></li>
+</ul>
+-->
+<!-- INDEX END -->
+
+<p>
+</p>
+<h1><a name="name">NAME</a></h1>
+<p>tcarc - Trusted Collective authority configuration commands file</p>
+<p>
+</p>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p>TC authority configuration commands are passed to <strong>tcaadmin</strong> either
+in a file of text lines or interactively at <strong>tcaadmin</strong>'s command prompt
+(:).  Commands are interpreted line-by line, with exactly one command per
+line.  The formats and effects of the TC authority configuration
+commands are described below.</p>
+<p>
+</p>
+<hr />
+<h1><a name="commands">COMMANDS</a></h1>
+<dl>
+<dt><strong><a name="item__3f"><strong>?</strong></a></strong>
+
+<dd>
+<p>The <strong>help</strong> command.  This will display a listing of the commands and their
+formats.  It is the same as the <strong>h</strong> command.</p>
+</dd>
+</li>
+<dt><strong><a name="item__23"><strong>#</strong></a></strong>
+
+<dd>
+<p>Comment line.  Lines beginning with <strong>#</strong> are not interpreted.</p>
+</dd>
+</li>
+<dt><strong><a name="item_e"><strong>e</strong> { 1 | 0 }</a></strong>
+
+<dd>
+<p>Echo control.  Setting echo to 1 causes all output printed by tcaadmin to be
+logged as well as sent to stdout.  Setting echo to 0 disables this behavior.</p>
+</dd>
+</li>
+<dt><strong><a name="item_v"><strong>v</strong></a></strong>
+
+<dd>
+<p>Version number.  Prints out the version of ION currently installed.  HINT:
+combine with <strong>e 1</strong> command to log the version number at startup.</p>
+</dd>
+</li>
+<dt><strong><a name="item_h"><strong>h</strong></a></strong>
+
+<dd>
+<p>The <strong>help</strong> command.  This will display a listing of the commands and their
+formats.  It is the same as the <strong>?</strong> command.</p>
+</dd>
+</li>
+<li><strong><a name="item_multicast_group_number_for_tc_bulletins_multicast_"><strong>1</strong> <em>multicast_group_number_for_TC_bulletins</em> <em>multicast_group_number_for_TC_records</em> <em>number_of_authorities_in_collective</em> <em>K</em> <em>R</em></a></strong>
+
+<p>The <strong>initialize</strong> command.  Until this command is executed, the authority
+function for the selected TC application is not in operation on the local
+ION node and most <em>tcaadmin</em> commands will fail.</p>
+<p><em>K</em> is the mandated <strong>diffusion</strong> for the selected TC application, i.e.,
+the number of blocks into which each bulletin of published TC information
+is divided for transmission.</p>
+<p><em>R</em> is the mandated <strong>redundancy</strong> for the selected TC application, i.e.,
+the percentage of blocks issued per bulletin that will be parity blocks
+rather than extents of the bulletin itself.</p>
+</li>
+<dt><strong><a name="item_i"><strong>i</strong></a></strong>
+
+<dd>
+<p>The <strong>info</strong> This command will print information about the current state
+of the authority function for the selected TC application on the local
+node, including the current settings of all parameters that can be
+managed as described below.</p>
+</dd>
+</li>
+<dt><strong><a name="item_s"><strong>s</strong></a></strong>
+
+<dd>
+<p>The <strong>start</strong> command.  This command starts the <strong>tcarecv</strong> and <strong>tcacompile</strong>
+daemons of the authority function for the selected TC application on the
+local node.</p>
+</dd>
+</li>
+<dt><strong><a name="item_m_compiletime_time"><strong>m compiletime</strong> <em>time</em></a></strong>
+
+<dd>
+<p>The <strong>manage compile time</strong> command.  This command sets the time at which
+the authority function for the selected TC application on this node will next
+compile a bulletin.  The command is not needed in normal operations, because
+future compile times are computed automatically as bulletins are compiled.
+<em>time</em> must be in yyyy/mm/dd-hh:mm:ss format.</p>
+</dd>
+</li>
+<dt><strong><a name="item_m_interval_bulletin_compilation_interval"><strong>m interval</strong> <em>bulletin_compilation_interval</em></a></strong>
+
+<dd>
+<p>The <strong>manage bulletin compilation interval</strong> command.  This interval,
+expressed as a number of seconds, controls the period on which the 
+authority function for the selected TC appliction on this node will
+compile new key information bulletins.  The default value is 3600 (one hour).</p>
+</dd>
+</li>
+<dt><strong><a name="item_m_grace_bulletin_consensus_grace_time"><strong>m grace</strong> <em>bulletin_consensus_grace_time</em></a></strong>
+
+<dd>
+<p>The <strong>manage bulletin consensus grace time</strong> command.  This interval,
+expressed as a number of seconds, controls the length of time the
+authority function for the selected TC application on this node  will
+wait after publishing a bulletin before computing a consensus bulletin;
+this parameter is intended to relax the degree to which the system
+clocks of all members of the collective authority for this TC
+application must be in agreement.  The default value is 60 (1 minute).</p>
+</dd>
+</li>
+<dt><strong><a name="item__2b_authority_array_index_node_number"><strong>+</strong> <em>authority_array_index</em> <em>node_number</em></a></strong>
+
+<dd>
+<p>This command asserts that the trusted Nth member of the collective authority
+for the selected TC application, where N is the <em>authority_array_index</em>
+value, is the node identified by <em>node_number</em>.</p>
+</dd>
+</li>
+<dt><strong><a name="item__2d_authority_array_index"><strong>-</strong> <em>authority_array_index</em></a></strong>
+
+<dd>
+<p>This command asserts that the Nth member of the collective authority for
+the selected TC application, where N is the <em>authority_array_index</em> value,
+is no longer trusted; bulletins received from this collective authority
+member must be discarded.</p>
+</dd>
+</li>
+<dt><strong><a name="item_a_node_number"><strong>a</strong> <em>node_number</em></a></strong>
+
+<dd>
+<p>This command adds the node identified by <em>node_number</em> to the list of nodes
+hosting <strong>authorized_clients</strong> for the selected TC application.  Once this
+list has been populated, TC records for this application that are received
+from clients residing on nodes that are not in the list are automatically
+discarded by the authority function residing on the local node.</p>
+</dd>
+</li>
+<dt><strong><a name="item_d_node_number"><strong>d</strong> <em>node_number</em></a></strong>
+
+<dd>
+<p>This command deletes the node identified by <em>node_number</em> from the list of
+nodes hosting <strong>authorized_clients</strong> for the selected TC application.</p>
+</dd>
+</li>
+<dt><strong><a name="item_l"><strong>l</strong></a></strong>
+
+<dd>
+<p>This command lists all nodes currently hosting <strong>authorized_clients</strong> for
+the selected TC application.</p>
+</dd>
+</li>
+<dt><strong><a name="item_x"><strong>x</strong></a></strong>
+
+<dd>
+<p>The <strong>stop</strong> command.  This command stops the <strong>tcarecv</strong> and <strong>tcacompile</strong>
+daemons of the authority function for the selected TC application on the
+local node.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="examples">EXAMPLES</a></h1>
+<dl>
+<dt><strong><a name="item__2b_3_6913">+ 3 6913</a></strong>
+
+<dd>
+<p>Asserts that node 6913 is now member 3 of the collective authority for the
+selected application.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="see_also">SEE ALSO</a></h1>
+<p>tcaadmin(1), <code>dtka(3)</code></p>
+
+</body>
+
+</html>

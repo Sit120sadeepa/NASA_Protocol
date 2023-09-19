@@ -1,0 +1,250 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>sdrlist - Simple Data Recorder list management functions</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:mingw-dvlpr@lists.sourceforge.net" />
+</head>
+
+<body style="background-color: white">
+
+<p><a name="__index__"></a></p>
+<!-- INDEX BEGIN -->
+<!--
+
+<ul>
+
+	<li><a href="#name">NAME</a></li>
+	<li><a href="#synopsis">SYNOPSIS</a></li>
+	<li><a href="#description">DESCRIPTION</a></li>
+	<li><a href="#usage">USAGE</a></li>
+	<li><a href="#see_also">SEE ALSO</a></li>
+</ul>
+-->
+<!-- INDEX END -->
+
+<p>
+</p>
+<h1><a name="name">NAME</a></h1>
+<p>sdrlist - Simple Data Recorder list management functions</p>
+<p>
+</p>
+<hr />
+<h1><a name="synopsis">SYNOPSIS</a></h1>
+<pre>
+    #include &quot;sdr.h&quot;</pre>
+<pre>
+    typedef int (*SdrListCompareFn)(Sdr sdr, Address eltData, void *argData);
+    typedef void (*SdrListDeleteFn)(Sdr sdr, Object elt, void *argument);</pre>
+<pre>
+    [see description for available functions]</pre>
+<p>
+</p>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p>The SDR list management functions manage doubly-linked lists in managed
+SDR heap space.  The functions manage two kinds of objects: lists and
+list elements.  A list knows how many elements it contains and what its
+start and end elements are.  An element knows what list it belongs to
+and the elements before and after it in the list.  An element also
+knows its content, which is normally the SDR Address of some object
+in the SDR heap.  A list may be sorted, which speeds the process
+of searching for a particular element.</p>
+<dl>
+<dt><strong><a name="item_sdr_list_create">Object sdr_list_create(Sdr sdr)</a></strong>
+
+<dd>
+<p>Creates a new list object in the SDR; the new list object initially 
+contains no list elements.  Returns the address of the new list, or 
+zero on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_sdr_list_destroy">void sdr_list_destroy(Sdr sdr, Object list, SdrListDeleteFn fn, void *arg)</a></strong>
+
+<dd>
+<p>Destroys a list, freeing all elements of list.  If <em>fn</em> is non-NULL,
+that function is called once for each freed element;
+when called, <em>fn</em> is passed the Address that is the element's data and
+the <em>argument</em> pointer passed to sdr_list_destroy().</p>
+</dd>
+<dd>
+<p>Do not use <em>sdr_free</em> to destroy an SDR list, as this would
+leave the elements of the list allocated yet unreferenced.</p>
+</dd>
+</li>
+<dt><strong><a name="item_sdr_list_length">int sdr_list_length(Sdr sdr, Object list)</a></strong>
+
+<dd>
+<p>Returns the number of elements in the list, or -1 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_sdr_list_user_data_set">void sdr_list_user_data_set(Sdr sdr, Object list, Address userData)</a></strong>
+
+<dd>
+<p>Sets the ``user data'' word of <em>list</em> to <em>userData</em>.  Note that
+<em>userData</em> is nominally an Address but can in fact be any value
+that occupies a single word.  It is typically used to point to an SDR
+object that somehow characterizes the list as a whole, such as a name.</p>
+</dd>
+</li>
+<dt><strong><a name="item_sdr_list_user_data">Address  sdr_list_user_data(Sdr sdr, Object list)</a></strong>
+
+<dd>
+<p>Returns the value of the ``user data'' word of <em>list</em>, or zero on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_sdr_list_insert">Object sdr_list_insert(Sdr sdr, Object list, Address data, SdrListCompareFn fn, void *dataBuffer)</a></strong>
+
+<dd>
+<p>Creates a new list element whose data value is <em>data</em> and
+inserts that element into the list.  If <em>fn</em> is NULL,
+the new list element is simply appended to the
+list; otherwise, the new list element is inserted
+after the last element in the list whose data value is
+``less than or equal to'' the data value of the new element (in dataBuffer)
+according to the collating sequence established by <em>fn</em>.  Returns the address
+of the newly created element, or zero on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_sdr_list_insert_first">Object sdr_list_insert_first(Sdr sdr, Object list, Address data)</a></strong>
+
+<dt><strong><a name="item_sdr_list_insert_last">Object sdr_list_insert_last(Sdr sdr, Object list, Address data)</a></strong>
+
+<dd>
+<p>Creates a new element and inserts it at the front/end
+of the list.  This function should not be used to insert a new 
+element into any ordered list; use <a href="#item_sdr_list_insert"><code>sdr_list_insert()</code></a> instead.  
+Returns the address of the newly created list element on success,
+or zero on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_sdr_list_insert_before">Object sdr_list_insert_before(Sdr sdr, Object elt, Address data)</a></strong>
+
+<dt><strong><a name="item_sdr_list_insert_after">Object sdr_list_insert_after(Sdr sdr, Object elt, Address data)</a></strong>
+
+<dd>
+<p>Creates a new element and inserts it before/after the
+specified list element.  This function should not be
+used to insert a new element into any ordered list; use
+<a href="#item_sdr_list_insert"><code>sdr_list_insert()</code></a> instead.  Returns the address of the newly 
+created list element, or zero on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_sdr_list_delete">void sdr_list_delete(Sdr sdr, Object elt, SdrListDeleteFn fn, void *arg)</a></strong>
+
+<dd>
+<p>Delete <em>elt</em> from the list it is in.
+If <em>fn</em> is non-NULL, that function will be called upon deletion of
+<em>elt</em>; when called, that function is passed the Address that is the list
+element's data value and the <em>arg</em> pointer passed to sdr_list_delete().</p>
+</dd>
+</li>
+<dt><strong><a name="item_sdr_list_first">Object sdr_list_first(Sdr sdr, Object list)</a></strong>
+
+<dt><strong><a name="item_sdr_list_last">Object sdr_list_last(Sdr sdr, Object list)</a></strong>
+
+<dd>
+<p>Returns the address of the first/last element of <em>list</em>, or zero on
+any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_sdr_list_next">Object sdr_list_next(Sdr sdr, Object elt)</a></strong>
+
+<dt><strong><a name="item_sdr_list_prev">Object sdr_list_prev(Sdr sdr, Object elt)</a></strong>
+
+<dd>
+<p>Returns the address of the element following/preceding <em>elt</em>
+in that element's list, or zero on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_sdr_list_search">Object sdr_list_search(Sdr sdr, Object elt, int reverse, SdrListCompareFn fn, void *dataBuffer);</a></strong>
+
+<dd>
+<p>Search a list for an element whose data matches the data in <em>dataBuffer</em>,
+starting at the indicated initial list element.  If the <em>compare</em>
+function is non-NULL, the list is assumed to be sorted
+in the order implied by that function and the function is automatically
+called once for each element of the list until it returns a value that is
+greater than or equal to zero (where zero indicates an exact match and a
+value greater than zero indicates that the list contains no matching
+element); each time <em>compare</em> is called it is passed the Address that is
+the element's data value and the <em>dataBuffer</em> value passed to sm_list_search().
+If <em>reverse</em> is non-zero, then the list is searched in reverse order
+(starting at the indicated initial list element) and the search ends
+when <em>compare</em> returns a value that is less than or equal to zero.  If
+<em>compare</em> is NULL, then the entire list is searched (in either
+forward or reverse order, as directed) until an element is
+located whose data value is equal to ((Address) <em>dataBuffer</em>).  Returns
+the address of the matching element if one is found, 0 otherwise.</p>
+</dd>
+</li>
+<dt><strong><a name="item_sdr_list_list">Object sdr_list_list(Sdr sdr, Object elt)</a></strong>
+
+<dd>
+<p>Returns the address of the list to which <em>elt</em> belongs,
+or 0 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_sdr_list_data">Address sdr_list_data(Sdr sdr, Object elt)</a></strong>
+
+<dd>
+<p>Returns the Address that is the data value of <em>elt</em>, or 0 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_sdr_list_data_set">Address sdr_list_data_set(Sdr sdr, Object elt, Address data)</a></strong>
+
+<dd>
+<p>Sets the data value for <em>elt</em> to <em>data</em>, replacing the
+original value.  Returns the original data value for <em>elt</em>, or 0 on
+any error.  The original data value for <em>elt</em> may or may not have
+been the address of an object in heap data space; even if it was, that
+object was NOT deleted.</p>
+</dd>
+<dd>
+<p>Warning: changing the data value of an element of an ordered list may ruin
+the ordering of the list.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="usage">USAGE</a></h1>
+<p>When inserting elements or searching a list, the user may
+optionally provide a compare function of the form:</p>
+<pre>
+    int user_comp_name(Sdr sdr, Address eltData, void *dataBuffer);</pre>
+<p>When provided, this function is automatically called by the sdrlist function
+being invoked; when the function is called it is passed the content of a
+list element (<em>eltData</em>, nominally the Address of an item in the SDR's
+heap space) and an argument, <em>dataBuffer</em>, which is nominally the address
+in local memory of some other item in the same format.
+The user-supplied function normally compares some key values of the two
+data items and returns 0 if they are equal, an integer less
+than 0 if <em>eltData</em>'s key value is less than that of <em>dataBuffer</em>, and an
+integer greater than 0 if <em>eltData</em>'s key value is greater than that of
+<em>dataBuffer</em>.  These return values will produce a list in ascending order.  
+If the user desires the list to be in descending
+order, the function must reverse the signs of these return values.</p>
+<p>When deleting an element or destroying a list, the user may
+optionally provide a delete function of the form:</p>
+<pre>
+    void user_delete_name(Sdr sdr, Address eltData, void *argData)</pre>
+<p>When provided, this function is automatically called by the sdrlist function
+being invoked; when the function is called it is passed the content of a
+list element (<em>eltData</em>, nominally the Address of an item in the SDR's heap
+space) and an argument, <em>argData</em>, which if non-NULL is normally the address
+in local memory of a data item providing context for the list element deletion.
+The user-supplied function performs any application-specific cleanup
+associated with deleting the element, such as freeing the element's content
+data item and/or other SDR heap space associated with the element.</p>
+<p>
+</p>
+<hr />
+<h1><a name="see_also">SEE ALSO</a></h1>
+<p>lyst(3), sdr(3), sdrstring(3), sdrtable(3), <code>smlist(3)</code></p>
+
+</body>
+
+</html>

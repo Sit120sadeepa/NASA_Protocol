@@ -1,0 +1,129 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>amsbenchr - Asynchronous Message Service benchmarking meter</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:mingw-dvlpr@lists.sourceforge.net" />
+</head>
+
+<body style="background-color: white">
+
+<p><a name="__index__"></a></p>
+<!-- INDEX BEGIN -->
+<!--
+
+<ul>
+
+	<li><a href="#name">NAME</a></li>
+	<li><a href="#synopsis">SYNOPSIS</a></li>
+	<li><a href="#description">DESCRIPTION</a></li>
+	<li><a href="#exit_status">EXIT STATUS</a></li>
+	<li><a href="#files">FILES</a></li>
+	<li><a href="#environment">ENVIRONMENT</a></li>
+	<li><a href="#diagnostics">DIAGNOSTICS</a></li>
+	<li><a href="#bugs">BUGS</a></li>
+	<li><a href="#see_also">SEE ALSO</a></li>
+</ul>
+-->
+<!-- INDEX END -->
+
+<p>
+</p>
+<h1><a name="name">NAME</a></h1>
+<p>amsbenchr - Asynchronous Message Service (AMS) benchmarking meter</p>
+<p>
+</p>
+<hr />
+<h1><a name="synopsis">SYNOPSIS</a></h1>
+<p><strong>amsbenchr</strong></p>
+<p>
+</p>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p><strong>amsbenchr</strong> is a test program that simply subscribes to subject ``bench''
+and receives messages published by <strong>amsbenchs</strong> until all messages in the
+test - as indicated by the count of remaining messages, in in the first
+four bytes of each message - have been received.  Then it stops receiving
+messages, calculates and prints performance statistics, and terminates.</p>
+<p><strong>amsbenchr</strong> will register as an application module in the root unit of
+the venture identified by application name ``amsdemo'' and authority name
+``test''.  A configuration server for the local continuum and a registrar
+for the root unit of that venture (which may both be instantiated in a
+single <strong>amsd</strong> daemon task) must be running in order for <strong>amsbenchr</strong> to
+commence operations.</p>
+<p>
+</p>
+<hr />
+<h1><a name="exit_status">EXIT STATUS</a></h1>
+<dl>
+<dt><strong><a name="item__2d1">-1</a></strong>
+
+<dd>
+<p><strong>amsbenchr</strong> failed, for reasons noted in the ion.log file.</p>
+</dd>
+</li>
+<dt><strong><a name="item__220_22">``0''</a></strong>
+
+<dd>
+<p><strong>amsbenchr</strong> terminated normally.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="files">FILES</a></h1>
+<p>A MIB initialization file with the applicable default name (see <code>amsrc(5))</code>
+must be present.</p>
+<p>
+</p>
+<hr />
+<h1><a name="environment">ENVIRONMENT</a></h1>
+<p>No environment variables apply.</p>
+<p>
+</p>
+<hr />
+<h1><a name="diagnostics">DIAGNOSTICS</a></h1>
+<p>The following diagnostics may be issued to the <strong>ion.log</strong> log file:</p>
+<dl>
+<dt><strong><a name="item_amsbenchr_can_27t_register_2e">amsbenchr can't register.</a></strong>
+
+<dd>
+<p><strong>amsbenchr</strong> failed to register, for reasons noted in the ion.log file.</p>
+</dd>
+</li>
+<dt><strong><a name="item_amsbenchr_3a_subject__27bench_27_is_unknown_2e">amsbenchr: subject 'bench' is unknown.</a></strong>
+
+<dd>
+<p><strong>amsbenchr</strong> can't subscribe to test messages; probably an error in the MIB
+initialization file.</p>
+</dd>
+</li>
+<dt><strong><a name="item_amsbenchr_can_27t_subscribe_2e">amsbenchr can't subscribe.</a></strong>
+
+<dd>
+<p><strong>amsbenchr</strong> failed to subscribe, for reasons noted in the ion.log file.</p>
+</dd>
+</li>
+<dt><strong><a name="item_amsbenchr_can_27t_get_event_2e">amsbenchr can't get event.</a></strong>
+
+<dd>
+<p><strong>amsbenchr</strong> failed to receive a message, for reasons noted in the ion.log file.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="bugs">BUGS</a></h1>
+<p>Report bugs to &lt;<a href="mailto:ion-dtn-support@lists.sourceforge.net">ion-dtn-support@lists.sourceforge.net</a>&gt;</p>
+<p>
+</p>
+<hr />
+<h1><a name="see_also">SEE ALSO</a></h1>
+<p><code>amsrc(5)</code></p>
+
+</body>
+
+</html>

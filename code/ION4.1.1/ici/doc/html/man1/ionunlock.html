@@ -1,0 +1,123 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>ionunlock - utility for unlocking a locked ION node</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:mingw-dvlpr@lists.sourceforge.net" />
+</head>
+
+<body style="background-color: white">
+
+<p><a name="__index__"></a></p>
+<!-- INDEX BEGIN -->
+<!--
+
+<ul>
+
+	<li><a href="#name">NAME</a></li>
+	<li><a href="#synopsis">SYNOPSIS</a></li>
+	<li><a href="#description">DESCRIPTION</a></li>
+	<li><a href="#exit_status">EXIT STATUS</a></li>
+	<li><a href="#files">FILES</a></li>
+	<li><a href="#environment">ENVIRONMENT</a></li>
+	<li><a href="#diagnostics">DIAGNOSTICS</a></li>
+	<li><a href="#bugs">BUGS</a></li>
+	<li><a href="#see_also">SEE ALSO</a></li>
+</ul>
+-->
+<!-- INDEX END -->
+
+<p>
+</p>
+<h1><a name="name">NAME</a></h1>
+<p>ionunlock - utility for unlocking a locked ION node</p>
+<p>
+</p>
+<hr />
+<h1><a name="synopsis">SYNOPSIS</a></h1>
+<p><strong>ionunlock</strong> [<em>sdr_name</em>]</p>
+<p>
+</p>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p>The <strong>ionunlock</strong> program is designed to be run when some ION thread has
+terminated while it is the owner of the node's system mutex, i.e., while
+in the midst of an SDR transaction.  IT MUST NEVER BE RUN AT ANY OTHER TIME
+as it will totally corrupt a node that is not locked up. The program simply
+declares itself to be the owner of the incomplete transaction and cancels it,
+enabling the rest of the system to resume operations.</p>
+<p>If omitted, <em>sdr_name</em> defaults to ``ion''.</p>
+<p>
+</p>
+<hr />
+<h1><a name="exit_status">EXIT STATUS</a></h1>
+<dl>
+<dt><strong><a name="item__220_22">``0''</a></strong>
+
+<dd>
+<p><strong>ionunlock</strong> has terminated successfully.</p>
+</dd>
+</li>
+<dt><strong><a name="item__221_22">``1''</a></strong>
+
+<dd>
+<p><strong>ionunlock</strong> has terminated unsuccessfully.  See diagnostic messages in the
+<strong>ion.log</strong> log file for details.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="files">FILES</a></h1>
+<p>No configuration files are needed.</p>
+<p>
+</p>
+<hr />
+<h1><a name="environment">ENVIRONMENT</a></h1>
+<p>No environment variables apply.</p>
+<p>
+</p>
+<hr />
+<h1><a name="diagnostics">DIAGNOSTICS</a></h1>
+<p>The following diagnostics may be issued to the <strong>ion.log</strong> log file:</p>
+<dl>
+<dt><strong><a name="item_can_27t_initialize_the_sdr_system_2e">Can't initialize the SDR system.</a></strong>
+
+<dd>
+<p>Probable operations error: ION appears not to be initialized, in which case
+there is no point in running <strong>ionunlock</strong>.</p>
+</dd>
+</li>
+<dt><strong><a name="item_can_27t_start_using_sdr_2e">Can't start using SDR.</a></strong>
+
+<dd>
+<p>ION system error.  See earlier diagnostic messages posted to <strong>ion.log</strong>
+for details.  In this event it is unlikely that <strong>ionunlock</strong> can be run
+successfully, and it is also unlikely that it would have any effect if it
+did run successfully.</p>
+</dd>
+</li>
+<dt><strong><a name="item_ionunlock_unnecessary_3b_exiting_2e">ionunlock unnecessary; exiting.</a></strong>
+
+<dd>
+<p>Either the indicated SDR is not initialized or it is not currently stuck in
+a transaction.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="bugs">BUGS</a></h1>
+<p>Report bugs to &lt;<a href="mailto:ion-dtn-support@lists.sourceforge.net">ion-dtn-support@lists.sourceforge.net</a>&gt;</p>
+<p>
+</p>
+<hr />
+<h1><a name="see_also">SEE ALSO</a></h1>
+<p>ionxnowner(1), sdrmend(1), <code>sdr(3)</code></p>
+
+</body>
+
+</html>

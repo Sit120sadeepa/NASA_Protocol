@@ -1,0 +1,175 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>ionadmin - ION node administration interface</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:mingw-dvlpr@lists.sourceforge.net" />
+</head>
+
+<body style="background-color: white">
+
+<p><a name="__index__"></a></p>
+<!-- INDEX BEGIN -->
+<!--
+
+<ul>
+
+	<li><a href="#name">NAME</a></li>
+	<li><a href="#synopsis">SYNOPSIS</a></li>
+	<li><a href="#description">DESCRIPTION</a></li>
+	<li><a href="#exit_status">EXIT STATUS</a></li>
+	<li><a href="#examples">EXAMPLES</a></li>
+	<li><a href="#files">FILES</a></li>
+	<li><a href="#environment">ENVIRONMENT</a></li>
+	<li><a href="#diagnostics">DIAGNOSTICS</a></li>
+	<li><a href="#bugs">BUGS</a></li>
+	<li><a href="#see_also">SEE ALSO</a></li>
+</ul>
+-->
+<!-- INDEX END -->
+
+<p>
+</p>
+<h1><a name="name">NAME</a></h1>
+<p>ionadmin - ION node administration interface</p>
+<p>
+</p>
+<hr />
+<h1><a name="synopsis">SYNOPSIS</a></h1>
+<p><strong>ionadmin</strong> [ <em>commands_filename</em> | . | ! ]</p>
+<p>
+</p>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p><strong>ionadmin</strong> configures, starts, manages, and stops the ION node on the local
+computer.</p>
+<p>It configures the node and sets (and reports on) global operational
+settings for the DTN protocol stack on the local computer in response
+to ION configuration commands found in <em>commands_filename</em>, if provided;
+if not, <strong>ionadmin</strong> prints a simple prompt (:) so that the user may type
+commands directly into standard input.  If <em>commands_filename</em> is a
+period (.), the effect is the same as if a command file containing
+the single command 'x' were passed to <strong>ionadmin</strong> -- that is, the ION
+node's <em>rfxclock</em> task is stopped.  If <em>commands_filename</em> is an
+exclamation point (!), that effect is reversed: the ION node's <em>rfxclock</em>
+task is restarted.</p>
+<p>The format of commands for <em>commands_filename</em> can be queried from <strong>ionadmin</strong>
+by entering the command 'h' or '?' at the prompt.  The commands are documented
+in ionrc(5).</p>
+<p>Note that <em>ionadmin</em> always computes a congestion forecast immediately
+before exiting.  The result of this forecast -- maximum projected occupancy
+of the DTN protocol traffic allocation in ION's SDR database -- is retained
+for application flow control purposes: if maximum projected occupancy is the
+entire protocol traffic allocation, then a message to this effect is logged
+and no new bundle origination by any application will be accepted until
+a subsequent forecast that predicts no congestion is computed.  (Congestion
+forecasts are constrained by <em>horizon</em> times, which can be established by
+commands issued to <em>ionadmin</em>.  One way to re-enable data origination
+temporarily while long-term traffic imbalances are being addressed is to
+declare a congestion forecast horizon in the near future, before congestion
+would occur if no adjustments were made.)</p>
+<p>
+</p>
+<hr />
+<h1><a name="exit_status">EXIT STATUS</a></h1>
+<dl>
+<dt><strong><a name="item__220_22">``0''</a></strong>
+
+<dd>
+<p>Successful completion of ION node administration.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="examples">EXAMPLES</a></h1>
+<dl>
+<dt><strong><a name="item_ionadmin">ionadmin</a></strong>
+
+<dd>
+<p>Enter interactive ION configuration command entry mode.</p>
+</dd>
+</li>
+<dt><strong><a name="item_ionadmin_host1_2eion">ionadmin host1.ion</a></strong>
+
+<dd>
+<p>Execute all configuration commands in <em>host1.ion</em>, then terminate immediately.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="files">FILES</a></h1>
+<p>Status and diagnostic messages from <strong>ionadmin</strong> and from other software that
+utilizes the ION node are nominally written to a log file in the current
+working directory within which <strong>ionadmin</strong> was run.  The log file is typically
+named <strong>ion.log</strong>.</p>
+<p>See also <code>ionconfig(5)</code> and ionrc(5).</p>
+<p>
+</p>
+<hr />
+<h1><a name="environment">ENVIRONMENT</a></h1>
+<p>Environment variables ION_NODE_LIST_DIR and ION_NODE_WDNAME can be used to
+enable the operation of multiple ION nodes on a single workstation computer.
+See section 2.1.3 of the ION Design and Operations Guide for details.</p>
+<p>
+</p>
+<hr />
+<h1><a name="diagnostics">DIAGNOSTICS</a></h1>
+<p><strong>Note</strong>: all ION administration utilities expect source file input to be
+lines of ASCII text that are NL-delimited.  If you edit the ionrc file on
+a Windows machine, be sure to <strong>use dos2unix to convert it to Unix text format</strong>
+before presenting it to <strong>ionadmin</strong>.  Otherwise <strong>ionadmin</strong> will detect syntax
+errors and will not function satisfactorily.</p>
+<p>The following diagnostics may be issued to the log file:</p>
+<dl>
+<dt><strong><a name="item_can_27t_open_command_file_2e_2e_2e">Can't open command file...</a></strong>
+
+<dd>
+<p>The <em>commands_filename</em> specified in the command line doesn't exist.</p>
+</dd>
+</li>
+<dt><strong><a name="item_ionadmin_sdr_definition_failed_2e">ionadmin SDR definition failed.</a></strong>
+
+<dd>
+<p>A node initialization command was executed, but an SDR database already
+exists for the indicated node.  It is likely that an ION node is already
+running on this computer or that destruction of a previously started the
+previous ION node was incomplete.  For most ION installations, incomplete
+node destruction can be repaired by (a) killing all ION processes that
+are still running and then (b) using <strong>ipcrm</strong> to remove all SVr4 IPC
+objects owned by ION.</p>
+</dd>
+</li>
+<dt><strong><a name="item_ionadmin_can_27t_get_sdr_parms_2e">ionadmin can't get SDR parms.</a></strong>
+
+<dd>
+<p>A node initialization command was executed, but the <em>ion_config_filename</em>
+passed to that command contains improperly formatted commands.  Please see
+<code>ionconfig(5)</code> for further details.</p>
+</dd>
+</li>
+</dl>
+<p>Various errors that don't cause <strong>ionadmin</strong> to fail but are noted in the
+log file may be caused by improperly formatted commands given at the prompt
+or in the <em>commands_filename</em>.  Please see <code>ionrc(5)</code> for details.</p>
+<p>
+</p>
+<hr />
+<h1><a name="bugs">BUGS</a></h1>
+<p>If the <em>ion_config_filename</em> parameter passed to a node initialization
+command refers to a nonexistent filename, then <strong>ionadmin</strong> uses default
+values are used rather than reporting an error in the command line argument.</p>
+<p>Report bugs to &lt;<a href="mailto:ion-dtn-support@lists.sourceforge.net">ion-dtn-support@lists.sourceforge.net</a>&gt;</p>
+<p>
+</p>
+<hr />
+<h1><a name="see_also">SEE ALSO</a></h1>
+<p>ionrc(5), <code>ionconfig(5)</code></p>
+
+</body>
+
+</html>

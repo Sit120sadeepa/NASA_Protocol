@@ -1,0 +1,299 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>bssprc - Bundle Streaming Service Protocol management commands file</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:mingw-dvlpr@lists.sourceforge.net" />
+</head>
+
+<body style="background-color: white">
+
+<p><a name="__index__"></a></p>
+<!-- INDEX BEGIN -->
+<!--
+
+<ul>
+
+	<li><a href="#name">NAME</a></li>
+	<li><a href="#description">DESCRIPTION</a></li>
+	<li><a href="#commands">COMMANDS</a></li>
+	<li><a href="#examples">EXAMPLES</a></li>
+	<li><a href="#see_also">SEE ALSO</a></li>
+</ul>
+-->
+<!-- INDEX END -->
+
+<p>
+</p>
+<h1><a name="name">NAME</a></h1>
+<p>bssprc - Bundle Streaming Service Protocol management commands file</p>
+<p>
+</p>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p>BSSP management commands are passed to <strong>bsspadmin</strong> either in a file of
+text lines or interactively at <strong>bsspadmin</strong>'s command prompt (:).  Commands
+are interpreted line-by line, with exactly one command per line.  The formats
+and effects of the BSSP management commands are described below.</p>
+<p>
+</p>
+<hr />
+<h1><a name="commands">COMMANDS</a></h1>
+<dl>
+<dt><strong><a name="item__3f"><strong>?</strong></a></strong>
+
+<dd>
+<p>The <strong>help</strong> command.  This will display a listing of the commands and their
+formats.  It is the same as the <strong>h</strong> command.</p>
+</dd>
+</li>
+<dt><strong><a name="item__23"><strong>#</strong></a></strong>
+
+<dd>
+<p>Comment line.  Lines beginning with <strong>#</strong> are not interpreted.</p>
+</dd>
+</li>
+<dt><strong><a name="item_e"><strong>e</strong> { 1 | 0 }</a></strong>
+
+<dd>
+<p>Echo control.  Setting echo to 1 causes all output printed by bsspadmin to be
+logged as well as sent to stdout.  Setting echo to 0 disables this behavior.</p>
+</dd>
+</li>
+<dt><strong><a name="item_v"><strong>v</strong></a></strong>
+
+<dd>
+<p>Version number.  Prints out the version of ION currently installed.  HINT:
+combine with <strong>e 1</strong> command to log the version number at startup.</p>
+</dd>
+</li>
+<li><strong><a name="item_est_max_nbr_of_sessions"><strong>1</strong> <em>est_max_nbr_of_sessions</em></a></strong>
+
+<p>The <strong>initialize</strong> command.  Until this command is executed, BSSP is not
+in operation on the local ION node and most <em>bsspadmin</em> commands will fail.</p>
+<p>The command uses <em>est_max_nbr_of_sessions</em> to configure the hashtable it
+will use to manage access to transmission sessions that are currently
+in progress.  For optimum performance, <em>est_max_nbr_of_sessions</em> should
+normally equal or exceed the summation of <em>max_nbr_of_sessions</em> over all
+spans as discussed below.</p>
+</li>
+<dt><strong><a name="item_a_span_peer_engine_nbr_max_nbr_of_sessions_max_blo"><strong>a span</strong> <em>peer_engine_nbr</em> <em>max_nbr_of_sessions</em> <em>max_block_size</em> '<em>BE-BSO_command</em>' '<em>RL-BSO_command</em> [<em>queuing_latency</em>]</a></strong>
+
+<dd>
+<p>The <strong>add span</strong> command.  This command declares that a <em>span</em> of potential
+BSSP data interchange exists between the local BSSP engine and the indicated
+(neighboring) BSSP engine.</p>
+</dd>
+<dd>
+<p>The <em>max_block_size</em> is expressed as a number of bytes of data.
+<em>max_block_size</em> is used to configure transmission buffer sizes; as such, it
+limits client data item size.</p>
+</dd>
+<dd>
+<p><em>max_nbr_of__sessions</em> constitutes, in effect, the local BSSP engine's
+retransmission ``window'' for this span.  The retransmission windows of the
+spans impose flow control on BSSP transmission, reducing the chance ofx
+allocation of all available space in the ION node's data store to BSSP
+transmission sessions.</p>
+</dd>
+<dd>
+<p><em>BE-BSO_command</em> is script text that will be executed when BSSP is started on
+this node, to initiate operation of the best-efforts transmission channel task
+for this span.  Note that `` <em>peer_engine_nbr</em>'' will automatically be
+appended to <em>BE-BSO_command</em> by <strong>bsspadmin</strong> before the command is executed,
+so only the link-service-specific portion of the command should be provided
+in the <em>LSO_command</em> string itself.</p>
+</dd>
+<dd>
+<p><em>RL-BSO_command</em> is script text that will be executed when BSSP is started on
+this node, to initiate operation of the reliable transmission channel task
+for this span.  Note that `` <em>peer_engine_nbr</em>'' will automatically be
+appended to <em>RL-BSO_command</em> by <strong>bsspadmin</strong> before the command is executed,
+so only the link-service-specific portion of the command should be provided
+in the <em>LSO_command</em> string itself.</p>
+</dd>
+<dd>
+<p><em>queuing_latency</em> is the estimated number of seconds that we expect to lapse
+between reception of a block at this node and transmission of an
+acknowledging PDU, due to processing delay in the node.  (See the
+'m ownqtime' command below.)  The default value is 1.</p>
+</dd>
+<dd>
+<p>If <em>queuing latency</em> a negative number, the absolute value of this number
+is used as the actual queuing latency and session purging is enabled;
+otherwise session purging is disabled.  If session purging is enabled
+for a span then at the end of any period of transmission over this span
+all of the span's export sessions that are currently in progress are
+automatically canceled.  Notionally this forces re-forwarding of the DTN
+bundles in each session's block, to avoid having to wait for the restart
+of transmission on this span before those bundles can be successfully
+transmitted.</p>
+</dd>
+</li>
+<dt><strong><a name="item_a_seat__27be_2dbso_command_27__27rl_2dbso_command_"><strong>a seat</strong> '<em>BE-BSO_command</em>' '<em>RL-BSO_command</em>'</a></strong>
+
+<dd>
+<p>The <strong>add seat</strong> command.  This command declares that the local BSSP engine
+can receive BSSP PDUs via the link service input daemons that begin
+running when '<em>BE-BSO_command</em>' and '<em>RL-BSO_command</em>' are executed.</p>
+</dd>
+</li>
+<dt><strong><a name="item_c_span_peer_engine_nbr_max_nbr_of_sessions_max_blo"><strong>c span</strong> <em>peer_engine_nbr</em> <em>max_nbr_of_sessions</em> <em>max_block_size</em> '<em>BE-BSO_command</em>' '<em>RL-BSO_command</em> [<em>queuing_latency</em>]</a></strong>
+
+<dd>
+<p>The <strong>change span</strong> command.  This command sets the indicated span's 
+configuration parameters to the values provided as arguments.</p>
+</dd>
+</li>
+<dt><strong><a name="item_d_span_peer_engine_nbr"><strong>d span</strong> <em>peer_engine_nbr</em></a></strong>
+
+<dd>
+<p>The <strong>delete span</strong> command.  This command deletes the span identified
+by <em>peer_engine_nbr</em>.  The command will fail if any outbound blocks
+for this span are pending transmission.</p>
+</dd>
+</li>
+<dt><strong><a name="item_d_seat__27be_2dbso_command_27__27rl_2dbso_command_"><strong>d seat</strong> '<em>BE-BSO_command</em>' '<em>RL-BSO_command</em>'</a></strong>
+
+<dd>
+<p>The <strong>delete span</strong> command.  This command deletes the seat identified
+by '<em>BE-BSO_command</em>' and '<em>RL-BSO_command</em>'.</p>
+</dd>
+</li>
+<dt><strong><a name="item_i_span_peer_engine_nbr"><strong>i span</strong> <em>peer_engine_nbr</em></a></strong>
+
+<dd>
+<p>This command will print information (all configuration parameters)
+about the span identified by <em>peer_engine_nbr</em>.</p>
+</dd>
+</li>
+<dt><strong><a name="item_i_seat__27be_2dbso_command_27__27rl_2dbso_command_"><strong>i seat</strong> '<em>BE-BSO_command</em>' '<em>RL-BSO_command</em>'</a></strong>
+
+<dd>
+<p>This command will print all information (i.e., process ID numbers)
+about the seat identified by '<em>BE-BSO_command</em>' and '<em>RL-BSO_command</em>'.</p>
+</dd>
+</li>
+<dt><strong><a name="item_l_span"><strong>l span</strong></a></strong>
+
+<dd>
+<p>This command lists all declared BSSP data interchange spans.</p>
+</dd>
+</li>
+<dt><strong><a name="item_l_seat"><strong>l seat</strong></a></strong>
+
+<dd>
+<p>This command lists all declared BSSP data acquisition seats.</p>
+</dd>
+</li>
+<dt><strong><a name="item_s__5b_27be_2dbsi_command_27__27rl_2dbsi_command_27"><strong>s</strong> ['<em>BE-BSI_command</em>' '<em>RL-BSI_command</em>']</a></strong>
+
+<dd>
+<p>The <strong>start</strong> command.  This command starts reliable and best-efforts link
+service output tasks for all BSSP spans (to remote engines) from the local
+BSSP engine, and it starts the reliable and best-efforts link service input
+tasks for the local engine.  '<em>BE-BSI_command</em>' and '<em>RL-BSI_command</em>'
+are deprecated but are supported for backward compatibility; if provided,
+the effect is the same as entering the command 
+``a seat '<em>BE-BSO_command</em>' '<em>RL-BSO_command</em>''' prior to starting all
+daemon tasks.</p>
+</dd>
+</li>
+<dt><strong><a name="item_m_ownqtime_own_queuing_latency"><strong>m ownqtime</strong> <em>own_queuing_latency</em></a></strong>
+
+<dd>
+<p>The <strong>manage own queuing time</strong> command.  This command sets the number of
+seconds of predicted additional latency attributable to processing delay
+within the local engine itself that should be included whenever BSSP computes
+the nominal round-trip time for an exchange of data with any remote engine.
+The default value is 1.</p>
+</dd>
+</li>
+<dt><strong><a name="item_x"><strong>x</strong></a></strong>
+
+<dd>
+<p>The <strong>stop</strong> command.  This command stops all link service input and output
+tasks for the local BSSP engine.</p>
+</dd>
+</li>
+<dt><strong><a name="item_w"><strong>w</strong> { 0 | 1 | &lt;activity_spec&gt; }</a></strong>
+
+<dd>
+<p>The <strong>BSSP watch</strong> command.  This command enables and disables production of
+a continuous stream of user-selected BSSP activity indication characters.  A
+watch parameter of ``1'' selects all BSSP activity indication characters; ``0''
+de-selects all BSSP activity indication characters; any other <em>activity_spec</em>
+such as ``df='' selects all activity indication characters in the string,
+de-selecting all others.  BSSP will print each selected activity indication
+character to <strong>stdout</strong> every time a processing event of the associated type
+occurs:</p>
+</dd>
+<dd>
+<p><strong>d</strong>	bssp send completed</p>
+</dd>
+<dd>
+<p><strong>e</strong>	bssp block constructed for issuance</p>
+</dd>
+<dd>
+<p><strong>f</strong>	bssp block issued</p>
+</dd>
+<dd>
+<p><strong>g</strong>	bssp block popped from best-efforts transmission queue</p>
+</dd>
+<dd>
+<p><strong>h</strong>	positive ACK received for bssp block, session ended</p>
+</dd>
+<dd>
+<p><strong>s</strong>	bssp block received</p>
+</dd>
+<dd>
+<p><strong>t</strong>	bssp block popped from reliable transmission queue</p>
+</dd>
+<dd>
+<p><strong>=</strong>	unacknowledged best-efforts block requeued for reliable transmission</p>
+</dd>
+<dd>
+<p><strong>{</strong>	session canceled locally by sender</p>
+</dd>
+</li>
+<dt><strong><a name="item_h"><strong>h</strong></a></strong>
+
+<dd>
+<p>The <strong>help</strong> command.  This will display a listing of the commands and their
+formats.  It is the same as the <strong>?</strong> command.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="examples">EXAMPLES</a></h1>
+<dl>
+<dt><strong><a name="item_a_span_19_20_4096__27udpbso_node19_2eohio_2eedu_3a">a span 19 20 4096 'udpbso node19.ohio.edu:5001' 'tcpbso node19.ohio.edu:5001'</a></strong>
+
+<dd>
+<p>Declares a data interchange span between the local BSSP engine and the remote
+engine (ION node) numbered 19.  There can be at most 20 concurrent sessions
+of BSSP transmission activity to this node.  Maximum block size for this span
+is set to 4096 bytes, and the best-efforts and reliable link service
+output tasks that are initiated when BSSP is started on the local ION node
+will execute the <em>udpbso</em> and <em>tcpbso</em> programs as indicated.</p>
+</dd>
+</li>
+<dt><strong><a name="item_m_ownqtime_2">m ownqtime 2</a></strong>
+
+<dd>
+<p>Sets local queuing delay allowance to 2 seconds.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="see_also">SEE ALSO</a></h1>
+<p>bsspadmin(1), udpbsi(1), udpbso(1), tcpbsi(1), <code>tcpbso(1)</code></p>
+
+</body>
+
+</html>

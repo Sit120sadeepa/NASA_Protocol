@@ -1,0 +1,125 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>dgr2file - DGR reception test program</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:mingw-dvlpr@lists.sourceforge.net" />
+</head>
+
+<body style="background-color: white">
+
+<p><a name="__index__"></a></p>
+<!-- INDEX BEGIN -->
+<!--
+
+<ul>
+
+	<li><a href="#name">NAME</a></li>
+	<li><a href="#synopsis">SYNOPSIS</a></li>
+	<li><a href="#description">DESCRIPTION</a></li>
+	<li><a href="#exit_status">EXIT STATUS</a></li>
+	<li><a href="#files">FILES</a></li>
+	<li><a href="#environment">ENVIRONMENT</a></li>
+	<li><a href="#diagnostics">DIAGNOSTICS</a></li>
+	<li><a href="#bugs">BUGS</a></li>
+	<li><a href="#see_also">SEE ALSO</a></li>
+</ul>
+-->
+<!-- INDEX END -->
+
+<p>
+</p>
+<h1><a name="name">NAME</a></h1>
+<p>dgr2file - DGR reception test program</p>
+<p>
+</p>
+<hr />
+<h1><a name="synopsis">SYNOPSIS</a></h1>
+<p><strong>dgr2file</strong></p>
+<p>
+</p>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p><strong>dgr2file</strong> uses DGR to receive multiple copies of the text of a file
+transmitted by <strong>file2dgr</strong>, writing each copy of the file to the current
+working directory.  The name of each file written by <strong>dgr2file</strong> is
+file_copy_<em>cycleNbr</em>, where <em>cycleNbr</em> is initially zero and is increased
+by 1 every time <strong>dgr2file</strong> closes the file it is currently writing and
+opens a new one.</p>
+<p>Upon receiving a DGR datagram from <strong>file2dgr</strong>, <strong>dgr2file</strong> extracts the
+content of the datagram (either a line of text from the file that is being
+transmitted by <strong>file2dgr</strong> or else an EOF string indicating the end of that
+file).  It appends each extracted line of text to the local copy of that
+file that <strong>dgr2file</strong> is currently writing.  When the extracted datagram
+content is an EOF string (the ASCII text ``*** End of the file ***''),
+<strong>dgr2file</strong> closes the file it is writing, increments <em>cycleNbr</em>, opens
+a new copy of the file for writing, and prints the message ``working on cycle
+<em>cycleNbr</em>.''</p>
+<p><strong>dgr2file</strong> always receives datagrams at port 2101.</p>
+<p>
+</p>
+<hr />
+<h1><a name="exit_status">EXIT STATUS</a></h1>
+<dl>
+<dt><strong><a name="item__220_22">``0''</a></strong>
+
+<dd>
+<p><strong>dgr2file</strong> has terminated.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="files">FILES</a></h1>
+<p>No configuration files are needed.</p>
+<p>
+</p>
+<hr />
+<h1><a name="environment">ENVIRONMENT</a></h1>
+<p>No environment variables apply.</p>
+<p>
+</p>
+<hr />
+<h1><a name="diagnostics">DIAGNOSTICS</a></h1>
+<dl>
+<dt><strong><a name="item_can_27t_open_dgr_service">can't open dgr service</a></strong>
+
+<dd>
+<p>Operating system error.  Check errtext, correct problem, and rerun.</p>
+</dd>
+</li>
+<dt><strong><a name="item_can_27t_open_output_file">can't open output file</a></strong>
+
+<dd>
+<p>Operating system error.  Check errtext, correct problem, and rerun.</p>
+</dd>
+</li>
+<dt><strong><a name="item_dgr_receive_failed">dgr_receive failed</a></strong>
+
+<dd>
+<p>Operating system error.  Check errtext, correct problem, and rerun.</p>
+</dd>
+</li>
+<dt><strong><a name="item_can_27t_write_to_output_file">can't write to output file</a></strong>
+
+<dd>
+<p>Operating system error.  Check errtext, correct problem, and rerun.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="bugs">BUGS</a></h1>
+<p>Report bugs to &lt;<a href="mailto:ion-dtn-support@lists.sourceforge.net">ion-dtn-support@lists.sourceforge.net</a>&gt;</p>
+<p>
+</p>
+<hr />
+<h1><a name="see_also">SEE ALSO</a></h1>
+<p>file2dgr(1), <code>dgr(3)</code></p>
+
+</body>
+
+</html>

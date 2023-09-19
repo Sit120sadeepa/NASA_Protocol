@@ -1,0 +1,151 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>tccrc - Trusted Collective client configuration commands file</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:mingw-dvlpr@lists.sourceforge.net" />
+</head>
+
+<body style="background-color: white">
+
+<p><a name="__index__"></a></p>
+<!-- INDEX BEGIN -->
+<!--
+
+<ul>
+
+	<li><a href="#name">NAME</a></li>
+	<li><a href="#description">DESCRIPTION</a></li>
+	<li><a href="#commands">COMMANDS</a></li>
+	<li><a href="#examples">EXAMPLES</a></li>
+	<li><a href="#see_also">SEE ALSO</a></li>
+</ul>
+-->
+<!-- INDEX END -->
+
+<p>
+</p>
+<h1><a name="name">NAME</a></h1>
+<p>tccrc - Trusted Collective client configuration commands file</p>
+<p>
+</p>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p>TC client configuration commands are passed to <strong>tccadmin</strong> either
+in a file of text lines or interactively at <strong>tccadmin</strong>'s command prompt
+(:).  Commands are interpreted line-by line, with exactly one command per
+line.  The formats and effects of the TC client configuration commands
+are described below.</p>
+<p>
+</p>
+<hr />
+<h1><a name="commands">COMMANDS</a></h1>
+<dl>
+<dt><strong><a name="item__3f"><strong>?</strong></a></strong>
+
+<dd>
+<p>The <strong>help</strong> command.  This will display a listing of the commands and their
+formats.  It is the same as the <strong>h</strong> command.</p>
+</dd>
+</li>
+<dt><strong><a name="item__23"><strong>#</strong></a></strong>
+
+<dd>
+<p>Comment line.  Lines beginning with <strong>#</strong> are not interpreted.</p>
+</dd>
+</li>
+<dt><strong><a name="item_e"><strong>e</strong> { 1 | 0 }</a></strong>
+
+<dd>
+<p>Echo control.  Setting echo to 1 causes all output printed by tccadmin to be
+logged as well as sent to stdout.  Setting echo to 0 disables this behavior.</p>
+</dd>
+</li>
+<dt><strong><a name="item_v"><strong>v</strong></a></strong>
+
+<dd>
+<p>Version number.  Prints out the version of ION currently installed.  HINT:
+combine with<strong>e 1</strong> command to log the version number at startup.</p>
+</dd>
+</li>
+<dt><strong><a name="item_h"><strong>h</strong></a></strong>
+
+<dd>
+<p>The <strong>help</strong> command.  This will display a listing of the commands and their
+formats.  It is the same as the <strong>h</strong> command.</p>
+</dd>
+</li>
+<li><strong><a name="item_number_of_authorities_in_collective__5b_k__5b_r__5"><strong>1</strong> <em>number_of_authorities_in_collective</em> [ <em>K</em> [ <em>R</em> ]]</a></strong>
+
+<p>The <strong>initialize</strong> command.  Until this command is executed, the client
+daemon for the selected TC application is not in operation on the local
+ION node and most <em>tccadmin</em> commands will fail.</p>
+<p><em>K</em> is the mandated <strong>diffusion</strong> for the selected TC application, i.e.,
+the number of blocks into which each bulletin of published TC information
+is divided for transmission.</p>
+<p><em>R</em> is the mandated <strong>redundancy</strong> for the selected TC application, i.e.,
+the percentage of  blocks issued per bulletin that will be parity blocks
+rather than extents of the bulletin itself.</p>
+</li>
+<dt><strong><a name="item_i"><strong>i</strong></a></strong>
+
+<dd>
+<p>The <strong>info</strong> This command will print information about the current state
+of the client daemon for the selected TC application on the local node,
+i.e., the identities of the TC authority nodes that the client daemon
+recognizes.</p>
+</dd>
+</li>
+<dt><strong><a name="item_s"><strong>s</strong></a></strong>
+
+<dd>
+<p>The <strong>start</strong> command.  This command starts the client daemon (<strong>tcc</strong>)
+for the selected TC application.</p>
+</dd>
+</li>
+<dt><strong><a name="item_m_authority_authority_array_index_node_number"><strong>m authority</strong> <em>authority_array_index</em> <em>node_number</em></a></strong>
+
+<dd>
+<p>This command asserts that the Nth member of the collective authority for
+the selected TC application, where N is the <em>authority_array_index</em> value,
+is the node identified by <em>node_number</em>.</p>
+</dd>
+</li>
+<dt><strong><a name="item_x"><strong>x</strong></a></strong>
+
+<dd>
+<p>The <strong>stop</strong> command.  This command stops the client daemon (<strong>tcc</strong>) for
+the selected TC application.</p>
+</dd>
+</li>
+<dt><strong><strong>h</strong></strong>
+
+<dd>
+<p>The <strong>help</strong> command.  This will display a listing of the commands and their
+formats.  It is the same as the <strong>?</strong> command.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="examples">EXAMPLES</a></h1>
+<dl>
+<dt><strong><a name="item_m_authority_3_6913">m authority 3 6913</a></strong>
+
+<dd>
+<p>Asserts that node 6913 is member 3 of the collective authority for the
+selected application.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="see_also">SEE ALSO</a></h1>
+<p><code>tccadmin(1)</code></p>
+
+</body>
+
+</html>

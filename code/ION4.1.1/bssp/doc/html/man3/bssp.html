@@ -1,0 +1,196 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>bssp - Bundle Streaming Service Protocol communications library</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:mingw-dvlpr@lists.sourceforge.net" />
+</head>
+
+<body style="background-color: white">
+
+<p><a name="__index__"></a></p>
+<!-- INDEX BEGIN -->
+<!--
+
+<ul>
+
+	<li><a href="#name">NAME</a></li>
+	<li><a href="#synopsis">SYNOPSIS</a></li>
+	<li><a href="#description">DESCRIPTION</a></li>
+	<li><a href="#see_also">SEE ALSO</a></li>
+</ul>
+-->
+<!-- INDEX END -->
+
+<p>
+</p>
+<h1><a name="name">NAME</a></h1>
+<p>bssp - Bundle Streaming Service Protocol (BSSP) communications library</p>
+<p>
+</p>
+<hr />
+<h1><a name="synopsis">SYNOPSIS</a></h1>
+<pre>
+    #include &quot;bssp.h&quot;</pre>
+<pre>
+    typedef enum
+    {
+        BsspNoNotice = 0,
+        BsspXmitSuccess,
+        BsspXmitFailure,
+        BsspRecvSuccess
+    } BsspNoticeType;</pre>
+<pre>
+    [see description for available functions]</pre>
+<p>
+</p>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p>The bssp library provides functions enabling application software to use BSSP
+to send and receive streaming data in bundles.</p>
+<p>BSSP is designed to forward streaming data in original transmission order
+wherever possible but to retransmit data as necessary to ensure that the
+entire stream is available for playback eventually.  To this end, BSSP uses
+not one but two underlying ``link service'' channels: (a) an unreliable ``best
+efforts'' channel, for data items that are successfully received upon initial
+transmission over every extent of the end-to-end path, and (b) a ``reliable''
+channel, for data items that were lost at some point, had to be retransmitted,
+and therefore are now out of order.  The BSS library at the destination node
+supports immediate ``real-time'' display of all data received on the ``best
+efforts'' channel in transmission order, together with database retention of
+all data eventually received on the ``reliable'' channel.</p>
+<p>The BSSP notion of <strong>engine ID</strong> corresponds closely to the Internet notion of
+a host, and in ION engine IDs are normally indistinguishable from node numbers
+including the node numbers in Bundle Protocol endpoint IDs conforming to
+the ``ipn'' scheme.</p>
+<p>The BSSP notion of <strong>client ID</strong> corresponds closely to the Internet notion of
+``protocol number'' as used in the Internet Protocol.  It enables data from
+multiple applications -- clients -- to be multiplexed over a single reliable
+link.  However, for ION operations we normally use BSSP exclusively for the
+transmission of Bundle Protocol data, identified by client ID = 1.</p>
+<dl>
+<dt><strong><a name="item_bssp_attach">int <code>bssp_attach()</code></a></strong>
+
+<dd>
+<p>Attaches the application to BSSP functionality on the lcoal computer.  Returns
+0 on success, -1 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_bssp_detach">void <code>bssp_detach()</code></a></strong>
+
+<dd>
+<p>Terminates all access to BSSP functionality on the local computer.</p>
+</dd>
+</li>
+<dt><strong><a name="item_bssp_engine_is_started">int <code>bssp_engine_is_started()</code></a></strong>
+
+<dd>
+<p>Returns 1 if the local BSSP engine has been started and not yet stopped,
+0 otherwise.</p>
+</dd>
+</li>
+<dt><strong><a name="item_bssp_send">int bssp_send(uvast destinationEngineId, unsigned int clientId, Object clientServiceData, int inOrder, BsspSessionId *sessionId)</a></strong>
+
+<dd>
+<p>Sends a client service data unit to the application that is waiting for
+data tagged with the indicated <em>clientId</em> as received at the remote BSSP
+engine identified by <em>destinationEngineId</em>.</p>
+</dd>
+<dd>
+<p><em>clientServiceData</em> must be a ``zero-copy object'' reference as returned
+by ionCreateZco().  Note that BSSP will privately make and destroy its own
+reference to the client service data object; the application is free to
+destroy its reference at any time.</p>
+</dd>
+<dd>
+<p><em>inOrder</em> is a Boolean value indicating whether or not the service data item
+that is being sent is ``in order'', i.e., was originally transmitted after all
+items that have previously been sent to this destination by this local BSSP
+engine: 0 if no (meaning that the item must be transmitted using the
+``reliable'' channel), 1 if yes (meaning that the item must be transmitted
+using the ``best-efforts'' channel.</p>
+</dd>
+<dd>
+<p>On success, the function populates <em>*sessionId</em> with the source engine ID
+and the ``session number'' assigned to transmission of this client service
+data unit and returns zero.  The session number may be used to link future
+BSSP processing events to the affected client service data.  <a href="#item_bssp_send"><code>bssp_send()</code></a>
+returns -1 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_bssp_open">int bssp_open(unsigned int clientId)</a></strong>
+
+<dd>
+<p>Establishes the application's exclusive access to received service data
+units tagged with the indicated BSSP client service data ID.  At any time,
+only a single application task is permitted to receive service data units
+for any single client service data ID.</p>
+</dd>
+<dd>
+<p>Returns 0 on success, -1 on any error (e.g., the indicated client service
+is already being held open by some other application task).</p>
+</dd>
+</li>
+<dt><strong><a name="item_bssp_get_notice">int bssp_get_notice(unsigned int clientId, BsspNoticeType *type, BsspSessionId *sessionId, unsigned char *reasonCode, unsigned int *dataLength, Object *data)</a></strong>
+
+<dd>
+<p>Receives notices of BSSP processing events pertaining to the flow of service
+data units tagged with the indicated client service ID.  The nature of each
+event is indicated by <em>*type</em>.  Additional parameters characterizing the
+event are returned in <em>*sessionId</em>, <em>*reasonCode</em>, <em>*dataLength</em>, and
+<em>*data</em> as relevant.</p>
+</dd>
+<dd>
+<p>The value returned in <em>*data</em> is always a zero-copy object; use the
+zco_* functions defined in ``zco.h'' to retrieve the content of that object.</p>
+</dd>
+<dd>
+<p>When the notice is an BsspRecvSuccess, the ZCO returned in <em>*data</em>
+contains the content of a single BSSP block.</p>
+</dd>
+<dd>
+<p>The cancellation of an export session results in delivery of a 
+BsspXmitFailure notice.  In this case, the ZCO returned in *data is a
+service data unit ZCO that had previously been passed to bssp_send().</p>
+</dd>
+<dd>
+<p><a href="#item_bssp_get_notice"><code>bssp_get_notice()</code></a> always blocks indefinitely until an BSSP processing event
+is delivered.</p>
+</dd>
+<dd>
+<p>Returns zero on success, -1 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_bssp_interrupt">void bssp_interrupt(unsigned int clientId)</a></strong>
+
+<dd>
+<p>Interrupts an <a href="#item_bssp_get_notice"><code>bssp_get_notice()</code></a> invocation.  This function is designed to be
+called from a signal handler; for this purpose, <em>clientId</em> may need to be
+obtained from a static variable.</p>
+</dd>
+</li>
+<dt><strong><a name="item_bssp_release_data">void bssp_release_data(Object data)</a></strong>
+
+<dd>
+<p>Releases the resources allocated to hold <em>data</em>, which must be a <strong>received</strong>
+client service data unit ZCO.</p>
+</dd>
+</li>
+<dt><strong><a name="item_bssp_close">void bssp_close(unsigned int clientId)</a></strong>
+
+<dd>
+<p>Terminates the application's exclusive access to received service data
+units tagged with the indicated client service data ID.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="see_also">SEE ALSO</a></h1>
+<p>bsspadmin(1), bssprc(5), <code>zco(3)</code></p>
+
+</body>
+
+</html>

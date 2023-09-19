@@ -376,11 +376,37 @@ void	psm_erase(PsmPartition partition)
 	map->status = 0;
 }
 
-void    *psp(PsmPartition partition, PsmAddress address)
+/*void    *psp(PsmPartition partition, PsmAddress address)
 {
 	CHKNULL(partition);
 	return (address < sizeof(PartitionMap) ? NULL
 			: (partition->space) + address);
+}*/
+void *psp(PsmPartition partition, PsmAddress address)
+{
+    // Check if the partition is valid
+    if (!partition)
+    {
+        return NULL; // Handle the case of an invalid partition gracefully.
+    }
+
+    // Define the maximum valid address
+    const size_t maxValidAddress = sizeof(PartitionMap);
+
+    // Check if the address is within bounds
+    if (address < maxValidAddress)
+    {
+        return NULL; // Handle the out-of-bounds address gracefully.
+    }
+
+    // Ensure that address remains within bounds
+    if (address >= partition->spaceSize)
+    {
+        return NULL; // Handle the case of an out-of-bounds address.
+    }
+
+    // Calculate and return the pointer
+    return (partition->space) + address;
 }
 
 PsmAddress	psa(PsmPartition partition, void *pointer)

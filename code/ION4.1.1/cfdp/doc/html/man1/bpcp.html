@@ -1,0 +1,142 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>bpcp - A remote copy utility for delay tolerant networks utilizing
+NASA JPL's Interplanetary Overlay Network</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:mingw-dvlpr@lists.sourceforge.net" />
+</head>
+
+<body style="background-color: white">
+
+<p><a name="__index__"></a></p>
+<!-- INDEX BEGIN -->
+<!--
+
+<ul>
+
+	<li><a href="#name">NAME</a></li>
+	<li><a href="#synopsis">SYNOPSIS</a></li>
+	<li><a href="#description">DESCRIPTION</a></li>
+	<li><a href="#exit_status">EXIT STATUS</a></li>
+	<li><a href="#files">FILES</a></li>
+	<li><a href="#environment">ENVIRONMENT</a></li>
+	<li><a href="#bugs">BUGS</a></li>
+	<li><a href="#see_also">SEE ALSO</a></li>
+</ul>
+-->
+<!-- INDEX END -->
+
+<p>
+</p>
+<h1><a name="name">NAME</a></h1>
+<p>bpcp - A remote copy utility for delay tolerant networks utilizing
+NASA JPL's Interplanetary Overlay Network (ION)</p>
+<p>
+</p>
+<hr />
+<h1><a name="synopsis">SYNOPSIS</a></h1>
+<p><strong>bpcp</strong> [-dqr | -v] [-L <em>bundle_lifetime</em>] [-C <em>custody_on/off</em>] 
+[-S <em>class_of_service</em>] [<em>host1</em>:]<em>file1</em> ... [<em>host2</em>:]<em>file2</em></p>
+<p>
+</p>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p><strong>bpcp</strong> copies files between hosts utilizing NASA JPL's Interplanetary
+Overlay Network (ION) to provide a delay tolerant network. File copies
+from local to remote, remote to local, or remote to remote are permitted.
+<strong>bpcp</strong> depends on ION to do any authentication or encryption of file transfers.
+All covergence layers over which <strong>bpcp</strong> runs MUST be reliable.</p>
+<p>The options are permitted as follows:</p>
+<dl>
+<dt><strong><a name="item___2dd_debug_output_2e_repeat_for_increased_verbosi"><strong> -d</strong>	Debug output. Repeat for increased verbosity.</a></strong>
+
+<dt><strong><a name="item___2dq_quiet_2e_do_not_output_status_messages_2e"><strong> -q</strong>	Quiet. Do not output status messages.</a></strong>
+
+<dt><strong><a name="item___2dr_recursive_2e"><strong> -r</strong>	Recursive.</a></strong>
+
+<dt><strong><a name="item___2dv_display_version_information_2e"><strong> -v</strong>	Display version information.</a></strong>
+
+<dt><strong><a name="item___2dl_bundle_lifetime"><strong> -L</strong> <em>bundle_lifetime</em></a></strong>
+
+<dd>
+<p>Bundle lifetime in seconds. Default is 86400 seconds (1 day).</p>
+</dd>
+</li>
+<dt><strong><a name="item___2dc_bp_custody"><strong> -C</strong> <em>BP_custody</em></a></strong>
+
+<dd>
+<p>Acceptable values are ON/OFF,YES/NO,1/0. Default is OFF.</p>
+</dd>
+</li>
+<dt><strong><a name="item___2ds_class_of_service"><strong> -S</strong> <em>class_of_service</em></a></strong>
+
+<dd>
+<p>Bundle Protocol Class of Service for this transfer. Available options are:</p>
+</dd>
+<ol>
+<li><strong><a name="item_bulk_priority">Bulk Priority</a></strong>
+
+<pre>
+
+=item 1 Standard Priority</pre>
+<li><strong><a name="item_expedited_priority">Expedited Priority</a></strong>
+
+</ol>
+<pre>
+
+Default is Standard Priority.</pre>
+</dl>
+<p><strong>bpcp</strong> utilizes CFDP to preform the actual file transfers. This has several
+important implications. First, ION's CFDP implementation requires that reliable
+convergence layers be used to transfer the data. Second, file permissions are
+not transferred. Files will be made executable on copy. Third, symbolic links
+are ignored for local to remote transfers and their target is copied for remote
+transfers. Fourth, all hosts must be specified using ION's IPN naming scheme.</p>
+<p>In order to preform remote to local transfers or remote to remote transfers,
+<strong>bpcpd</strong> must be running on the remote hosts. However, <strong>bpcp</strong> should NOT
+be run simultaneously with <strong>bpcpd</strong> or <strong>cfdptest</strong>.</p>
+<p>
+</p>
+<hr />
+<h1><a name="exit_status">EXIT STATUS</a></h1>
+<dl>
+<dt><strong><a name="item__220_22">``0''</a></strong>
+
+<dd>
+<p><strong>bpcp</strong> terminated normally.</p>
+</dd>
+</li>
+<dt><strong><a name="item__221_22">``1''</a></strong>
+
+<dd>
+<p><strong>bpcp</strong> terminated abnormally. Check console and the <strong>ion.log</strong> file for error messages.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="files">FILES</a></h1>
+<p>No configuration files are needed.</p>
+<p>
+</p>
+<hr />
+<h1><a name="environment">ENVIRONMENT</a></h1>
+<p>No environment variables apply.</p>
+<p>
+</p>
+<hr />
+<h1><a name="bugs">BUGS</a></h1>
+<p>Report bugs to &lt;<a href="mailto:ion-dtn-support@lists.sourceforge.net">ion-dtn-support@lists.sourceforge.net</a>&gt;</p>
+<p>
+</p>
+<hr />
+<h1><a name="see_also">SEE ALSO</a></h1>
+<p>bpcpd(1), ion(3), <code>cfdptest(1)</code>
+</p>
+
+</body>
+
+</html>

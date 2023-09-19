@@ -1,0 +1,117 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>sdrmend - SDR corruption repair utility</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:mingw-dvlpr@lists.sourceforge.net" />
+</head>
+
+<body style="background-color: white">
+
+<p><a name="__index__"></a></p>
+<!-- INDEX BEGIN -->
+<!--
+
+<ul>
+
+	<li><a href="#name">NAME</a></li>
+	<li><a href="#synopsis">SYNOPSIS</a></li>
+	<li><a href="#description">DESCRIPTION</a></li>
+	<li><a href="#exit_status">EXIT STATUS</a></li>
+	<li><a href="#files">FILES</a></li>
+	<li><a href="#environment">ENVIRONMENT</a></li>
+	<li><a href="#diagnostics">DIAGNOSTICS</a></li>
+	<li><a href="#bugs">BUGS</a></li>
+	<li><a href="#see_also">SEE ALSO</a></li>
+</ul>
+-->
+<!-- INDEX END -->
+
+<p>
+</p>
+<h1><a name="name">NAME</a></h1>
+<p>sdrmend - SDR corruption repair utility</p>
+<p>
+</p>
+<hr />
+<h1><a name="synopsis">SYNOPSIS</a></h1>
+<p><strong>sdrmend</strong> <em>sdr_name</em> <em>config_flags</em> <em>heap_words</em> <em>heap_key</em> <em>path_name</em> [<em>restartCmd</em> <em>restartLatency</em>]</p>
+<p>
+</p>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p>The <strong>sdrmend</strong> program simply invokes the <code>sdr_reload_profile()</code> function (see
+<code>sdr(3))</code> to effect necessary repairs in a potentially corrupt SDR, e.g., due to
+the demise of a program that had an SDR transaction in progress at the moment
+it crashed.</p>
+<p>Note that <strong>sdrmend</strong> need not be run to repair ION's data store in the event
+of a hardware reboot: restarting ION will automatically reload the data
+store's profile.  <strong>sdrmend</strong> is needed only when it is desired to repair
+the data store without requiring all ION software to terminate and restart.</p>
+<p>
+</p>
+<hr />
+<h1><a name="exit_status">EXIT STATUS</a></h1>
+<dl>
+<dt><strong><a name="item__220_22">``0''</a></strong>
+
+<dd>
+<p><strong>sdrmend</strong> has terminated successfully.</p>
+</dd>
+</li>
+<dt><strong><a name="item__221_22">``1''</a></strong>
+
+<dd>
+<p><strong>sdrmend</strong> has terminated unsuccessfully.  See diagnostic messages in the
+<strong>ion.log</strong> log file for details.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="files">FILES</a></h1>
+<p>No configuration files are needed.</p>
+<p>
+</p>
+<hr />
+<h1><a name="environment">ENVIRONMENT</a></h1>
+<p>No environment variables apply.</p>
+<p>
+</p>
+<hr />
+<h1><a name="diagnostics">DIAGNOSTICS</a></h1>
+<p>The following diagnostics may be issued to the <strong>ion.log</strong> log file:</p>
+<dl>
+<dt><strong><a name="item_can_27t_initialize_the_sdr_system_2e">Can't initialize the SDR system.</a></strong>
+
+<dd>
+<p>Probable operations error: ION appears not to be initialized, in which case
+there is no point in running <strong>sdrmend</strong>.</p>
+</dd>
+</li>
+<dt><strong><a name="item_can_27t_reload_profile_for_sdr_2e">Can't reload profile for SDR.</a></strong>
+
+<dd>
+<p>ION system error.  See earlier diagnostic messages posted to <strong>ion.log</strong>
+for details.  In this event it is unlikely that <strong>sdrmend</strong> can be run
+successfully, and it is also unlikely that it would have any effect if it
+did run successfully.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="bugs">BUGS</a></h1>
+<p>Report bugs to &lt;<a href="mailto:ion-dtn-support@lists.sourceforge.net">ion-dtn-support@lists.sourceforge.net</a>&gt;</p>
+<p>
+</p>
+<hr />
+<h1><a name="see_also">SEE ALSO</a></h1>
+<p>ionunlock(1), sdr(3), <code>ionadmin(1)</code></p>
+
+</body>
+
+</html>

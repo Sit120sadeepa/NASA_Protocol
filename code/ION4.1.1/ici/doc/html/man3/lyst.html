@@ -1,0 +1,260 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>lyst - library for manipulating generalized doubly linked lists</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:mingw-dvlpr@lists.sourceforge.net" />
+</head>
+
+<body style="background-color: white">
+
+<p><a name="__index__"></a></p>
+<!-- INDEX BEGIN -->
+<!--
+
+<ul>
+
+	<li><a href="#name">NAME</a></li>
+	<li><a href="#synopsis">SYNOPSIS</a></li>
+	<li><a href="#description">DESCRIPTION</a></li>
+	<li><a href="#see_also">SEE ALSO</a></li>
+</ul>
+-->
+<!-- INDEX END -->
+
+<p>
+</p>
+<h1><a name="name">NAME</a></h1>
+<p>lyst - library for manipulating generalized doubly linked lists</p>
+<p>
+</p>
+<hr />
+<h1><a name="synopsis">SYNOPSIS</a></h1>
+<pre>
+    #include &quot;lyst.h&quot;</pre>
+<pre>
+    typedef int  (*LystCompareFn)(void *s1, void *s2);
+    typedef void (*LystCallback)(LystElt elt, void *userdata);</pre>
+<pre>
+    [see description for available functions]</pre>
+<p>
+</p>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p>The ``lyst'' library uses two types of objects, <em>Lyst</em> objects
+and <em>LystElt</em> objects.  A Lyst knows how many elements it contains, 
+its first and last elements, the memory manager used
+to create/destroy the Lyst and its elements, and how the elements are
+sorted.  A LystElt knows its content (normally a pointer to an item
+in memory), what Lyst it belongs to, and the LystElts before and after
+it in that Lyst.</p>
+<dl>
+<dt><strong><a name="item_lyst_create">Lyst <code>lyst_create(void)</code></a></strong>
+
+<dd>
+<p>Create and return a new Lyst object without any elements in it.
+All operations performed on this Lyst will use the
+allocation/deallocation functions of the default memory
+manager ``std'' (see memmgr(3)).  Returns NULL on any failure.</p>
+</dd>
+</li>
+<dt><strong><a name="item_lyst_create_using">Lyst lyst_create_using(unsigned memmgrId)</a></strong>
+
+<dd>
+<p>Create and return a new Lyst object without any elements in it.
+All operations performed on this Lyst will use the
+allocation/deallocation functions of the specified
+memory manager (see memmgr(3)).  Returns NULL on any failure.</p>
+</dd>
+</li>
+<dt><strong><a name="item_lyst_clear">void lyst_clear(Lyst list)</a></strong>
+
+<dd>
+<p>Clear a Lyst, i.e. free all elements of <em>list</em>, calling the Lyst's
+deletion function if defined, but without destroying the Lyst itself.</p>
+</dd>
+</li>
+<dt><strong><a name="item_lyst_destroy">void lyst_destroy(Lyst list)</a></strong>
+
+<dd>
+<p>Destroy a Lyst.  Will free all elements of <em>list</em>, calling the Lyst's
+deletion function if defined.</p>
+</dd>
+</li>
+<dt><strong><a name="item_lyst_compare_set">void lyst_compare_set(Lyst list, LystCompareFn compareFn)</a></strong>
+
+<dt><strong><a name="item_lyst_compare_get">LystCompareFn lyst_compare_get(Lyst list)</a></strong>
+
+<dd>
+<p>Set/get comparison function for specified Lyst.  Comparison 
+functions are called with two Lyst element data
+pointers, and must return a negative integer if first
+is less than second, 0 if both are equal, and a positive integer
+if first is greater than second (i.e., same return values as strcmp(3)).
+The comparison function is used by the
+lyst_insert(), lyst_search(), lyst_sort(), and <a href="#item_lyst_sorted"><code>lyst_sorted()</code></a>
+functions.</p>
+</dd>
+</li>
+<dt><strong><a name="item_lyst_direction_set">void lyst_direction_set(Lyst list, LystSortDirection direction)</a></strong>
+
+<dd>
+<p>Set sort direction (either LIST_SORT_ASCENDING or
+LIST_SORT_DESCENDING) for specified Lyst.  If no comparison
+function is set, then this controls whether
+new elements are added to the end or beginning (respectively) 
+of the Lyst when <a href="#item_lyst_insert"><code>lyst_insert()</code></a> is called.</p>
+</dd>
+</li>
+<dt><strong><a name="item_lyst_delete_set">void lyst_delete_set(Lyst list, LystCallback deleteFn, void *userdata)</a></strong>
+
+<dd>
+<p>Set user deletion function for specified Lyst.  This
+function is automatically called whenever an element of the Lyst is deleted,
+to perform any user-required processing.  When automatically called,
+the deletion function is passed two arguments: the element being deleted
+and the <em>userdata</em> pointer specified in the <a href="#item_lyst_delete_set"><code>lyst_delete_set()</code></a> call.</p>
+</dd>
+</li>
+<dt><strong><a name="item_lyst_insert_set">void lyst_insert_set(Lyst list, LystCallback insertFn, void *userdata)</a></strong>
+
+<dd>
+<p>Set user insertion function for specified Lyst.  This
+function is automatically called whenever a Lyst element is
+inserted into the Lyst, to perform any user-required processing.
+When automatically called, the insertion function is passed two arguments:
+the element being inserted and the <em>userdata</em> pointer specified in
+the <a href="#item_lyst_insert_set"><code>lyst_insert_set()</code></a> call.</p>
+</dd>
+</li>
+<dt><strong><a name="item_lyst_length">unsigned long lyst_length(Lyst list)</a></strong>
+
+<dd>
+<p>Return the number of elements in the Lyst.</p>
+</dd>
+</li>
+<dt><strong><a name="item_lyst_insert">LystElt lyst_insert(Lyst list, void *data)</a></strong>
+
+<dd>
+<p>Create a new element whose content is the pointer value <em>data</em>
+and insert it into the Lyst.  Uses the Lyst's comparison
+function to select insertion point, if defined; otherwise
+adds the new element at the beginning or end of the Lyst,
+depending on the Lyst sort direction setting.  Returns a
+pointer to the newly created element, or NULL on any failure.</p>
+</dd>
+</li>
+<dt><strong><a name="item_lyst_insert_first">LystElt lyst_insert_first(Lyst list, void *data)</a></strong>
+
+<dt><strong><a name="item_lyst_insert_last">LystElt lyst_insert_last(Lyst list, void *data)</a></strong>
+
+<dd>
+<p>Create a new element and insert it at the beginning/end
+of the Lyst.  If these functions are used when inserting elements
+into a Lyst with a defined comparison function, then the Lyst may
+get out of order and future calls to <a href="#item_lyst_insert"><code>lyst_insert()</code></a> can put new elements 
+in unpredictable locations.  Returns a pointer to
+the newly created element, or NULL on any failure.</p>
+</dd>
+</li>
+<dt><strong><a name="item_lyst_insert_before">LystElt lyst_insert_before(LystElt element, void *data)</a></strong>
+
+<dt><strong><a name="item_lyst_insert_after">LystElt lyst_insert_after(LystElt element, void *data)</a></strong>
+
+<dd>
+<p>Create a new element and insert it before/after the
+specified element.  If these functions are used when inserting
+elements into a Lyst with a defined comparison function,
+then the Lyst may get out
+of order and future calls to <a href="#item_lyst_insert"><code>lyst_insert()</code></a> can put new
+elements in unpredictable locations.  Returns a pointer
+to the newly created element, or NULL on any failure.</p>
+</dd>
+</li>
+<dt><strong><a name="item_lyst_delete">void lyst_delete(LystElt element)</a></strong>
+
+<dd>
+<p>Delete the specified element from its Lyst and deallocate its memory.  
+Calls the user delete function if defined.</p>
+</dd>
+</li>
+<dt><strong><a name="item_lyst_first">LystElt lyst_first(Lyst list)</a></strong>
+
+<dt><strong><a name="item_lyst_last">LystElt lyst_last(Lyst list)</a></strong>
+
+<dd>
+<p>Return a pointer to the first/last element of a Lyst.</p>
+</dd>
+</li>
+<dt><strong><a name="item_lyst_next">LystElt lyst_next(LystElt element)</a></strong>
+
+<dt><strong><a name="item_lyst_prev">LystElt lyst_prev(LystElt element)</a></strong>
+
+<dd>
+<p>Return a pointer to the element following/preceding the specified element.</p>
+</dd>
+</li>
+<dt><strong><a name="item_lyst_search">LystElt lyst_search(LystElt element, void *searchValue)</a></strong>
+
+<dd>
+<p>Find the first matching element in a Lyst starting with
+the specified element.  Returns NULL if no matches are
+found.  Uses the Lyst's comparison function if defined,
+otherwise searches from the given element to the end of the Lyst.</p>
+</dd>
+</li>
+<dt><strong><a name="item_lyst_lyst">Lyst lyst_lyst(LystElt element)</a></strong>
+
+<dd>
+<p>Return the Lyst to which the specified element belongs.</p>
+</dd>
+</li>
+<dt><strong><a name="item_lyst_data">void* lyst_data(LystElt element)</a></strong>
+
+<dt><strong><a name="item_lyst_data_set">void* lyst_data_set(LystElt element, void *data)</a></strong>
+
+<dd>
+<p>Get/set the pointer value content of the specified Lyst element.  The
+set routine returns the element's previous content, and the
+delete function is <em>not</em> called.  If the <a href="#item_lyst_data_set"><code>lyst_data_set()</code></a>
+function is used on an element of a Lyst with a defined comparison
+function, then the Lyst may get out of order and future calls to
+<a href="#item_lyst_insert"><code>lyst_insert()</code></a> can put new elements in unpredictable locations.</p>
+</dd>
+</li>
+<dt><strong><a name="item_lyst_sort">void lyst_sort(Lyst list)</a></strong>
+
+<dd>
+<p>Sort the Lyst based on the current comparison function
+and sort direction.  A stable insertion sort is used
+that is very fast when the elements are already in order.</p>
+</dd>
+</li>
+<dt><strong><a name="item_lyst_sorted">int lyst_sorted(Lyst list)</a></strong>
+
+<dd>
+<p>Determine whether or not the Lyst is sorted based on
+the current comparison function and sort direction.</p>
+</dd>
+</li>
+<dt><strong><a name="item_lyst_apply">void lyst_apply(Lyst list, LystCallback applyFn, void *userdata)</a></strong>
+
+<dd>
+<p>Apply the function <em>applyFn</em> automatically to each element
+in the Lyst.  When automatically called, <em>applyFn</em> is passed
+two arguments: a pointer to an element, and the <em>userdata</em>
+argument specified in the call to lyst_apply().  <em>applyFn</em>
+should not delete or reorder the elements in the Lyst.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="see_also">SEE ALSO</a></h1>
+<p>memmgr(3), <code>psm(3)</code></p>
+
+</body>
+
+</html>

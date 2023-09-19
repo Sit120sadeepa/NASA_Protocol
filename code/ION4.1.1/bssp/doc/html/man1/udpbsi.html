@@ -1,0 +1,137 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>udpbsi - UDP-based best-effort link service input task for BSSP</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:mingw-dvlpr@lists.sourceforge.net" />
+</head>
+
+<body style="background-color: white">
+
+<p><a name="__index__"></a></p>
+<!-- INDEX BEGIN -->
+<!--
+
+<ul>
+
+	<li><a href="#name">NAME</a></li>
+	<li><a href="#synopsis">SYNOPSIS</a></li>
+	<li><a href="#description">DESCRIPTION</a></li>
+	<li><a href="#exit_status">EXIT STATUS</a></li>
+	<li><a href="#files">FILES</a></li>
+	<li><a href="#environment">ENVIRONMENT</a></li>
+	<li><a href="#diagnostics">DIAGNOSTICS</a></li>
+	<li><a href="#bugs">BUGS</a></li>
+	<li><a href="#see_also">SEE ALSO</a></li>
+</ul>
+-->
+<!-- INDEX END -->
+
+<p>
+</p>
+<h1><a name="name">NAME</a></h1>
+<p>udpbsi - UDP-based best-effort link service input task for BSSP</p>
+<p>
+</p>
+<hr />
+<h1><a name="synopsis">SYNOPSIS</a></h1>
+<p><strong>udpbsi</strong> {<em>local_hostname</em> | @}[:<em>local_port_nbr</em>]</p>
+<p>
+</p>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p><strong>udpbsi</strong> is a background ``daemon'' task that receives UDP datagrams via a
+UDP socket bound to <em>local_hostname</em> and <em>local_port_nbr</em>, extracts BSSP
+PDUs from those datagrams, and passes them to the local BSSP engine.
+Host name ``@'' signifies that the host name returned by <code>hostname(1)</code> is to
+be used as the socket's host name.  If not specified, port number defaults
+to 6001.</p>
+<p>The link service input task is spawned automatically by <strong>bsspadmin</strong> in
+response to the 's' command that starts operation of the BSSP protocol;
+the text of the command that is used to spawn the task must be provided
+as a parameter to the 's' command.  The link service input task is
+terminated by <strong>bsspadmin</strong> in response to an 'x' (STOP) command.</p>
+<p>
+</p>
+<hr />
+<h1><a name="exit_status">EXIT STATUS</a></h1>
+<dl>
+<dt><strong><a name="item__220_22">``0''</a></strong>
+
+<dd>
+<p><strong>udpbsi</strong> terminated normally, for reasons noted in the <strong>ion.log</strong> file.  If
+this termination was not commanded, investigate and solve the problem identified
+in the log file and use <strong>bsspadmin</strong> to restart <strong>udpbsi</strong>.</p>
+</dd>
+</li>
+<dt><strong><a name="item__221_22">``1''</a></strong>
+
+<dd>
+<p><strong>udpbsi</strong> terminated abnormally, for reasons noted in the <strong>ion.log</strong> file.
+Investigate and solve the problem identified in the log file, then use
+<strong>bsspadmin</strong> to restart <strong>udpbsi</strong>.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="files">FILES</a></h1>
+<p>No configuration files are needed.</p>
+<p>
+</p>
+<hr />
+<h1><a name="environment">ENVIRONMENT</a></h1>
+<p>No environment variables apply.</p>
+<p>
+</p>
+<hr />
+<h1><a name="diagnostics">DIAGNOSTICS</a></h1>
+<p>The following diagnostics may be issued to the <strong>ion.log</strong> log file:</p>
+<dl>
+<dt><strong><a name="item_udpbsi_can_27t_initialize_bssp_2e">udpbsi can't initialize BSSP.</a></strong>
+
+<dd>
+<p><strong>bsspadmin</strong> has not yet initialized BSSP protocol operations.</p>
+</dd>
+</li>
+<dt><strong><a name="item_be_2dbsi_task_is_already_started_2e">BE-BSI task is already started.</a></strong>
+
+<dd>
+<p>Redundant initiation of <strong>udpbsi</strong>.</p>
+</dd>
+</li>
+<dt><strong><a name="item_be_2dbsi_can_27t_open_udp_socket">BE-BSI can't open UDP socket</a></strong>
+
+<dd>
+<p>Operating system error.  Check errtext, correct problem, and restart <strong>udpbsi</strong>.</p>
+</dd>
+</li>
+<dt><strong><a name="item_be_2dbsi_can_27t_initialize_socket">BE-BSI can't initialize socket</a></strong>
+
+<dd>
+<p>Operating system error.  Check errtext, correct problem, and restart <strong>udpbsi</strong>.</p>
+</dd>
+</li>
+<dt><strong><a name="item_udpbsi_can_27t_create_receiver_thread">udpbsi can't create receiver thread</a></strong>
+
+<dd>
+<p>Operating system error.  Check errtext, correct problem, and restart <strong>udpbsi</strong>.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="bugs">BUGS</a></h1>
+<p>Report bugs to &lt;<a href="mailto:ion-dtn-support@lists.sourceforge.net">ion-dtn-support@lists.sourceforge.net</a>&gt;</p>
+<p>
+</p>
+<hr />
+<h1><a name="see_also">SEE ALSO</a></h1>
+<p>bsspadmin(1), tcpbsi(1), <code>udpbso(1)</code></p>
+
+</body>
+
+</html>

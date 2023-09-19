@@ -1,0 +1,281 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>smrbt - shared-memory red-black tree management library</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:mingw-dvlpr@lists.sourceforge.net" />
+</head>
+
+<body style="background-color: white">
+
+<p><a name="__index__"></a></p>
+<!-- INDEX BEGIN -->
+<!--
+
+<ul>
+
+	<li><a href="#name">NAME</a></li>
+	<li><a href="#synopsis">SYNOPSIS</a></li>
+	<li><a href="#description">DESCRIPTION</a></li>
+	<li><a href="#usage">USAGE</a></li>
+	<li><a href="#example">EXAMPLE</a></li>
+	<li><a href="#see_also">SEE ALSO</a></li>
+</ul>
+-->
+<!-- INDEX END -->
+
+<p>
+</p>
+<h1><a name="name">NAME</a></h1>
+<p>smrbt - shared-memory red-black tree management library</p>
+<p>
+</p>
+<hr />
+<h1><a name="synopsis">SYNOPSIS</a></h1>
+<pre>
+    #include &quot;smrbt.h&quot;</pre>
+<pre>
+    typedef int (*SmRbtCompareFn)
+        (PsmPartition partition, PsmAddress nodeData, void *dataBuffer);
+    typedef void (*SmRbtDeleteFn)
+        (PsmPartition partition, PsmAddress nodeData, void *argument);</pre>
+<pre>
+    [see description for available functions]</pre>
+<p>
+</p>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p>The smrbt library provides functions to create, manipulate
+and destroy ``red-black'' balanced binary trees in shared memory.
+smrbt uses two types of objects, <em>rbt</em> objects and
+<em>node</em> objects; as these objects are stored in
+shared memory which is managed by psm(3), pointers to these
+objects are carried as PsmAddress values.  An rbt knows how
+many nodes it contains and what its root node is.  
+An node knows what rbt it belongs to and which nodes are its
+parent and (up to 2) children.
+A node also knows its content, which is normally the PsmAddress of some
+object in shared memory.</p>
+<dl>
+<dt><strong><a name="item_sm_rbt_create">PsmAddress sm_rbt_create(PsmPartition partition)</a></strong>
+
+<dd>
+<p>Create a new rbt object without any nodes in it, within the memory
+segment identified by <em>partition</em>.  Returns the PsmAddress of the rbt,
+or 0 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_sm_rbt_unwedge">void sm_rbt_unwedge(PsmPartition partition, PsmAddress rbt, int interval)</a></strong>
+
+<dd>
+<p>Unwedge, as necessary, the mutex semaphore protecting shared access to the
+indicated rbt.  For details, see the explanation of the <code>sm_SemUnwedge()</code>
+function in platform(3).</p>
+</dd>
+</li>
+<dt><strong><a name="item_sm_rbt_clear">int sm_rbt_clear(PsmPartition partition, PsmAddress rbt, SmRbtDeleteFn delete, void *argument);</a></strong>
+
+<dd>
+<p>Frees every node of the rbt, leaving the rbt empty.  If the <em>delete</em> function 
+is non-NULL, that function is called once for each freed node; when
+called, that function is passed the PsmAddress that is the node's data
+and the <em>argument</em> pointer passed to sm_rbt_clear().  Returns 0 on success,
+-1 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_sm_rbt_destroy">void sm_rbt_destroy(PsmPartition partition, PsmAddress rbt, SmRbtDeleteFn delete, void *argument);</a></strong>
+
+<dd>
+<p>Destroy an rbt.  Frees all nodes of the rbt as in sm_rbt_clear(), then
+frees the rbt structure itself.</p>
+</dd>
+</li>
+<dt><strong><a name="item_sm_rbt_user_data_set">int sm_rbt_user_data_set(PsmPartition partition, PsmAddress rbt, PsmAddress userData);</a></strong>
+
+<dd>
+<p>Set the value of a user data variable associated with the rbt as a whole.
+This value may be used for any purpose; it is typically used to store the
+PsmAddress of a shared memory block containing data (e.g., state data) which
+the user wishes to associate with the rbt.  Returns 0 on success, -1 on any
+error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_sm_rbt_user_data">PsmAddress sm_rbt_user_data(PsmPartition partition, PsmAddress rbt);</a></strong>
+
+<dd>
+<p>Return the value of the user data variable associated with the rbt as a
+whole, or 0 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_sm_rbt_length">int sm_rbt_length(PsmPartition partition, PsmAddress rbt);</a></strong>
+
+<dd>
+<p>Return the number of nodes in the rbt.</p>
+</dd>
+</li>
+<dt><strong><a name="item_sm_rbt_insert">PsmAddress sm_rbt_insert(PsmPartition partition, PsmAddress rbt, PsmAddress data, SmRbtCompareFn compare, void *dataBuffer);</a></strong>
+
+<dd>
+<p>Create a new rbt node whose data value is <em>data</em> and insert it into
+<em>rbt</em>.  The nodes of an rbt are ordered by their notional ``key'' values;
+for this purpose, no two nodes may have the same key value.  The key value
+of a node is assumed to be some function of the content of <em>dataBuffer</em>,
+which is assumed to be a representation in memory of the data value
+indicated by <em>data</em>, and that function must be implicit in the <em>compare</em>
+function, which must not be NULL.  The new rbt node is inserted into
+the rbt in a tree location that preserves order in the tree, according to
+the collating sequence established by <em>compare</em>, and also ensures that
+no path (from root to leaf) in the tree is more than twice as long as
+any other path.  This makes searching the tree for a given data value
+quite rapid even if the number of nodes in the tree is very large.  Returns
+the PsmAddress of the new node, or 0 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_sm_rbt_delete">void sm_rbt_delete(PsmPartition partition, PsmAddress rbt, SmRbtCompareFn compare, void *dataBuffer, SmRbtDeleteFn delete, void *argument);</a></strong>
+
+<dd>
+<p>Delete a node from <em>rbt</em>.  <em>compare</em> must be the same function that was
+used to insert the node: the tree must be dynamically re-balanced upon node
+deletion, and the <em>compare</em> function and the data value of the node that
+is to be deleted (as represented in memory in <em>dataBuffer</em>) are required for
+this purpose.  (Since the function descends the tree in search of the
+matching node anyway, in order to preserve balance, the address of the node
+itself is not needed.)</p>
+</dd>
+<dd>
+<p>If the <em>delete</em> function is non-NULL, that function is called upon deletion
+of the indicated node.  When called, that function is passed the PsmAddress
+that is the node's data value and the <em>argument</em> pointer passed to
+sm_rbt_delete().</p>
+</dd>
+<dd>
+<p><strong>NOTE</strong> that this function does something highly devious to avoid extra
+tree-balancing complexity when node is deleted.  For details, see the code,
+but the main point is that deleting a node <strong>WILL MOVE NODES WITHIN THE TREE</strong>.
+After the deletion, the next node may not be the one that would have been
+reported if you passed the to-be-deleted node to <a href="#item_sm_rbt_next"><code>sm_rbt_next()</code></a> before
+calling sm_rbt_delete().  This is important: do not apply updates (no
+insertions, and especially no deletions) while you are traversing a
+red-black tree sequentially.  If you do, the result will not be what you
+expect.</p>
+</dd>
+</li>
+<dt><strong><a name="item_sm_rbt_first">PsmAddress sm_rbt_first(PsmPartition partition, PsmAddress rbt);</a></strong>
+
+<dt><strong><a name="item_sm_rbt_last">PsmAddress sm_rbt_last(PsmPartition partition, PsmAddress rbt);</a></strong>
+
+<dd>
+<p>Return the PsmAddress of the first/last node in <em>rbt</em>, or 0 on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_sm_rbt_next">PsmAddress sm_rbt_next(PsmPartition partition, PsmAddress node);</a></strong>
+
+<dt><strong><a name="item_sm_rbt_prev">PsmAddress sm_rbt_prev(PsmPartition partition, PsmAddress node);</a></strong>
+
+<dd>
+<p>Return the PsmAddress of the node following/preceding <em>node</em> in
+that node's rbt, or 0 on any error.</p>
+</dd>
+<dd>
+<p><strong>NOTE</strong> that the red-black tree node insertion and deletion functions 
+<strong>WILL MOVE NODES WITHIN THE TREE</strong>.
+This is important: do not apply updates (no insertions, and especially no
+deletions) while you are traversing a red-black tree sequentially, using
+<a href="#item_sm_rbt_next"><code>sm_rbt_next()</code></a> or sm_rbt_prev().  If you do, the result will not be what you
+expect.</p>
+</dd>
+</li>
+<dt><strong><a name="item_sm_rbt_search">PsmAddress sm_rbt_search(PsmPartition partition, PsmAddress rbt, SmRbtCompareFn compare, void *dataBuffer, PsmAddress *successor);</a></strong>
+
+<dd>
+<p>Search <em>rbt</em> for a node whose data matches the data in <em>dataBuffer</em>.
+<em>compare</em> must be the same function that was used to insert all nodes
+into the tree.  The tree is searched until a node is found whose data
+value is ``equal'' (according to <em>compare</em>) to the data value represented
+in memory in <em>dataBuffer</em>, or until it is known that there is no such
+node in the tree.  If the matching node is found, the PsmAddress of that
+node is returned and <em>*successor</em> is set to zero.  Otherwise, zero is
+returned and <em>*successor</em> is set to the PsmAddress of the first node in
+the tree whose key value is greater than the key value of <em>dataBuffer</em>,
+according to <em>compare</em>, or to zero if there is no such successor node.</p>
+</dd>
+</li>
+<dt><strong><a name="item_sm_rbt_rbt">PsmAddress sm_rbt_rbt(PsmPartition partition, PsmAddress node);</a></strong>
+
+<dd>
+<p>Return the PsmAddress of the rbt to which <em>node</em> belongs, or 0
+on any error.</p>
+</dd>
+</li>
+<dt><strong><a name="item_sm_rbt_data">PsmAddress sm_rbt_data(PsmPartition partition, PsmAddress node);</a></strong>
+
+<dd>
+<p>Return the PsmAddress that is the data value for <em>node</em>, or 0
+on any error.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="usage">USAGE</a></h1>
+<p>A user normally creates an node and adds it to a rbt by doing the following:</p>
+<ol>
+<li>
+<p>obtaining a shared memory block to contain the node's data;</p>
+</li>
+<li>
+<p>converting the shared memory block's PsmAddress to a character pointer;</p>
+</li>
+<li>
+<p>using that pointer to write the data into the shared memory block;</p>
+</li>
+<li>
+<p>calling the <em>sm_rbt_insert</em> function to create the node structure (which
+will include the shared memory block's PsmAddress) and insert it into the rbt.</p>
+</li>
+</ol>
+<p>When inserting or deleting nodes or searching a rbt, the user must
+provide a compare function of the form:</p>
+<pre>
+    int user_comp_name(PsmPartition partition, PsmAddress node, 
+                       void *dataBuffer);</pre>
+<p>This function is automatically called by the smrbt function being invoked;
+when the function is called it is passed the data content of an rbt node
+(<em>node</em>, nominally the PsmAddress of an item in shared memory) and an
+argument, <em>dataBuffer</em>, which is nominally the address in local memory
+of some other data item in the same format.  The user-supplied function
+normally compares some key values of the two data items and returns 0 if
+they are equal, an integer less than 0 if <em>node</em>'s key value is less
+than that of <em>dataBuffer</em>, and an integer greater than 0 if <em>node</em>'s
+key value is greater than that of <em>dataBuffer</em>.  These return values
+will produce an rbt in ascending order.</p>
+<p>When deleting an node or destroying a rbt, the user may
+optionally provide a delete function of the form:</p>
+<pre>
+    void user_delete_name(PsmPartition partition, PsmAddress node, 
+                          void *argData)</pre>
+<p>When provided, this function is automatically called by the smrbt function
+being invoked; when the function is called it is passed the content of a
+rbt node (<em>node</em>, nominally the PsmAddress of an item in shared
+memory) and an argument, <em>argData</em>, which if non-NULL is normally the address
+in local memory of a data item providing context for the rbt node deletion.
+The user-supplied function performs any application-specific cleanup
+associated with deleting the node, such as freeing the node's content
+data item and/or other memory associated with the node.</p>
+<p>
+</p>
+<hr />
+<h1><a name="example">EXAMPLE</a></h1>
+<p>For an example of the use of smrbt, see the file smrbtsh.c
+in the utils directory of ICI.</p>
+<p>
+</p>
+<hr />
+<h1><a name="see_also">SEE ALSO</a></h1>
+<p>smrbtsh(1), platform(3), <code>psm(3)</code></p>
+
+</body>
+
+</html>

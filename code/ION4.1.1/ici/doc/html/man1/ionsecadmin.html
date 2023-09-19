@@ -1,0 +1,134 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>ionsecadmin - ION global security database management interface</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:mingw-dvlpr@lists.sourceforge.net" />
+</head>
+
+<body style="background-color: white">
+
+<p><a name="__index__"></a></p>
+<!-- INDEX BEGIN -->
+<!--
+
+<ul>
+
+	<li><a href="#name">NAME</a></li>
+	<li><a href="#synopsis">SYNOPSIS</a></li>
+	<li><a href="#description">DESCRIPTION</a></li>
+	<li><a href="#exit_status">EXIT STATUS</a></li>
+	<li><a href="#examples">EXAMPLES</a></li>
+	<li><a href="#files">FILES</a></li>
+	<li><a href="#environment">ENVIRONMENT</a></li>
+	<li><a href="#diagnostics">DIAGNOSTICS</a></li>
+	<li><a href="#bugs">BUGS</a></li>
+	<li><a href="#see_also">SEE ALSO</a></li>
+</ul>
+-->
+<!-- INDEX END -->
+
+<p>
+</p>
+<h1><a name="name">NAME</a></h1>
+<p>ionsecadmin - ION global security database management interface</p>
+<p>
+</p>
+<hr />
+<h1><a name="synopsis">SYNOPSIS</a></h1>
+<p><strong>ionsecadmin</strong> [ <em>commands_filename</em> ]</p>
+<p>
+</p>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p><strong>ionsecadmin</strong> configures and manages the ION security database
+on the local computer.</p>
+<p>It configures and manages the ION security database on the local
+computer in response to ION configuration commands found in
+<em>commands_filename</em>, if provided; if not, <strong>ionsecadmin</strong> prints
+a simple prompt (:) so that the user may type commands directly
+into standard input.</p>
+<p>The format of commands for <em>commands_filename</em> can be queried from
+<strong>ionsecadmin</strong> by entering the command 'h' or '?' at the prompt.  The
+commands are documented in ionsecrc(5).</p>
+<p>
+</p>
+<hr />
+<h1><a name="exit_status">EXIT STATUS</a></h1>
+<dl>
+<dt><strong><a name="item__220_22">``0''</a></strong>
+
+<dd>
+<p>Successful completion of ION security database administration.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="examples">EXAMPLES</a></h1>
+<dl>
+<dt><strong><a name="item_ionsecadmin">ionsecadmin</a></strong>
+
+<dd>
+<p>Enter interactive ION security policy administration command entry mode.</p>
+</dd>
+</li>
+<dt><strong><a name="item_ionsecadmin_host1_2eionsecrc">ionsecadmin host1.ionsecrc</a></strong>
+
+<dd>
+<p>Execute all configuration commands in <em>host1.ionsecrc</em>, then terminate
+immediately.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="files">FILES</a></h1>
+<p>Status and diagnostic messages from <strong>ionsecadmin</strong> and from other software that
+utilizes the ION node are nominally written to a log file in the current
+working directory within which <strong>ionsecadmin</strong> was run.  The log file is
+typically named <strong>ion.log</strong>.</p>
+<p>See also ionsecrc(5).</p>
+<p>
+</p>
+<hr />
+<h1><a name="environment">ENVIRONMENT</a></h1>
+<p>No environment variables apply.</p>
+<p>
+</p>
+<hr />
+<h1><a name="diagnostics">DIAGNOSTICS</a></h1>
+<p><strong>Note</strong>: all ION administration utilities expect source file input to be
+lines of ASCII text that are NL-delimited.  If you edit the ionrc file on
+a Windows machine, be sure to <strong>use dos2unix to convert it to Unix text format</strong>
+before presenting it to <strong>ionsecadmin</strong>.  Otherwise <strong>ionsecadmin</strong> will detect
+syntax errors and will not function satisfactorily.</p>
+<p>The following diagnostics may be issued to the log file:</p>
+<dl>
+<dt><strong><a name="item_can_27t_open_command_file_2e_2e_2e">Can't open command file...</a></strong>
+
+<dd>
+<p>The <em>commands_filename</em> specified in the command line doesn't exist.</p>
+</dd>
+</li>
+</dl>
+<p>Various errors that don't cause <strong>ionsecadmin</strong> to fail but are noted in the
+log file may be caused by improperly formatted commands given at the prompt
+or in the <em>commands_filename</em>.  Please see <code>ionsecrc(5)</code> for details.</p>
+<p>
+</p>
+<hr />
+<h1><a name="bugs">BUGS</a></h1>
+<p>Report bugs to &lt;<a href="mailto:ion-dtn-support@lists.sourceforge.net">ion-dtn-support@lists.sourceforge.net</a>&gt;</p>
+<p>
+</p>
+<hr />
+<h1><a name="see_also">SEE ALSO</a></h1>
+<p><code>ionsecrc(5)</code></p>
+
+</body>
+
+</html>

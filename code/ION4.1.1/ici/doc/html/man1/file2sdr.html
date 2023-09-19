@@ -1,0 +1,145 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>file2sdr - SDR data ingestion test program</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:mingw-dvlpr@lists.sourceforge.net" />
+</head>
+
+<body style="background-color: white">
+
+<p><a name="__index__"></a></p>
+<!-- INDEX BEGIN -->
+<!--
+
+<ul>
+
+	<li><a href="#name">NAME</a></li>
+	<li><a href="#synopsis">SYNOPSIS</a></li>
+	<li><a href="#description">DESCRIPTION</a></li>
+	<li><a href="#exit_status">EXIT STATUS</a></li>
+	<li><a href="#files">FILES</a></li>
+	<li><a href="#environment">ENVIRONMENT</a></li>
+	<li><a href="#diagnostics">DIAGNOSTICS</a></li>
+	<li><a href="#bugs">BUGS</a></li>
+	<li><a href="#see_also">SEE ALSO</a></li>
+</ul>
+-->
+<!-- INDEX END -->
+
+<p>
+</p>
+<h1><a name="name">NAME</a></h1>
+<p>file2sdr - SDR data ingestion test program</p>
+<p>
+</p>
+<hr />
+<h1><a name="synopsis">SYNOPSIS</a></h1>
+<p><strong>file2sdr</strong> <em>configFlags</em> <em>fileName</em></p>
+<p>
+</p>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p><strong>file2sdr</strong> stress-tests SDR data ingestion by repeatedly writing all text
+lines of the file named <em>fileName</em> to one of a series of non-volatile
+linked lists created in a test SDR data store named ``testsdr<em>configFlags</em>''.
+By incorporating the data store configuration into the name
+(e.g., ``testsdr14'') we make it relatively easy to perform comparative
+testing on SDR data stores that are identical aside from their configuration
+settings.</p>
+<p>The operation of <strong>file2sdr</strong> is cyclical: a new linked list is created each
+time the program finishes copying the file's text lines and starts over
+again.  If you use ^C to terminate <strong>file2sdr</strong> and then restart it, the
+program resumes operation at the point where it left off.</p>
+<p>After writing each line to the current linked list, <strong>file2sdr</strong> gives a
+semaphore to indicate that the list is now non-empty.  This is mainly for
+the benefit of the complementary test program sdr2file(1).</p>
+<p>At the end of each cycle <strong>file2sdr</strong> appends a final EOF line to the current
+linked list, containing the text ``*** End of the file ***'', and prints a
+brief performance report:</p>
+<pre>
+        Processing I&lt;lineCount&gt; lines per second.</pre>
+<p>
+</p>
+<hr />
+<h1><a name="exit_status">EXIT STATUS</a></h1>
+<dl>
+<dt><strong><a name="item__220_22">``0''</a></strong>
+
+<dd>
+<p><strong>file2sdr</strong> has terminated.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="files">FILES</a></h1>
+<p>No configuration files are needed.</p>
+<p>
+</p>
+<hr />
+<h1><a name="environment">ENVIRONMENT</a></h1>
+<p>No environment variables apply.</p>
+<p>
+</p>
+<hr />
+<h1><a name="diagnostics">DIAGNOSTICS</a></h1>
+<p>Diagnostic messages produced by <strong>file2sdr</strong> are written to the ION log
+file <em>ion.log</em>.</p>
+<dl>
+<dt><strong><a name="item_can_27t_use_sdr_2e">Can't use sdr.</a></strong>
+
+<dd>
+<p>ION system error.  Check for earlier diagnostic messages describing
+the cause of the error; correct problem and rerun.</p>
+</dd>
+</li>
+<dt><strong><a name="item_can_27t_create_semaphore_2e">Can't create semaphore.</a></strong>
+
+<dd>
+<p>ION system error.  Check for earlier diagnostic messages describing
+the cause of the error; correct problem and rerun.</p>
+</dd>
+</li>
+<dt><strong><a name="item_sdr_transaction_failed_2e">SDR transaction failed.</a></strong>
+
+<dd>
+<p>ION system error.  Check for earlier diagnostic messages describing
+the cause of the error; correct problem and rerun.</p>
+</dd>
+</li>
+<dt><strong><a name="item_can_27t_open_input_file">Can't open input file</a></strong>
+
+<dd>
+<p>Operating system error.  Check errtext, correct problem, and rerun.</p>
+</dd>
+</li>
+<dt><strong><a name="item_can_27t_reopen_input_file">Can't reopen input file</a></strong>
+
+<dd>
+<p>Operating system error.  Check errtext, correct problem, and rerun.</p>
+</dd>
+</li>
+<dt><strong><a name="item_can_27t_read_from_input_file">Can't read from input file</a></strong>
+
+<dd>
+<p>Operating system error.  Check errtext, correct problem, and rerun.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="bugs">BUGS</a></h1>
+<p>Report bugs to &lt;<a href="mailto:ion-dtn-support@lists.sourceforge.net">ion-dtn-support@lists.sourceforge.net</a>&gt;</p>
+<p>
+</p>
+<hr />
+<h1><a name="see_also">SEE ALSO</a></h1>
+<p>sdr2file(1), <code>sdr(3)</code></p>
+
+</body>
+
+</html>
