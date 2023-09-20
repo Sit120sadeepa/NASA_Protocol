@@ -400,7 +400,7 @@ int	main(int argc, char *argv[])
 	/*	Start the receiver thread.				*/
 	rtp.running = 1;
 	rtp.mainThread = pthread_self();
-	if (pthread_begin(&listenerThread, NULL, Listen_for_connections,
+	if (pthread_begin(&listenerThread, NULL, Recieve_DCCP, Listen_for_connections,
 		&rtp, "dccplsi_listener"))
 	{
 		close(rtp.linkSocket);
