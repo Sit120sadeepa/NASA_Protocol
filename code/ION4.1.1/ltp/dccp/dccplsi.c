@@ -187,93 +187,112 @@ typedef struct
 	int			running;
 } ListenerThreadParms;
 
-static void* Listen_for_connections(void* parm)
+static void *Listen_for_connections(void *parm)
 {
-	ListenerThreadParms* rtp = (ListenerThreadParms*)parm;
-	int consock = -1; // Initialize consock to an invalid value
-	struct sockaddr fromAddr;
-	socklen_t solen;
-	ReceiverThreadParms* rp;
-	pthread_mutex_t elk;
-	Lyst list;
+    ListenerThreadParms *rtp = (ListenerThreadParms *)parm;
+    int consock = -1; // Initialize consock to an invalid value
+    struct sockaddr fromAddr;
+    socklen_t solen;
+    ReceiverThreadParms *rp;
+    pthread_mutex_t elk;
+    Lyst list;
 
-	list = lyst_create_using(getIonMemoryMgr());
-	lyst_clear(list);
-	pthread_mutex_init(&elk, NULL);
+    list = lyst_create_using(getIonMemoryMgr());
+    lyst_clear(list);
+    pthread_mutex_init(&elk, NULL);
 
-	// ... (rest of the code)
+    // ... (rest of the code)
 
-	while (rtp->running)
-	{
-		solen = sizeof(fromAddr);
-		consock = accept(rtp->linkSocket, &fromAddr, &solen);
-		if (consock < 0)
-		{
-			if (errno == EINTR)
-			{
-				continue;
-			}
-			putSysErrmsg("DCCPLSI accept() failed.", NULL);
-			pthread_kill(rtp->mainThread, SIGTERM);
-			rtp->running = 0;
-			continue;
-		}
+    while (rtp->running)
+    {
+        solen = sizeof(fromAddr);
+        consock = accept(rtp->linkSocket, &fromAddr, &solen);
+        if (consock < 0)
+        {
+            if (errno == EINTR)
+            {
+                continue;
+            }
+            putSysErrmsg("DCCPLSI accept() failed.", NULL);
+            pthread_kill(rtp->mainThread, SIGTERM);
+            rtp->running = 0;
+            continue;
+        }
 
-		if (rtp->running == 0)
-		{
-			close(consock); // Close consock on early exit
-			consock = -1; // Reset consock to an invalid value
-			continue;
-		}
+        if (rtp->running == 0)
+        {
+            close(consock); // Close consock on early exit
+            consock = -1; // Reset consock to an invalid value
+            continue;
+        }
 
-		pthread_mutex_lock(&elk);
-		rp = create_new_thread_data(&list);
-		pthread_mutex_unlock(&elk);
-		if (rp == NULL)
-		{
-			putSysErrmsg("DCCPLSI can't allocate thread data structures.", NULL);
-			pthread_kill(rtp->mainThread, SIGTERM);
-			rtp->running = 0;
-			close(consock); // Close consock on failure to create thread data
-			consock = -1; // Reset consock to an invalid value
-			continue;
-		}
+        pthread_mutex_lock(&elk);
+        rp = create_new_thread_data(&list);
+        pthread_mutex_unlock(&elk);
+        if (rp == NULL)
+        {
+            putSysErrmsg("DCCPLSI can't allocate thread data structures.", NULL);
+            pthread_kill(rtp->mainThread, SIGTERM);
+            rtp->running = 0;
+            close(consock); // Close consock on failure to create thread data
+            consock = -1; // Reset consock to an invalid value
+            continue;
+        }
 
-		// ... (rest of the code for thread creation)
+        rp->sock = consock;
+        rp->mainThread = rtp->mainThread;
+        rp->running = 1;
+        rp->elk = &elk;
+        rp->list = &list;
 
-		// Make sure other tasks have a chance to run.
-		sm_TaskYield();
-	}
+        if (pthread_begin(&rp->me, NULL, Recieve_DCCP, rp, "dccplsi_receiver"))
+        {
+            putSysErrmsg("DCCPLSI can't create receiver thread.", NULL);
+            close(consock);
+            consock = -1; // Reset consock to an invalid value
+            pthread_kill(rtp->mainThread, SIGTERM);
+            rtp->running = 0;
+            continue;
+        }
 
-	while (!no_threads(&list))
-	{
-		pthread_mutex_lock(&elk);
-		rp = get_first_thread(&list);
-		pthread_mutex_unlock(&elk);
-		if (rp == NULL)
-		{
-			putSysErrmsg("DCCPLSI can't terminate all threads nicely.", NULL);
-			close(consock); // Close consock on error
-			consock = -1; // Reset consock to an invalid value
-			pthread_mutex_destroy(&elk);
-			lyst_destroy(list);
-			return NULL;
-		}
-		rp->running = 0;
-		pthread_kill(rp->me, SIGUSR1);
-		pthread_join(rp->me, NULL);
-	}
+        // ... (rest of the code for thread creation)
 
-	// Cleanup resources
-	if (consock != -1)
-	{
-		close(consock);
-	}
-	pthread_mutex_destroy(&elk);
-	lyst_destroy(list);
-	writeErrmsgMemos();
-	writeMemo("[i] dccplsi listener thread has ended.");
-	return NULL;
+        // Make sure other tasks have a chance to run.
+        sm_TaskYield();
+    }
+
+    while (!no_threads(&list))
+    {
+        pthread_mutex_lock(&elk);
+        rp = get_first_thread(&list);
+        pthread_mutex_unlock(&elk);
+        if (rp == NULL)
+        {
+            putSysErrmsg("DCCPLSI can't terminate all threads nicely.", NULL);
+            if (consock != -1)
+            {
+                close(consock); // Close consock on error
+                consock = -1; // Reset consock to an invalid value
+            }
+            pthread_mutex_destroy(&elk);
+            lyst_destroy(list);
+            return NULL;
+        }
+        rp->running = 0;
+        pthread_kill(rp->me, SIGUSR1);
+        pthread_join(rp->me, NULL);
+    }
+
+    // Cleanup resources
+    if (consock != -1)
+    {
+        close(consock);
+    }
+    pthread_mutex_destroy(&elk);
+    lyst_destroy(list);
+    writeErrmsgMemos();
+    writeMemo("[i] dccplsi listener thread has ended.");
+    return NULL;
 }
 
 
@@ -400,7 +419,7 @@ int	main(int argc, char *argv[])
 	/*	Start the receiver thread.				*/
 	rtp.running = 1;
 	rtp.mainThread = pthread_self();
-	if (pthread_begin(&listenerThread, NULL, Recieve_DCCP, Listen_for_connections,
+	if (pthread_begin(&listenerThread, NULL, Listen_for_connections,
 		&rtp, "dccplsi_listener"))
 	{
 		close(rtp.linkSocket);
