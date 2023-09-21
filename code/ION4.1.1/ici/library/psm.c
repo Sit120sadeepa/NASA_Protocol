@@ -402,7 +402,7 @@ void *psp(PsmPartition partition, PsmAddress address)
     }
 
     // Ensure that address remains within bounds
-    if (address >= partition->spaceSize)
+    if (address >= maxValidAddress)
     {
         return NULL; // Handle the case of an out-of-bounds address.
     }
