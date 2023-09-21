@@ -1777,7 +1777,7 @@ int bcbApplySenderPolRule(Bundle *bundle, BpSecPolRule *polRule, unsigned
 		char tgtNum)
 {
     int isValidObject(Object obj) {
-        return obj != NULL;
+        return obj;
     }
     int isValidSize(size_t size, size_t max_size) {
         return size > 0 && size <= max_size;
