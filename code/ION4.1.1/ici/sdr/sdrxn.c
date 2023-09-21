@@ -1975,12 +1975,12 @@ void _sdrput(const char *file, int line, Sdr sdrv, Address into, char *from,
 	{
 		return;
 	}
-	"error checking changes 16/09/2023"
-	"if the legth is greater than the size return" if (length > size_t)
+	/*"error checking changes 16/09/2023"*/
+	/*"if the legth is greater than the size return"*/ if (length > size_t)
 	{
 		return;
 	}
-	"if the legth is a negative return" if (length < 0)
+	/*"if the legth is a negative return"*/ if (length < 0)
 	{
 		return;
 	}
