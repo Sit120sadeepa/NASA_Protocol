@@ -11,12 +11,15 @@ class node():
         self.IPAddress = []
         self.connectedNodes = []
 
+#Define the "Add Node" function
 def AddNode(nodes,node):
     nodes.append(node)
 
+#Define a function to return the current node as usuable data
 def NodeConstructor():
         return node()
 
+#Define the "Remove Node" function.
 def RemoveNode(nodes,nodeName):
     for node in nodes:
         if(node.name==nodeName):
@@ -25,7 +28,7 @@ def RemoveNode(nodes,nodeName):
             nodes.remove(node)
             break
 
-#input validation for IP address input for node
+#Input validation for IP address field for Nodes
 def inputValdation(UI,nodes):
     ipList = []
     for node in nodes:

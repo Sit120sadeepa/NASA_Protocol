@@ -1,7 +1,11 @@
 #This script is used for drawing the primary user interface, it contains the buttons to load the various sub-programs of the application
 
 #import libraies
-import tkinter as tk
+import sys
+if sys.version_info[0] == 3:
+    import tkinter as tk
+else:
+    import Tkinter as tk
 
 #Import all sub-UIs that can be called from the main window
 from NT_User_Interface.NT_UI_Node_Add import AddNodeGui

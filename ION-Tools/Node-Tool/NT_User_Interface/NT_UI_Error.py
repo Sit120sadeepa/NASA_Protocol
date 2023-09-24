@@ -1,4 +1,8 @@
-import tkinter as tk
+import sys
+if sys.version_info[0] == 3:
+    import tkinter as tk
+else:
+    import Tkinter as tk
 
 #Generic error window template.
 def ErrorGUI(windowLocation,ErrorMessage):

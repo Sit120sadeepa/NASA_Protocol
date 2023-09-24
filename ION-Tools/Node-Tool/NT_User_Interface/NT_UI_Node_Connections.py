@@ -1,6 +1,10 @@
 #import libraies
+import sys
+if sys.version_info[0] == 3:
+    import tkinter as tk
+else:
+    import Tkinter as tk
 from tkinter import ttk
-import tkinter as tk
 import NT_User_Interface.NT_UI_Main
 from NT_User_Interface.NT_UI_Error import ErrorGUI
 from NT_Node.NT_Node import *

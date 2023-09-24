@@ -1,8 +1,12 @@
 #import libraies
-import tkinter as tk
+import sys
+if sys.version_info[0] == 3:
+    import tkinter as tk
+else:
+    import Tkinter as tk
 import NT_User_Interface.NT_UI_Main
 
-#Varible for storing array of nodes used thoughout the application
+#Varible for storing array of nodes used thoughout the application 
 nodes = []
 #Window Starting Location
 windowLocation = [300,300]

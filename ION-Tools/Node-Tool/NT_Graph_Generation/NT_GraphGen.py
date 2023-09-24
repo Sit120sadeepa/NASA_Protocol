@@ -1,56 +1,61 @@
 from copy import deepcopy
-import igraph as ig
+import networkx as nx
 import matplotlib.pyplot as plt
 
-#Stuff for generating the network visualisation to be passed to the UI
-
+# Stuff for generating the network visualization to be passed to the UI
 def GenerateGraph(nodes):
-    #Deep Clone
+    # Deep Clone
     nodeCopy = deepcopy(nodes)
 
     nodeCount = len(nodeCopy)
 
-    g = ig.Graph(directed=False)
+    # Create an empty undirected networkx graph
+    g = nx.Graph()
 
-    # Add 5 vertices
-    g.add_vertices(nodeCount)
+    # Add nodes
+    g.add_nodes_from(range(nodeCount))
 
     nodeList = []
     for node in nodes:
-       nodeList.append(node.name)
+        nodeList.append(node.name)
 
-
-    # Add ids and labels to vertices
-    for i in range(len(g.vs)):
-        g.vs[i]["id"]= i
-        g.vs[i]["label"]= str(nodeList[i])  #str(i)
+    # Add labels to nodes
+    node_labels = {i: str(nodeList[i]) for i in range(nodeCount)}
 
     edges = []
 
-    #Generate Edges
+    # Generate Edges
     for i in range(nodeCount):
-        for j in range (nodeCount):
+        for j in range(nodeCount):
             inode = nodeCopy[i]
             jnode = nodeCopy[j]
-            if(inode.connectedNodes.count(jnode)>0):
-                edges.append((i,j))
-                try: jnode.connectedNodes.remove(inode)
-                except:None
+            if inode.connectedNodes.count(jnode) > 0:
+                edges.append((i, j))
+                try:
+                    jnode.connectedNodes.remove(inode)
+                except:
+                    None
+
     # Add edges
-    g.add_edges(edges)
+    g.add_edges_from(edges)
 
-    visual_style = {}
+    # Draw the graph
+    pos = nx.spring_layout(g)  # You can choose a different layout algorithm if needed
+    node_colors = ['white' for _ in range(nodeCount)]
 
-    #Colour of the line between nodes
-    visual_style["edge_color"] = 'black'
+    # Set node properties
+    nx.draw(
+        g,
+        pos=pos,
+        with_labels=True,
+        labels=node_labels,
+        node_size=200,  # You can adjust the node size as needed
+        node_color=node_colors,
+        edge_color='black',
+        font_size=10,
+    )
 
-    #node properties
-    #size of the text inside the node
-    visual_style["vertex_label_size"] = 10
-    #Node inside colour
-    visual_style["vertex_color"] = 'white'
+    plt.axis('off')
+    plt.tight_layout()
 
-    fig, ax = plt.subplots()
-    ig.plot(g, target=ax,**visual_style)
-    
-    return fig
+    return plt.gcf()

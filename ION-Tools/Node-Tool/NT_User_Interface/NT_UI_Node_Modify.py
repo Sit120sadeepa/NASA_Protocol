@@ -1,6 +1,10 @@
 #import libraies
+import sys
+if sys.version_info[0] == 3:
+    import tkinter as tk
+else:
+    import Tkinter as tk
 from tkinter import ttk
-import tkinter as tk
 import copy
 
 #Import Scripts from directory
